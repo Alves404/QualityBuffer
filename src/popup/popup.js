@@ -226,15 +226,15 @@
 
     const isApplied = isConfigEqual(uiCfg, appliedConfig);
 
-    if (elApplyStatusSwitch && elApplyStatusText) {
+    if (elApplyStatusSwitch) {
       if (isApplied) {
         elApplyStatusSwitch.classList.remove('is-pending');
         elApplyStatusSwitch.classList.add('is-applied');
-        elApplyStatusText.textContent = 'Aplicado';
+        elApplyStatusSwitch.title = 'Verde: Alteracoes aplicadas';
       } else {
         elApplyStatusSwitch.classList.remove('is-applied');
         elApplyStatusSwitch.classList.add('is-pending');
-        elApplyStatusText.textContent = 'Nao Aplicado';
+        elApplyStatusSwitch.title = 'Vermelho: Alteracoes nao aplicadas (clique em Aplicar Agora)';
       }
     }
 
