@@ -1,27 +1,27 @@
-# Codigo de Conduta — Contributor Covenant
+# Code of Conduct — Contributor Covenant
 
-## Nosso Compromisso
+## Our Pledge
 
-Como membros, contribuidores e mantenedores do projeto **My Quality 4k**, assumimos o compromisso de manter a participacao nesta comunidade livre de assedio para todos, independentemente de nivel de experiencia, sistema operacional, configuracao de hardware, nacionalidade ou identidade.
+As members, contributors, and maintainers of the **My Quality 4k** project, we pledge to make participation in our community a harassment-free experience for everyone, regardless of experience level, operating system, hardware configuration, nationality, or identity.
 
-## Nossos Padroes
+## Our Standards
 
-Exemplos de comportamentos que contribuem para um ambiente tecnico positivo incluem:
+Examples of behavior that contributes to a positive technical environment include:
 
-* Demonstrar empatia e respeito por outros desenvolvedores e usuarios.
-* Oferecer e aceitar feedback tecnico construtivo fundamentado em dados e benchmarks.
-* Focar no que e melhor para a estabilidade do projeto e para a comunidade Open Source.
+* Demonstrating empathy and respect toward other developers and users.
+* Giving and gracefully accepting constructive technical feedback grounded in data and benchmarks.
+* Focusing on what is best for project stability and the broader Open Source community.
 
-Exemplos de comportamentos inaceitaveis incluem:
+Examples of unacceptable behavior include:
 
-* Ataques pessoais, insultos ou comentarios depreciativos em Issues ou Pull Requests.
-* Publicacao de informacoes privadas de terceiros sem permissao explicita.
-* Qualquer outra conduta que possa ser considerada inadequada em um ambiente profissional de engenharia de software.
+* Personal attacks, insults, or derogatory comments in Issues or Pull Requests.
+* Publishing others' private information without explicit permission.
+* Any other conduct which could reasonably be considered inappropriate in a professional software engineering setting.
 
-## Aplicacao
+## Enforcement
 
-Casos de comportamento abusivo ou inaceitavel podem ser reportados diretamente aos mantenedores do repositorio atraves das Issues ou canais de contato do perfil principal no GitHub. Todas as reclamacoes serao analisadas e investigadas com confidencialidade e imparcialidade.
+Instances of abusive, harassing, or otherwise unacceptable behavior may be reported directly to the repository maintainers via GitHub Issues or the primary maintainer profile contact channels. All complaints will be reviewed and investigated promptly and fairly.
 
-## Atribuicao
+## Attribution
 
-Este Codigo de Conduta e adaptado do [Contributor Covenant](https://www.contributor-covenant.org/), versao 2.1.
+This Code of Conduct is adapted from the [Contributor Covenant](https://www.contributor-covenant.org/), version 2.1.

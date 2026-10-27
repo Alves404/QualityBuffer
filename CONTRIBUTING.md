@@ -1,28 +1,28 @@
-# Guia de Contribuicao — My Quality 4k
+# Contributing Guide — My Quality 4k
 
-Obrigado pelo interesse em contribuir com o **My Quality 4k**. Este projeto e Open Source sob a licenca **GNU GPLv3 (GPL-3.0)** e busca otimizar a reproducao de videos 4K no YouTube para computadores de entrada e intermediarios.
+Thank you for your interest in contributing to **My Quality 4k**. This project is Open Source under the **GNU GPLv3 (GPL-3.0)** license and focuses on optimizing 4K YouTube video playback, SABR/MSE buffer depth, and hardware codec selection for entry-level and mid-range PCs.
 
 ---
 
-## Como Contribuir
+## How to Contribute
 
-1. Realize um **Fork** deste repositorio.
-2. Crie uma branch descritiva para sua funcionalidade ou correcao:
+1. **Fork** this repository.
+2. Create a descriptive feature or bugfix branch:
    ```bash
-   git checkout -b feat/otimizacao-buffer-mse
+   git checkout -b feat/sabr-buffer-optimization
    ```
-3. Teste a extensao localmente no Google Chrome (`chrome://extensions` -> Modo do Desenvolvedor -> Carregar sem compactacao).
-4. Execute a verificacao de sintaxe antes de enviar:
+3. Test the extension locally in Google Chrome (`chrome://extensions` -> Developer mode -> Load unpacked).
+4. Run the syntax verification script before submitting:
    ```bash
    npm run verify
    ```
-5. Envie um **Pull Request** detalhando o comportamento antes e depois da alteracao, incluindo metricas de perda de quadros (`droppedVideoFrames`) e uso de CPU/GPU quando aplicavel.
+5. Open a **Pull Request** detailing the behavior before and after your change, including frame drop metrics (`droppedVideoFrames`), buffer horizon seconds (`bufferAheadSec`), and CPU/GPU usage where applicable.
 
 ---
 
-## Padroes de Codigo e Diretrizes
+## Code Standards & Guidelines
 
-* **Manifest V3:** Todo codigo da extensao deve ser compativel com o padrao Manifest V3 do Chromium.
-* **Zero Dependencias Desnecessarias no Front-end:** O codigo injetado no YouTube (`src/content/page-hook.js` e `src/content/content-controller.js`) deve permanecer em JavaScript puro (Vanilla JS) de baixa latencia para nao adicionar sobrecarga de memoria RAM.
-* **Sem Emojis:** Mantenha comentarios de codigo, commits, interfaces e documentacao estritamente tecnicos e livres de emojis.
-* **Seguranca e Privacidade:** Nenhum dado de navegacao deve ser enviado para servidores externos. O servico de telemetria deve apontar exclusivamente para `localhost` quando ativado manualmente pelo usuario.
+* **Manifest V3:** All browser extension code must strictly comply with Chromium Manifest V3 standards.
+* **Zero External Front-End Dependencies:** Code injected into YouTube (`src/content/page-hook.js` and `src/content/content-controller.js`) must remain pure, low-latency Vanilla JavaScript with zero external dependencies.
+* **No Emojis:** Keep all code comments, commit messages, UI strings, and documentation strictly technical and free of emojis.
+* **Privacy & Security:** No browsing data may ever be transmitted to external third-party servers. Telemetry synchronization must remain strictly opt-in and target `localhost` only.

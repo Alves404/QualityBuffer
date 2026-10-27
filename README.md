@@ -1,157 +1,179 @@
 # My Quality 4k
 
-[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-red.svg)](LICENSE)
-[![Manifest V3](https://img.shields.io/badge/Chrome_Extension-Manifest_V3-blue.svg)](manifest.json)
-[![Stack: JavaScript](https://img.shields.io/badge/Front--End-Vanilla_JS-yellow.svg)](src/)
-[![Stack: Node.js & Ruby](https://img.shields.io/badge/Back--End-Node.js_%7C_Ruby-green.svg)](backend/)
+[![Latest Release](https://img.shields.io/badge/Release-v2.1.0-89CFF0.svg)](https://github.com/Alves404/My-Quality-4k/releases/latest)
+[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-5bb5e6.svg)](LICENSE)
+[![Manifest V3](https://img.shields.io/badge/Chrome_Extension-Manifest_V3-89CFF0.svg)](manifest.json)
+[![Stack: JavaScript](https://img.shields.io/badge/Front--End-Vanilla_JS-b6e3ff.svg)](src/)
+[![Stack: Node.js & Ruby](https://img.shields.io/badge/Back--End-Node.js_%7C_Ruby-89CFF0.svg)](backend/)
 
-Extensao Open Source para navegadores focada na otimizacao de videos em **4K (2160p)** do YouTube para computadores de entrada e intermediarios.
+**My Quality 4k** is an Open Source browser extension and network telemetry suite engineered to deliver smooth, stutter-free **4K (2160p)** YouTube video playback on entry-level and mid-range computers.
 
-Seu principal objetivo e evitar travamentos e perdas de quadros (`dropped frames`) por meio da selecao inteligente de codecs acelerados por hardware, estabilizacao de buffers **MediaSource Extensions (MSE)** e monitoramento de pacotes via **Network Logs** (`googlevideo.com`). Permite a visualizacao fluida de videos pesados em 4K mesmo sem um computador de ponta, desde que o usuario possua uma conexao de internet estavel.
-
----
-
-## Sumario
-
-1. [O Problema e a Solucao de Engenharia](#1-o-problema-e-a-solucao-de-engenharia)
-2. [Funcionalidades Implementadas](#2-funcionalidades-implementadas)
-3. [Stack Tecnologica](#3-stack-tecnologica)
-4. [Estrutura do Repositorio](#4-estrutura-do-repositorio)
-5. [Como Instalar e Testar no Google Chrome](#5-como-instalar-e-testar-no-google-chrome)
-6. [Executando os Servicos de Telemetria (Node.js e Ruby)](#6-executando-os-servicos-de-telemetria-nodejs-e-ruby)
-7. [Relatorio Tecnico e Licenciamento Open Source](#7-relatorio-tecnico-e-licenciamento-open-source)
-8. [Nota de Desenvolvimento Assistido por IA (Argon)](#8-nota-de-desenvolvimento-assistido-por-ia-argon)
-9. [Creditos e Autoria](#9-creditos-e-autoria)
+By combining **SABR (Server-Driven Adaptive Bitrate) & Policy Byte-Cap Unlocking**, **MediaSource Extensions (MSE) Buffer Stabilization**, and **Hardware Codec Enforcement (VP9 Profile 0 SDR)**, the extension eliminates CPU decoding bottlenecks and pre-buffers **1, 2, or 3 full minutes** of upcoming 4K video ahead of the playhead—even on modest hardware such as 4-core CPUs and 4 GB VRAM GPUs—whenever a stable internet connection is available.
 
 ---
 
-## 1. O Problema e a Solucao de Engenharia
+## Direct Download & Documentation
 
-Muitos computadores com processadores de 4 nucleos (ex: Intel Core i3) e placas de video de entrada com 4 GB de VRAM (ex: AMD Radeon RX 550 ou GPUs integradas) possuem velocidade de internet suficiente para baixar streams 4K (25 a 45 Mbps), mas sofrem travamentos severos no YouTube devido a tres fatores:
-
-1. **Decodificacao AV1 via Software na CPU:** O YouTube entrega streams 4K prioritariamente no codec `AV1` (`av01`). GPUs sem decodificador fisico AV1 delegam todo o trabalho para o processador, levando o uso de CPU a 100%. O **My Quality 4k** intercepta o `MediaSource.isTypeSupported` e forca o YouTube a enviar **VP9 Profile 0 (8-bit SDR)** (`itag=313` / `itag=315`), transferindo a decodificacao para o hardware da placa de video.
-2. **Micro-Gaps no SourceBuffer e Descarte de Cache:** Pequenas descontinuidades de milissegundos entre segmentos no buffer MSE congelam o player mesmo com dezenas de megabytes ja carregados na memoria. O motor da extensao monitora os intervalos de `video.buffered` e salta automaticamente sobre micro-lacunas, mantendo o fluxo continuo.
-3. **Sobrecarga de Shaders em Segundo Plano:** O "Modo Ambiente" (`#cinematic-container`) do YouTube renderiza um canvas desfocado em tempo real que consome ate 30% de GPUs de entrada. A extensao neutraliza esse canvas e promove o elemento `<video>` para uma camada de composicao dedicada.
-
----
-
-## 2. Funcionalidades Implementadas
-
-* **Deep Pre-Buffer (Virtual Buffer Horizon - v2.0):** Desbloqueia o limite interno de ~15s do agendador DASH do YouTube ao gerenciar dinamicamente `HTMLMediaElement.prototype.buffered` e `SourceBuffer.prototype.buffered`, forcando o pre-carregamento continuo dos **proximos 1, 2 ou 3 minutos** de video em 4K enquanto recicla o back-buffer ja assistido para evitar `QuotaExceededError`.
-* **Pre-Fetch Paralelo em RAM (Parser `sidx` 64 MB - v2.0):** Le o indice de segmentos (`sidx`) no pacote inicial (`range=0-...`) e antecipa o download dos proximos byte-ranges em cache RAM antes de o player requisita-los.
-* **Zero-Track-Laying Bootstrap & Headstart Boost (v2.0):** Informa `100 Mbps / 5ms RTT` via `navigator.connection`, pre-configura `yt-player-quality = 2160` no `localStorage`/`sessionStorage` antes do segundo zero e forma um colchao inicial de 4K antes de liberar a reproducao.
-* **Modificacao da Heuristica de Codec e Cache:** Bloqueio seletivo de `av01` (AV1), `vp09.02` (HDR 10-bit) e limitador opcional de **30fps (bloqueio de 60fps)** no `MAIN world` para garantir reproducao 4K via hardware em `VP9 Profile 0` sem engasgar GPUs de entrada.
-* **Estabilizacao de Buffer MSE e Recuperacao de Micro-Gaps:** Monitoramento de chamadas `SourceBuffer.prototype.appendBuffer` e recuperacao automatica de travamentos em fronteiras de segmento.
-* **Trava Inteligente de Resolucao 4K (`hd2160`):** Fixa a faixa de qualidade na API `#movie_player` do YouTube para impedir que o algoritmo adaptativo (ABR) descarte o buffer 4K ja baixado, contando com **Smart Drop Guard** caso a taxa de perda de quadros ultrapasse 18%.
-* **Interceptacao e Diagnostico via Network Logs:** Monitoramento passivo via `chrome.webRequest` das requisicoes `*://*.googlevideo.com/videoplayback*`, calculando banda efetiva (Mbps), latencia (ms), tamanho de chunk e formato `itag`.
-* **Interface Popup Tecnica:** Painel em tempo real com indicadores de saude do buffer, seletor de qualidade alvo, chaves de otimizacao de hardware e exportacao de logs em JSON.
-* **Back-end Local de Telemetria e Rota:** Servidor Node.js e analisador estatistico em Ruby para consolidacao de metricas de CDN e recomendacao de heuristicas de cache.
+* **Download Latest Release (v2.1.0 Ready-to-Use ZIP):** [My-Quality-4k-v2.1.0.zip](https://github.com/Alves404/My-Quality-4k/releases/download/v2.1.0/My-Quality-4k-v2.1.0.zip)
+* **All GitHub Releases:** [github.com/Alves404/My-Quality-4k/releases](https://github.com/Alves404/My-Quality-4k/releases)
+* **Documentation Website:** [`docs/index.html`](docs/index.html)
+* **Engineering Technical Report:** [`docs/TECHNICAL_REPORT.md`](docs/TECHNICAL_REPORT.md)
 
 ---
 
-## 3. Stack Tecnologica
+## Table of Contents
 
-* **Front-end (Extensao de Navegador):**
-  * JavaScript ES6+ (Vanilla JS de baixa latencia e zero dependencias externas)
-  * Chrome Extension Manifest V3 (`MAIN` e `ISOLATED` Content Scripts + Background Service Worker)
-  * HTML5 & CSS3 (Camada de aceleracao de compositor e interface Popup)
-* **Back-end (Servicos Locais de Telemetria e Caching):**
-  * **JavaScript (Node.js):** Servidor HTTP nativo (`backend/node-server/server.js`) na porta `3456` para ingestao de Network Logs e calculo de heuristica adaptativa.
-  * **Ruby:** Analisador estatistico (`backend/ruby-analyzer/telemetry_analyzer.rb`) para calculo de percentis P50/P95 de largura de banda, latencia e ranking de estabilidade de servidores CDN.
+1. [The Engineering Problem & Solution](#1-the-engineering-problem--solution)
+2. [Key Features (v2.1.0)](#2-key-features-v210)
+3. [Technology Stack](#3-technology-stack)
+4. [Repository Structure](#4-repository-structure)
+5. [Installation Guide (Release ZIP or Developer Mode)](#5-installation-guide-release-zip-or-developer-mode)
+6. [Running the Local Telemetry Services (Node.js & Ruby)](#6-running-the-local-telemetry-services-nodejs--ruby)
+7. [Technical Report & Open Source Licensing](#7-technical-report--open-source-licensing)
+8. [AI-Assisted Engineering Notice (Argon)](#8-ai-assisted-engineering-notice-argon)
+9. [Credits & Authorship](#9-credits--authorship)
 
 ---
 
-## 4. Estrutura do Repositorio
+## 1. The Engineering Problem & Solution
+
+Many computers equipped with 4-core processors (e.g., Intel Core i3) and entry-level 4 GB VRAM graphics cards (e.g., AMD Radeon RX 550 or integrated GPUs) have more than enough internet bandwidth to download 4K streams (25 to 50 Mbps), yet suffer from severe stuttering, frame drops, and constant rebuffering on YouTube due to four architectural bottlenecks:
+
+1. **Hardcoded 35 MB (16-Second) 4K Buffer Ceiling in YouTube's SABR Scheduler:**
+   When streaming above 1080p (`qualityOrdinal > 1080`), YouTube's internal player policy (`g.vWa` / `fPa`) caps the video buffer pool at `36,700,160` bytes (**35 MB**). Divided by a 4K stream's average byte rate (`~2.25 MB/s`), the player stops downloading at **16.3 seconds**, while Google's `googlevideo.com` SABR server enforces a `15,000 ms` `targetVideoReadaheadMs` policy. **My Quality 4k** intercepts the internal player policy via `Object.prototype.videoTrack` to expand the video byte cap to **512 MB** (`536,870,912` bytes), audio byte cap to **64 MB**, and dynamically advances the SABR request horizon so `googlevideo.com` streams **60s, 120s, or 180s** of upcoming 4K video continuously.
+2. **Software AV1 CPU Decoding Overload:**
+   YouTube prioritizes `AV1` (`av01`) for 4K streams. GPUs without a dedicated hardware AV1 decoder offload decoding entirely to software (`dav1d`) on the CPU, spiking processor usage to 100%. **My Quality 4k** hooks `MediaSource.isTypeSupported`, `HTMLMediaElement.prototype.canPlayType`, and `navigator.mediaCapabilities.decodingInfo` to block `av01` and 10-bit HDR (`vp09.02`), forcing hardware-accelerated **VP9 Profile 0 (8-bit SDR)** (`itag=313` / `itag=315`).
+3. **MSE SourceBuffer Micro-Gaps:**
+   Millisecond timestamp discontinuities between adjacent segments in the MSE `SourceBuffer` cause the HTML5 video element to stall (`readyState < 3`) even when puluhan megabytes are already buffered ahead. The extension's monitor loop detects micro-gaps and bridges them automatically.
+4. **Background Shader & Telemetry Overhead:**
+   YouTube's "Ambient Mode" (`#cinematic-container`) renders a real-time blurred `<canvas>` that consumes up to 30% of entry-level GPU fill-rate, while periodic `/youtubei/v1/log_event` and `/api/stats/qoe` beacons cause main-thread serialization spikes. Both are neutralized automatically.
+
+---
+
+## 2. Key Features (v2.1.0)
+
+* **SABR & Policy Deep Pre-Buffer Unlocker (60s / 120s / 180s):** Removes YouTube's 35 MB (16-second) 4K buffer limit by locking internal `policy` byte budgets (`ya = 512 MB`, `Ta = 64 MB`), overriding SABR `NextRequestPolicy` (`targetVideoReadaheadMs` / `targetAudioReadaheadMs`), and pumping the internal loader until the user-selected multi-minute horizon is reached.
+* **Hardware Codec Enforcement (AV1 & HDR10 Blocker):** Selectively blocks `av01` (AV1) and `vp09.02` (10-bit HDR) across `MediaSource` and `MediaCapabilities` APIs while certifying 4K `VP9 Profile 0 SDR` as `smooth: true, powerEfficient: true`.
+* **Optional 30fps Stream Limiter (60fps Blocker):** Halves the number of decoded frames per second on high-framerate gameplay videos to keep 4 GB VRAM GPUs cool and responsive at 2160p.
+* **Zero-Track-Laying Bootstrap & CDN Preconnect:** Spoofs `navigator.connection` (`100 Mbps / 5ms RTT`), pre-seeds `yt-player-quality = 2160` in `localStorage`/`sessionStorage` prior to player initialization, and injects `<link rel="preconnect">` for active `*.googlevideo.com` CDN origins.
+* **MSE Buffer Stabilizer & Micro-Gap Recovery:** Monitors `SourceBuffer.prototype.appendBuffer` byte volume and automatically steps over sub-second timestamp gaps.
+* **Smart 4K Quality Lock (`hd2160`) & Drop Guard:** Locks playback quality on YouTube's `#movie_player` API and includes an optional **Smart Drop Guard** that steps down from 4K to 2K (`1440p`) only if frame drops exceed 18%.
+* **Real-Time Network Logs (`googlevideo.com`):** Passive `chrome.webRequest` inspection that calculates live CDN throughput (Mbps), chunk latency (ms), payload size (KB/MB), and `itag` stream profiles (including multiplexed SABR chunks via `Content-Length` headers).
+* **Baby Blue Dark UI & Video Player Identity:** Clean dark technical control panel accented in Baby Blue (`#89CFF0` / `#B6E3FF`) with live buffer progress bar, hardware toggles, and one-click JSON telemetry export.
+* **Local Telemetry & Route Analysis Backend:** Zero-dependency Node.js HTTP ingestion server and Ruby statistical analyzer for CDN route diagnostics.
+
+---
+
+## 3. Technology Stack
+
+* **Front-End (Browser Extension):**
+  * Vanilla JavaScript (ES6+, zero external runtime dependencies)
+  * Chrome Extension Manifest V3 (`MAIN` and `ISOLATED` world content scripts + Background Service Worker)
+  * HTML5 & CSS3 (GPU compositor layer isolation & Baby Blue Dark Mode Popup UI)
+* **Back-End (Local Telemetry & Caching Services):**
+  * **Node.js:** Native HTTP server (`backend/node-server/server.js`) on port `3456` for Network Log ingestion and adaptive cache heuristics.
+  * **Ruby:** Statistical analyzer (`backend/ruby-analyzer/telemetry_analyzer.rb`) computing P50/P95 bandwidth and latency percentiles across `googlevideo.com` CDN edge nodes.
+
+---
+
+## 4. Repository Structure
 
 ```text
 My-Quality-4k/
-├── manifest.json                 # Configuracao Chrome Extension Manifest V3
-├── package.json                  # Scripts de verificacao e execucao do Back-end
-├── LICENSE                       # Licenca Open Source GNU GPLv3 (Copyleft)
-├── README.md                     # Documentacao principal do projeto
-├── CONTRIBUTING.md               # Diretrizes para contribuidores Open Source
-├── CODE_OF_CONDUCT.md            # Codigo de conduta (Contributor Covenant)
-├── CHANGELOG.md                  # Historico de alteracoes e versoes
+├── manifest.json                 # Chrome Extension Manifest V3 configuration (v2.1.0)
+├── package.json                  # Verification and backend execution scripts
+├── LICENSE                       # GNU GPLv3 (Copyleft Open Source) License
+├── README.md                     # Main English documentation
+├── CONTRIBUTING.md               # Open Source contributor guidelines
+├── CODE_OF_CONDUCT.md            # Contributor Covenant Code of Conduct
+├── CHANGELOG.md                  # Version history and release notes
 ├── assets/
-│   └── icons/                    # Icones da extensao (16px, 32px, 48px, 128px)
+│   └── icons/                    # Baby Blue Video Player extension icons (16, 32, 48, 128px)
 ├── src/
 │   ├── background/
-│   │   └── service-worker.js     # Monitoramento de chunks googlevideo.com e métricas de rede
+│   │   └── service-worker.js     # googlevideo.com chunk monitor & throughput calculator
 │   ├── content/
-│   │   ├── page-hook.js          # Hook MAIN world: MSE, Codecs (VP9/AV1), Buffer e Player API
-│   │   ├── content-controller.js # Ponte ISOLATED world com chrome.storage e runtime
-│   │   └── player-optimize.css   # Isolamento de camada GPU e remocao do Ambient Mode
+│   │   ├── page-hook.js          # MAIN world engine: SABR 512MB Unlocker, Codecs & MSE hooks
+│   │   ├── content-controller.js # ISOLATED world bridge for chrome.storage & telemetry
+│   │   └── player-optimize.css   # GPU layer promotion & Ambient Mode neutralizer
 │   └── popup/
-│       ├── popup.html            # Estrutura da interface de controle e Network Logs
-│       ├── popup.css             # Estilizacao tecnica em modo escuro
-│       └── popup.js              # Controlador de estado e exportacao de relatorios JSON
+│       ├── popup.html            # Control interface & Network Logs viewer
+│       ├── popup.css             # Baby Blue Dark Theme stylesheet
+│       └── popup.js              # Popup state controller & JSON report exporter
 ├── backend/
-│   ├── data/                     # Diretorio de persistencia de logs e relatorios
+│   ├── data/                     # Persisted network logs and route reports
 │   ├── node-server/
-│   │   └── server.js             # Servidor HTTP Node.js para ingestao de telemetria
+│   │   └── server.js             # Node.js HTTP telemetry ingestion server
 │   └── ruby-analyzer/
-│       └── telemetry_analyzer.rb # Analisador Ruby para diagnostico de rota e cache
+│       └── telemetry_analyzer.rb # Ruby statistical CDN route & cache analyzer
 └── docs/
-    └── TECHNICAL_REPORT.md       # Relatorio Tecnico de Engenharia e Licenciamento
+    ├── index.html                # Official Documentation & Release Download Website
+    └── TECHNICAL_REPORT.md       # Deep-dive Engineering & Open Source Compliance Report
 ```
 
 ---
 
-## 5. Como Instalar e Testar no Google Chrome
+## 5. Installation Guide (Release ZIP or Developer Mode)
 
-O repositorio foi estruturado com o `manifest.json` diretamente na raiz para facilitar o carregamento imediato no navegador:
+### Option A: Quick Install via GitHub Release (Recommended)
 
-1. Abra o Google Chrome e digite na barra de enderecos:
+1. Download [**My-Quality-4k-v2.1.0.zip**](https://github.com/Alves404/My-Quality-4k/releases/download/v2.1.0/My-Quality-4k-v2.1.0.zip) from the [Latest Release](https://github.com/Alves404/My-Quality-4k/releases/latest) page and extract it to a folder on your computer.
+2. Open Google Chrome (or any Chromium-based browser such as Brave or Edge) and navigate to:
    ```text
    chrome://extensions/
    ```
-2. No canto superior direito, ative a chave **Modo do desenvolvedor** (*Developer mode*).
-3. Clique no botao **Carregar sem compactacao** (*Load unpacked*) no canto superior esquerdo.
-4. Selecione a pasta raiz deste repositorio:
-   ```text
-   C:\Users\joao\Documents\GitHub\My-Quality-4k
-   ```
-5. Fixe a extensao **My Quality 4k** na barra de ferramentas do Chrome, abra qualquer video em 4K no YouTube e clique no icone **4K** para visualizar o buffer, o codec ativo e os logs de rede em tempo real.
+3. Enable **Developer mode** using the toggle in the top-right corner.
+4. Click **Load unpacked** in the top-left corner and select the extracted folder (containing `manifest.json`).
+5. Pin **My Quality 4k** to your toolbar, open any 4K video on YouTube, and click the **Video Player** icon to monitor real-time multi-minute buffering.
+
+### Option B: Clone from Source
+
+```bash
+git clone https://github.com/Alves404/My-Quality-4k.git
+cd My-Quality-4k
+npm run verify
+```
+Then load the cloned `My-Quality-4k` root folder via `chrome://extensions/` -> **Load unpacked**.
 
 ---
 
-## 6. Executando os Servicos de Telemetria (Node.js e Ruby)
+## 6. Running the Local Telemetry Services (Node.js & Ruby)
 
-A extensao funciona de maneira **100% autonoma** no navegador. Caso deseje utilizar o servidor local para persistir os logs de rede e gerar relatorios estatisticos de rota:
+The browser extension operates **100% standalone**. If you wish to persist network logs locally and generate statistical CDN route reports:
 
-### 6.1. Verificar a Integridade dos Scripts
+### 6.1. Verify Script Syntax Integrity
 ```bash
 npm run verify
 ```
 
-### 6.2. Iniciar o Servidor de Telemetria em Node.js
+### 6.2. Start the Node.js Telemetry Ingestion Server
 ```bash
 npm run telemetry:server
 ```
-*(Em seguida, ative a opcao "Sincronizar Telemetria Local" no Popup da extensao).*
+*(Then enable the local telemetry sync toggle inside the extension popup).*
 
-### 6.3. Executar o Analisador de Rotas e Cache em Ruby
+### 6.3. Run the Ruby Statistical Route & Cache Analyzer
 ```bash
 npm run telemetry:analyze
 ```
 
 ---
 
-## 7. Relatorio Tecnico e Licenciamento Open Source
+## 7. Technical Report & Open Source Licensing
 
-* **Relatorio Tecnico Completo:** Consulte [docs/TECHNICAL_REPORT.md](docs/TECHNICAL_REPORT.md) para uma analise aprofundada sobre decodificacao de hardware vs. software, comportamento do `SourceBuffer` no Chromium, anatomia das requisicoes `googlevideo.com` e matriz de conformidade Open Source.
-* **Licenca:** Distribuido sob a **GNU General Public License v3.0 (GPLv3)** — garantindo que qualquer derivado deste codigo tambem permaneca Open Source. Consulte o arquivo [LICENSE](LICENSE) para mais detalhes.
-
----
-
-## 8. Nota de Desenvolvimento Assistido por IA (Argon)
-
-Antes dos creditos principais, registra-se com total transparencia que a arquitetura deste projeto Open Source, a engenharia de interceptacao de codecs e buffers MSE, o sistema de captura de Network Logs, os servicos de telemetria em Node.js e Ruby e a documentacao tecnica foram desenvolvidos com a ajuda assistida do **Argon (Google Antigravity)**, atuando em programacao assistida junto ao autor do repositorio.
+* **Engineering Technical Report:** Read [`docs/TECHNICAL_REPORT.md`](docs/TECHNICAL_REPORT.md) for a complete breakdown of YouTube's SABR protocol, `g.vWa` byte-cap unlocking, hardware vs. software codec pipelines, and Open Source compliance.
+* **License:** Distributed under the **GNU General Public License v3.0 (GPLv3)**, ensuring all derivatives remain free and Open Source. See [LICENSE](LICENSE) for full terms.
 
 ---
 
-## 9. Creditos e Autoria
+## 8. AI-Assisted Engineering Notice (Argon)
 
-* **Idealizador, Autor Principal e Mantenedor:** Joao Vitor Magalhaes Alves (`@Alves`)
-* **Engenharia Assistida e Co-Arquitetura:** Argon (Google Antigravity)
-* **Referencias Conceituais da Comunidade Open Source:** Arquitetura inspirada nas boas praticas de projetos abertos como `enhanced-h264ify` (MIT) e `uBlock Origin` (GPLv3).
+Prior to the main authorship credits, it is transparently recorded that the Open Source architecture of this project, the SABR and MSE buffer unlocking engine, the hardware codec interception hooks, the `googlevideo.com` Network Logs capture pipeline, the Node.js and Ruby telemetry services, and the technical documentation were developed with the direct AI-assisted engineering of **Argon (Google Antigravity)**, working in pair programming with the repository author.
+
+---
+
+## 9. Credits & Authorship
+
+* **Creator, Lead Author & Maintainer:** Joao Vitor Magalhaes Alves (`@Alves`)
+* **AI-Assisted Engineering & Co-Architecture:** Argon (Google Antigravity) & Claude Streaming Architect
+* **Conceptual Open Source References:** Inspired by architectural best practices from community projects such as `enhanced-h264ify` (MIT) and `uBlock Origin` (GPLv3).

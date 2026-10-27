@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Quality 4k v2.1.0 - Official Documentation &amp; Release Download</title>
+  <style>
+    :root {
+      --bg-primary: #0b1017;
+      --bg-secondary: #111823;
+      --bg-tertiary: #172231;
+      --border-subtle: #233246;
+      --border-accent: #89cff0;
+      --text-primary: #edf4fa;
+      --text-secondary: #9cb3c9;
+      --text-muted: #677d94;
+      --baby-blue: #89cff0;
+      --baby-blue-light: #b6e3ff;
+      --baby-blue-deep: #5bb5e6;
+      --baby-blue-gradient: linear-gradient(135deg, #b6e3ff 0%, #89cff0 55%, #5bb5e6 100%);
+      --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, sans-serif;
+      --font-mono: "Consolas", "SFMono-Regular", Menlo, Monaco, monospace;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg-primary);
+      background-image: radial-gradient(circle at 85% 0%, rgba(137, 207, 240, 0.12) 0%, rgba(91, 181, 230, 0.04) 45%, transparent 70%);
+      color: var(--text-primary);
+      font-family: var(--font-sans);
+      line-height: 1.6;
+      font-size: 15px;
+    }
+
+    a {
+      color: var(--baby-blue-light);
+      text-decoration: none;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+
+    /* Top Navigation */
+    .navbar {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background-color: rgba(17, 24, 35, 0.92);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--border-subtle);
+      padding: 14px 24px;
+    }
+
+    .navbar-inner {
+      max-width: 1080px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .brand-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      background: var(--baby-blue-gradient);
+      color: #08131f;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid rgba(255, 255, 255, 0.35);
+      box-shadow: 0 3px 14px rgba(137, 207, 240, 0.28);
+    }
+
+    .brand-title {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--baby-blue-light);
+      letter-spacing: -0.3px;
+    }
+
+    .brand-sub {
+      font-size: 12px;
+      color: var(--text-secondary);
+      display: block;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      font-size: 13.5px;
+      font-weight: 600;
+    }
+
+    /* Main Container */
+    .container {
+      max-width: 1080px;
+      margin: 0 auto;
+      padding: 48px 24px 72px;
+    }
+
+    /* Hero Section */
+    .hero {
+      background-color: var(--bg-secondary);
+      background-image: linear-gradient(135deg, rgba(137, 207, 240, 0.10) 0%, rgba(17, 24, 35, 0.95) 65%);
+      border: 1px solid var(--border-subtle);
+      border-radius: 14px;
+      padding: 42px 36px;
+      margin-bottom: 40px;
+    }
+
+    .version-pill {
+      display: inline-block;
+      background: rgba(137, 207, 240, 0.14);
+      color: var(--baby-blue-light);
+      border: 1px solid rgba(137, 207, 240, 0.4);
+      border-radius: 20px;
+      padding: 4px 12px;
+      font-size: 12px;
+      font-weight: 600;
+      font-family: var(--font-mono);
+      margin-bottom: 16px;
+    }
+
+    .hero h1 {
+      font-size: 34px;
+      line-height: 1.2;
+      margin-bottom: 14px;
+      color: var(--text-primary);
+      letter-spacing: -0.5px;
+    }
+
+    .hero h1 span {
+      color: var(--baby-blue);
+    }
+
+    .hero p {
+      color: var(--text-secondary);
+      max-width: 780px;
+      font-size: 16px;
+      margin-bottom: 26px;
+    }
+
+    .cta-row {
+      display: flex;
+      gap: 14px;
+      flex-wrap: wrap;
+    }
+
+    .btn-primary {
+      background: var(--baby-blue-gradient);
+      color: #08131f;
+      font-weight: 700;
+      padding: 11px 22px;
+      border-radius: 8px;
+      font-size: 14px;
+      border: 1px solid var(--baby-blue-light);
+      box-shadow: 0 4px 16px rgba(137, 207, 240, 0.25);
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    .btn-primary:hover {
+      text-decoration: none;
+      transform: translateY(-1px);
+      box-shadow: 0 6px 20px rgba(137, 207, 240, 0.38);
+    }
+
+    .btn-outline {
+      background-color: var(--bg-tertiary);
+      color: var(--baby-blue-light);
+      font-weight: 600;
+      padding: 11px 20px;
+      border-radius: 8px;
+      font-size: 14px;
+      border: 1px solid rgba(137, 207, 240, 0.38);
+    }
+
+    .btn-outline:hover {
+      text-decoration: none;
+      background-color: rgba(137, 207, 240, 0.15);
+    }
+
+    /* Section Headings */
+    .section-title {
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--baby-blue-light);
+      margin: 40px 0 18px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+
+    /* Feature Grid */
+    .grid-2 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(310px, 1fr));
+      gap: 18px;
+    }
+
+    .card {
+      background-color: var(--bg-secondary);
+      border: 1px solid var(--border-subtle);
+      border-radius: 10px;
+      padding: 20px 22px;
+    }
+
+    .card h3 {
+      font-size: 16px;
+      color: var(--baby-blue);
+      margin-bottom: 8px;
+    }
+
+    .card p {
+      font-size: 14px;
+      color: var(--text-secondary);
+    }
+
+    /* Code Blocks */
+    pre {
+      background-color: #080c12;
+      border: 1px solid var(--border-subtle);
+      border-radius: 8px;
+      padding: 14px 16px;
+      overflow-x: auto;
+      font-family: var(--font-mono);
+      font-size: 13px;
+      color: var(--baby-blue-light);
+      margin: 12px 0;
+    }
+
+    code {
+      font-family: var(--font-mono);
+      background-color: rgba(137, 207, 240, 0.12);
+      color: var(--baby-blue-light);
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 13px;
+    }
+
+    pre code {
+      background: transparent;
+      padding: 0;
+    }
+
+    /* AI Transparency Notice */
+    .notice-box {
+      border-left: 4px solid var(--baby-blue);
+      background: linear-gradient(90deg, rgba(137, 207, 240, 0.12) 0%, rgba(17, 24, 35, 0.8) 100%);
+      border-radius: 8px;
+      padding: 18px 22px;
+      margin: 24px 0;
+    }
+
+    .notice-box h3 {
+      color: var(--baby-blue-light);
+      font-size: 16px;
+      margin-bottom: 6px;
+    }
+
+    .notice-box p {
+      color: var(--text-secondary);
+      font-size: 14px;
+    }
+
+    .steps-list {
+      padding-left: 20px;
+      color: var(--text-secondary);
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    footer {
+      border-top: 1px solid var(--border-subtle);
+      background-color: var(--bg-secondary);
+      padding: 24px;
+      text-align: center;
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+  </style>
+</head>
+<body>
+  <nav class="navbar">
+    <div class="navbar-inner">
+      <div class="brand">
+        <div class="brand-icon" aria-label="Video Player Symbol">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="2" y="3.5" width="20" height="14" rx="2.5" stroke="currentColor" stroke-width="1.8"/>
+            <polygon points="10,7.5 10,13.5 15.2,10.5" fill="currentColor"/>
+            <line x1="3" y1="20.5" x2="21" y2="20.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+            <circle cx="9" cy="20.5" r="1.6" fill="currentColor"/>
+          </svg>
+        </div>
+        <div>
+          <span class="brand-title">My Quality 4k</span>
+          <span class="brand-sub">SABR Deep Pre-Buffer &amp; Hardware Codec Engine</span>
+        </div>
+      </div>
+      <div class="nav-links">
+        <a href="#architecture">Architecture</a>
+        <a href="#installation">Installation</a>
+        <a href="#telemetry">Telemetry API</a>
+        <a href="#credits">Credits &amp; License</a>
+        <a href="https://github.com/Alves404/My-Quality-4k/releases/latest">Releases</a>
+      </div>
+    </div>
+  </nav>
+
+  <main class="container">
+    <section class="hero">
+      <span class="version-pill">RELEASE v2.1.0 | MANIFEST V3 | GNU GPLv3</span>
+      <h1>Unlock Multi-Minute <span>4K YouTube Pre-Buffering</span> on Any PC</h1>
+      <p>
+        My Quality 4k removes YouTube's hardcoded 35 MB (16-second) 4K SABR buffer cap to pre-load 1, 2, or 3 upcoming minutes of 2160p video while enforcing hardware-accelerated VP9 SDR decoding for entry-level and mid-range GPUs.
+      </p>
+      <div class="cta-row">
+        <a class="btn-primary" href="https://github.com/Alves404/My-Quality-4k/releases/download/v2.1.0/My-Quality-4k-v2.1.0.zip">
+          Download My-Quality-4k-v2.1.0.zip
+        </a>
+        <a class="btn-outline" href="https://github.com/Alves404/My-Quality-4k">
+          View Source on GitHub
+        </a>
+      </div>
+    </section>
+
+    <h2 id="architecture" class="section-title">1. Core Engineering Architecture (v2.1.0)</h2>
+    <div class="grid-2">
+      <div class="card">
+        <h3>512 MB SABR &amp; Policy Unlocker</h3>
+        <p>
+          YouTube's internal <code>base.js</code> player caps 4K video buffers at <code>36,700,160</code> bytes (35 MB = 16.3s) and enforces a 15-second server-driven <code>targetVideoReadaheadMs</code>. My Quality 4k intercepts <code>g.vWa</code> policy objects and the SABR request coordinator to expand the video budget to <strong>512 MB</strong> and continuously stream up to <strong>60s, 120s, or 180s</strong> ahead.
+        </p>
+      </div>
+      <div class="card">
+        <h3>Hardware Codec Enforcement (VP9 SDR)</h3>
+        <p>
+          Intercepts <code>MediaSource.isTypeSupported</code> and <code>navigator.mediaCapabilities.decodingInfo</code> to block software-heavy <code>AV1 (av01)</code> and 10-bit <code>VP9 HDR (vp09.02)</code>, certifying 8-bit <code>VP9 Profile 0</code> for smooth GPU hardware decoding.
+        </p>
+      </div>
+      <div class="card">
+        <h3>30fps Limiter &amp; Smart Drop Guard</h3>
+        <p>
+          Includes an optional 30fps stream filter (blocking <code>framerate &gt; 30</code>) to cut GPU decode load in half on 4 GB VRAM cards, paired with an automatic Smart Drop Guard if frame loss exceeds 18%.
+        </p>
+      </div>
+      <div class="card">
+        <h3>MSE Micro-Gap Stabilizer &amp; Network Logs</h3>
+        <p>
+          Automatically bridges millisecond timestamp gaps in <code>video.buffered</code> to prevent infinite spinner stalls, while passively inspecting <code>googlevideo.com/videoplayback</code> chunks for live Mbps and latency telemetry.
+        </p>
+      </div>
+    </div>
+
+    <h2 id="installation" class="section-title">2. Installation &amp; Usage</h2>
+    <div class="card">
+      <ol class="steps-list">
+        <li>Download <a href="https://github.com/Alves404/My-Quality-4k/releases/download/v2.1.0/My-Quality-4k-v2.1.0.zip"><strong>My-Quality-4k-v2.1.0.zip</strong></a> from GitHub Releases and extract the archive to a permanent folder.</li>
+        <li>Open Google Chrome, Brave, or Edge and navigate to <code>chrome://extensions/</code>.</li>
+        <li>Enable <strong>Developer mode</strong> in the top-right corner.</li>
+        <li>Click <strong>Load unpacked</strong> in the top-left corner and select the extracted folder containing <code>manifest.json</code>.</li>
+        <li>Open any 4K YouTube video and click the Baby Blue <strong>Video Player</strong> extension icon to select your target resolution (<code>2160p 4K</code>) and pre-buffer horizon (<code>60s</code>, <code>120s</code>, or <code>180s</code>).</li>
+      </ol>
+    </div>
+
+    <h2 id="telemetry" class="section-title">3. Local Telemetry Services (Node.js &amp; Ruby)</h2>
+    <div class="card">
+      <p>
+        The extension runs 100% standalone in the browser. For advanced CDN route diagnostics and statistical P50/P95 throughput reports, run the included local backend services:
+      </p>
+      <pre><code># Verify syntax across all extension and backend scripts
+npm run verify
+
+# Start the local Node.js HTTP telemetry server on http://localhost:3456
+npm run telemetry:server
+
+# Run the Ruby statistical route &amp; cache analyzer
+npm run telemetry:analyze</code></pre>
+    </div>
+
+    <h2 id="credits" class="section-title">4. AI-Assisted Engineering Notice &amp; Credits</h2>
+    <div class="notice-box">
+      <h3>AI-Assisted Engineering Transparency Notice (Argon)</h3>
+      <p>
+        Prior to the main authorship credits, it is transparently recorded that the Open Source architecture of this project, the SABR 512 MB policy unlocker, the MSE buffer stabilization heuristics, the hardware codec interception pipeline, the Node.js and Ruby telemetry services, and the technical documentation were engineered with the direct assistance of <strong>Argon (Google Antigravity)</strong>, collaborating in pair programming with the project author.
+      </p>
+    </div>
+
+    <div class="card">
+      <h3>Authorship &amp; License</h3>
+      <ul class="steps-list">
+        <li><strong>Creator, Lead Author &amp; Maintainer:</strong> Joao Vitor Magalhaes Alves (<code>@Alves</code>)</li>
+        <li><strong>AI-Assisted Engineering &amp; Co-Architecture:</strong> Argon (Google Antigravity) &amp; Claude Streaming Architect</li>
+        <li><strong>License:</strong> GNU General Public License v3.0 (GPL-3.0 / Copyleft Open Source)</li>
+        <li><strong>Repository:</strong> <a href="https://github.com/Alves404/My-Quality-4k">https://github.com/Alves404/My-Quality-4k</a></li>
+      </ul>
+    </div>
+  </main>
+
+  <footer>
+    My Quality 4k v2.1.0 | Distributed under the GNU GPLv3 Open Source License
+  </footer>
+</body>
+</html>

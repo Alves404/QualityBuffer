@@ -1,6 +1,6 @@
 {
   "name": "my-quality-4k",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "description": "Open Source browser extension and telemetry suite that optimizes 4K YouTube video playback, MSE buffer stability, and hardware codec selection on low-to-mid-range PCs.",
   "main": "backend/node-server/server.js",
   "scripts": {

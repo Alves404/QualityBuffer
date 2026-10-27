@@ -108,7 +108,10 @@ function updateToolbarBadge() {
 
   const badgeText = labelMap[activeConfig.targetQuality] || '4K';
   chrome.action.setBadgeText({ text: badgeText });
-  chrome.action.setBadgeBackgroundColor({ color: '#4285f4' });
+  chrome.action.setBadgeBackgroundColor({ color: '#89cff0' });
+  if (typeof chrome.action.setBadgeTextColor === 'function') {
+    chrome.action.setBadgeTextColor({ color: '#08131f' });
+  }
 }
 
 /**

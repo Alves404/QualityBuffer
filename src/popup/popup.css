@@ -1,32 +1,30 @@
 /**
  * My Quality 4k - Popup Control Interface Stylesheet
- * Google Gemini Dark Theme Edition - Deep obsidian/space-indigo surfaces
- * with signature Gemini blue-violet-coral aurora accents.
+ * Baby Blue Dark Theme Edition - Deep obsidian/slate dark surfaces
+ * with luminous Baby Blue (#89CFF0 / #B6E3FF) accents and video player identity.
  *
  * Assisted engineering by Argon (Google Antigravity).
  * License: GPL-3.0
  */
 
 :root {
-  --bg-primary: #0e1017;
-  --bg-secondary: #131722;
-  --bg-tertiary: #1b2030;
-  --bg-elevated: #22293d;
-  --border-subtle: #262e42;
-  --border-accent: #8ab4f8;
-  --text-primary: #e8eaed;
-  --text-secondary: #9aa0a6;
-  --text-muted: #6e7787;
-  --gemini-blue: #4285f4;
-  --gemini-blue-soft: #8ab4f8;
-  --gemini-purple: #9b72cb;
-  --gemini-coral: #d96570;
-  --gemini-gradient: linear-gradient(135deg, #4285f4 0%, #9b72cb 52%, #d96570 100%);
-  --gemini-bar-gradient: linear-gradient(90deg, #4285f4 0%, #8ab4f8 38%, #9b72cb 74%, #d96570 100%);
-  --gemini-toggle-gradient: linear-gradient(135deg, #4285f4 0%, #9b72cb 100%);
+  --bg-primary: #0b1017;
+  --bg-secondary: #111823;
+  --bg-tertiary: #172231;
+  --bg-elevated: #1e2c40;
+  --border-subtle: #233246;
+  --border-accent: #89cff0;
+  --text-primary: #edf4fa;
+  --text-secondary: #9cb3c9;
+  --text-muted: #677d94;
+  --baby-blue: #89cff0;
+  --baby-blue-light: #b6e3ff;
+  --baby-blue-deep: #5bb5e6;
+  --baby-blue-gradient: linear-gradient(135deg, #b6e3ff 0%, #89cff0 55%, #5bb5e6 100%);
+  --baby-blue-bar-gradient: linear-gradient(90deg, #5bb5e6 0%, #89cff0 55%, #b6e3ff 100%);
   --status-green: #34a853;
   --status-amber: #fbbc04;
-  --font-sans: -apple-system, BlinkMacSystemFont, "Google Sans", "Segoe UI", Roboto, Oxygen, Ubuntu, sans-serif;
+  --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, sans-serif;
   --font-mono: "Consolas", "SFMono-Regular", Menlo, Monaco, monospace;
 }
 
@@ -40,7 +38,7 @@ body {
   width: 400px;
   min-height: 520px;
   background-color: var(--bg-primary);
-  background-image: radial-gradient(circle at 100% 0%, rgba(155, 114, 203, 0.08) 0%, rgba(66, 133, 244, 0.04) 38%, transparent 70%);
+  background-image: radial-gradient(circle at 100% 0%, rgba(137, 207, 240, 0.10) 0%, rgba(91, 181, 230, 0.04) 40%, transparent 70%);
   color: var(--text-primary);
   font-family: var(--font-sans);
   font-size: 13px;
@@ -56,7 +54,7 @@ body {
   justify-content: space-between;
   padding: 12px 16px;
   background-color: var(--bg-secondary);
-  background-image: linear-gradient(90deg, rgba(66, 133, 244, 0.07) 0%, rgba(155, 114, 203, 0.07) 55%, rgba(217, 101, 112, 0.05) 100%);
+  background-image: linear-gradient(90deg, rgba(137, 207, 240, 0.10) 0%, rgba(182, 227, 255, 0.04) 100%);
   border-bottom: 1px solid var(--border-subtle);
 }
 
@@ -67,29 +65,27 @@ body {
 }
 
 .brand-badge {
-  width: 34px;
-  height: 34px;
+  width: 36px;
+  height: 36px;
   border-radius: 8px;
-  background: var(--gemini-gradient);
-  color: #ffffff;
-  font-weight: 800;
-  font-size: 13.5px;
+  background: var(--baby-blue-gradient);
+  color: #08131f;
   display: flex;
   align-items: center;
   justify-content: center;
-  letter-spacing: 0.5px;
-  border: 1px solid rgba(255, 255, 255, 0.22);
-  box-shadow: 0 2px 10px rgba(155, 114, 203, 0.28);
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  box-shadow: 0 2px 10px rgba(137, 207, 240, 0.25);
+}
+
+.brand-player-icon {
+  display: block;
 }
 
 .brand-info h1 {
   font-size: 15px;
   font-weight: 700;
   letter-spacing: -0.2px;
-  background: linear-gradient(90deg, #ffffff 0%, #c6dafc 55%, #d7aefb 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  color: var(--baby-blue-light);
 }
 
 .brand-info .subtitle {
@@ -119,13 +115,13 @@ body {
 
 .tab-btn:hover {
   color: var(--text-primary);
-  background-color: rgba(138, 180, 248, 0.05);
+  background-color: rgba(137, 207, 240, 0.06);
 }
 
 .tab-btn.active {
-  color: var(--gemini-blue-soft);
-  border-bottom-color: var(--gemini-blue-soft);
-  background: linear-gradient(180deg, rgba(66, 133, 244, 0.03) 0%, rgba(155, 114, 203, 0.12) 100%);
+  color: var(--baby-blue-light);
+  border-bottom-color: var(--baby-blue);
+  background: linear-gradient(180deg, rgba(137, 207, 240, 0.03) 0%, rgba(137, 207, 240, 0.14) 100%);
 }
 
 /* Main Tab Panels */
@@ -163,14 +159,14 @@ body {
 }
 
 .metric-card:hover {
-  border-color: #35415e;
+  border-color: rgba(137, 207, 240, 0.45);
 }
 
 .metric-label {
   font-size: 10px;
   text-transform: uppercase;
   letter-spacing: 0.5px;
-  color: var(--gemini-blue-soft);
+  color: var(--baby-blue);
   font-weight: 600;
 }
 
@@ -201,13 +197,13 @@ body {
 .buffer-bar-fill {
   height: 100%;
   width: 0%;
-  background: var(--gemini-bar-gradient);
+  background: var(--baby-blue-bar-gradient);
   border-radius: 3px;
   transition: width 0.25s ease, background 0.25s ease;
 }
 
 .buffer-bar-fill.buffer-low {
-  background: linear-gradient(90deg, #fbbc04 0%, #d96570 100%);
+  background: linear-gradient(90deg, #fbbc04 0%, #f59e0b 100%);
 }
 
 /* Quality Selector Group */
@@ -245,25 +241,25 @@ body {
 }
 
 .select-input:focus {
-  border-color: var(--gemini-blue-soft);
-  box-shadow: 0 0 0 2px rgba(138, 180, 248, 0.15);
+  border-color: var(--baby-blue);
+  box-shadow: 0 0 0 2px rgba(137, 207, 240, 0.18);
 }
 
 .btn-secondary {
-  background: linear-gradient(135deg, rgba(66, 133, 244, 0.16) 0%, rgba(155, 114, 203, 0.18) 100%);
-  color: #d2e3fc;
-  border: 1px solid rgba(138, 180, 248, 0.32);
+  background: rgba(137, 207, 240, 0.14);
+  color: var(--baby-blue-light);
+  border: 1px solid rgba(137, 207, 240, 0.38);
   border-radius: 6px;
   padding: 4px 10px;
   font-size: 11px;
   font-weight: 600;
   cursor: pointer;
-  transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+  transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
 }
 
 .btn-secondary:hover {
-  background: linear-gradient(135deg, rgba(66, 133, 244, 0.28) 0%, rgba(155, 114, 203, 0.30) 100%);
-  border-color: var(--gemini-blue-soft);
+  background: rgba(137, 207, 240, 0.26);
+  border-color: var(--baby-blue-light);
   color: #ffffff;
 }
 
@@ -287,7 +283,7 @@ body {
 }
 
 .setting-item:hover {
-  border-color: #333d58;
+  border-color: rgba(137, 207, 240, 0.35);
 }
 
 .setting-text {
@@ -330,8 +326,8 @@ body {
   position: absolute;
   cursor: pointer;
   inset: 0;
-  background-color: #262e42;
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background-color: #213044;
+  border: 1px solid rgba(137, 207, 240, 0.15);
   border-radius: 20px;
   transition: background 0.2s ease, border-color 0.2s ease;
 }
@@ -344,21 +340,21 @@ body {
   width: 14px;
   left: 2px;
   bottom: 2px;
-  background-color: #c4c7c5;
+  background-color: #b8c7d9;
   border-radius: 50%;
   transition: transform 0.2s ease, background-color 0.2s ease;
 }
 
 .master-switch input:checked + .switch-slider,
 .toggle-control input:checked + .toggle-track {
-  background: var(--gemini-toggle-gradient);
-  border-color: rgba(138, 180, 248, 0.45);
+  background: var(--baby-blue-gradient);
+  border-color: var(--baby-blue-light);
 }
 
 .master-switch input:checked + .switch-slider::before,
 .toggle-control input:checked + .toggle-track::before {
   transform: translateX(16px);
-  background-color: #ffffff;
+  background-color: #08131f;
 }
 
 /* Network Logs Tab */
@@ -409,7 +405,7 @@ body {
 
 .logs-table th {
   background-color: var(--bg-tertiary);
-  color: var(--gemini-blue-soft);
+  color: var(--baby-blue);
   text-align: left;
   padding: 6px 8px;
   font-weight: 600;
@@ -420,7 +416,7 @@ body {
 
 .logs-table td {
   padding: 6px 8px;
-  border-bottom: 1px solid rgba(38, 46, 66, 0.55);
+  border-bottom: 1px solid rgba(35, 50, 70, 0.55);
   color: var(--text-primary);
   font-family: var(--font-mono);
 }
@@ -445,7 +441,7 @@ body {
   font-size: 12.5px;
   font-weight: 700;
   margin-bottom: 5px;
-  color: var(--gemini-blue-soft);
+  color: var(--baby-blue-light);
 }
 
 .about-card p {
@@ -455,8 +451,8 @@ body {
 }
 
 .highlight-box {
-  border-left: 3px solid var(--gemini-purple);
-  background: linear-gradient(90deg, rgba(66, 133, 244, 0.10) 0%, rgba(155, 114, 203, 0.06) 100%);
+  border-left: 3px solid var(--baby-blue);
+  background: linear-gradient(90deg, rgba(137, 207, 240, 0.12) 0%, rgba(137, 207, 240, 0.04) 100%);
 }
 
 .credits-list {

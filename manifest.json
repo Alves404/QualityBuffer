@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "My Quality 4k",
   "short_name": "MyQuality4k",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "description": "Open Source browser extension that unlocks deep multi-minute 4K YouTube pre-buffering, MSE stability, and hardware codec selection for low-to-mid-range PCs.",
   "author": "Joao Vitor Magalhaes Alves (with AI-assisted engineering by Argon)",
   "homepage_url": "https://github.com/Alves404/My-Quality-4k",

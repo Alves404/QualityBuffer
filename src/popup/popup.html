@@ -9,7 +9,14 @@
 <body>
   <header class="app-header">
     <div class="brand-row">
-      <div class="brand-badge">4K</div>
+      <div class="brand-badge" aria-label="Video Player Icon">
+        <svg class="brand-player-icon" viewBox="0 0 24 24" width="20" height="20" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect x="2" y="3.5" width="20" height="14" rx="2.5" stroke="currentColor" stroke-width="1.8"/>
+          <polygon points="10,7.5 10,13.5 15.2,10.5" fill="currentColor"/>
+          <line x1="3" y1="20.5" x2="21" y2="20.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+          <circle cx="9" cy="20.5" r="1.6" fill="currentColor"/>
+        </svg>
+      </div>
       <div class="brand-info">
         <h1>My Quality 4k</h1>
         <p class="subtitle">MSE Buffer &amp; Hardware Codec Optimizer</p>
@@ -249,7 +256,7 @@
           <li><strong>Autor Idealizador e Mantenedor:</strong> Joao Vitor Magalhaes Alves (@Alves)</li>
           <li><strong>Engenharia Assistida e Co-Arquitetura:</strong> Argon (Google Antigravity) &amp; Claude Streaming Architect</li>
           <li><strong>Licenca:</strong> GNU GPLv3 (Copyleft Open Source)</li>
-          <li><strong>Versao:</strong> 2.0.0 (Manifest V3 - Deep Pre-Buffer Engine)</li>
+          <li><strong>Versao:</strong> 2.1.0 (Manifest V3 - SABR Deep Pre-Buffer Engine)</li>
         </ul>
       </div>
     </section>
@@ -257,7 +264,7 @@
 
   <footer class="app-footer">
     <span id="status-indicator">Status: Monitoramento Ativo</span>
-    <span class="mono-text">v2.0.0 | GPL-3.0 License</span>
+    <span class="mono-text">v2.1.0 | GPL-3.0 License</span>
   </footer>
 
   <script src="popup.js"></script>

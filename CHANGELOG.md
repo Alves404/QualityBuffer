@@ -1,35 +1,45 @@
 # Changelog
 
-Todas as mudancas relevantes do projeto **My Quality 4k** serao documentadas neste arquivo.
+All notable changes to the **My Quality 4k** project are documented in this file.
 
-O formato baseia-se em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.0/), e este projeto adere ao [Versionamento Semantico](https://semver.org/lang/pt-BR/).
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+---
+
+## [2.1.0] - 2026-10-26
+
+### Added
+- **SABR & Policy 512 MB Deep Pre-Buffer Unlocker (`src/content/page-hook.js`):**
+  - Hooks `Object.prototype.videoTrack` to intercept YouTube's internal `g.vWa` policy object, unlocking the hardcoded 35 MB (`36,700,160` bytes = 16.3s) 4K video buffer cap to **512 MB** (`536,870,912` bytes) and the audio buffer cap to **64 MB** (`67,108,864` bytes).
+  - Overrides SABR `NextRequestPolicy` (`targetVideoReadaheadMs` and `targetAudioReadaheadMs`) and advances the reported media position (`mp`) inside active buffered ranges (`bc`) on outgoing `RO()` SABR requests so `googlevideo.com` continuously streams **60s, 120s, or 180s** of 4K video ahead of playback.
+  - Actively pumps YouTube's internal loader (`mf()`) until the user-selected multi-minute buffer goal is reached.
+- **Baby Blue Dark Theme & Video Player Symbol (`src/popup/`, `assets/icons/`):**
+  - Redesigned the Popup UI and extension icons with a Baby Blue (`#89CFF0` / `#B6E3FF`) dark mode aesthetic and a custom Video Player symbol.
+- **Official English Documentation Website (`docs/index.html`) & English `README.md`:**
+  - Added full English documentation site and updated technical documentation with direct GitHub Release `.zip` download links.
+- **SABR `Content-Length` Throughput Inspection (`src/background/service-worker.js`):**
+  - Reads `Content-Length` response headers on multiplexed SABR `videoplayback` responses to compute exact Mbps throughput and chunk sizes.
+
+### Fixed
+- Resolved `Uncaught Error: Extension context invalidated` in `src/content/content-controller.js` when reloading the extension while a YouTube tab remains open.
 
 ---
 
 ## [2.0.0] - 2026-10-26
 
-### Adicionado
-- **Virtual Buffer Horizon (`TimeRanges` Clamping em `page-hook.js`):** Desbloqueia o limite nativo de ~15-20s do agendador DASH do YouTube em 4K, reportando um horizonte virtual de `7.5s` enquanto o buffer real ainda nao atingiu a meta configurada pelo usuario (`60s`, `120s` ou `180s` a frente) e mantendo o `TimeRanges` real intacto para telemetria e buscas (`seeking`).
-- **Eviccao Proativa de Back-Buffer MSE & Protecao `QuotaExceededError`:** Recicla automaticamente os segmentos de video ja assistidos (`>22s` atras do ponteiro atual) para dedicar toda a janela de RAM do Chromium aos proximos minutos do video.
-- **Motor de Pre-Fetch Paralelo em RAM (`sidx` Segment Index Parser):** Inspeciona o box `sidx` nos pacotes iniciais (`range=0-...`) e antecipa o download dos proximos byte-ranges em um cache LRU de 64 MB em memoria RAM.
-- **Zero-Track-Laying Bootstrap:** Spoofing de `navigator.connection` (`100 Mbps / 5ms RTT`), pre-seeding de `localStorage` e `sessionStorage` (`yt-player-quality = 2160`) antes do segundo zero e correcao da race condition de `qualityAppliedForVideo`.
-- **Headstart Buffer Boost & Bloqueio de Beacons Pesados:** Formacao de colchao inicial em 4K antes de liberar a reproducao e bloqueio de endpoints pesados na thread principal (`/youtubei/v1/log_event`, `/api/stats/qoe`, `/ptracking`), preservando `/api/stats/watchtime`.
+### Added
+- **Zero-Track-Laying Bootstrap:** Spoofs `navigator.connection` (`100 Mbps / 5ms RTT`) and pre-seeds `localStorage` and `sessionStorage` (`yt-player-quality = 2160`) before player initialization.
+- **MediaCapabilities Hardware Certification:** Hooks `navigator.mediaCapabilities.decodingInfo` to certify 4K VP9 Profile 0 SDR as hardware-smooth and power-efficient.
+- **Headstart Buffer Boost & Main-Thread Telemetry Blocker:** Optional initial 4K buffer cushion at second zero and short-circuiting of heavy YouTube tracking beacons (`/youtubei/v1/log_event`, `/api/stats/qoe`, `/ptracking`) while preserving `/api/stats/watchtime`.
 
 ---
 
 ## [1.0.0] - 2026-10-26
 
-### Adicionado
-- **Extensao Chrome Manifest V3 (`manifest.json`):** Arquitetura dual-world (`MAIN` e `ISOLATED`) pronta para carregamento direto no navegador.
-- **Page Hook Engine (`src/content/page-hook.js`):**
-  - Interceptacao de `MediaSource.isTypeSupported` e `HTMLMediaElement.prototype.canPlayType` para bloquear decodificacao pesada via software (`AV1` / `av01`, `VP9 Profile 2 HDR 10-bit` e limitador opcional de `60fps` para `30fps`), priorizando `VP9 Profile 0 SDR` acelerado por hardware em 4K (`2160p`).
-  - Estabilizador de `SourceBuffer` com deteccao e correcao automatica de micro-gaps temporais entre segmentos MSE.
-  - Controle de qualidade fixa (`hd2160`, `hd1440`, `hd1080`) integrado a API interna `#movie_player` do YouTube.
-  - Protecao inteligente contra perda severa de quadros (`Smart Drop Guard`).
-- **Otimizador de Composicao GPU (`src/content/player-optimize.css`):** Desativacao automatica do `#cinematic-container` (Ambient Mode) e isolamento de camada de hardware para `<video>`.
-- **Monitor de Rede e Telemetria (`src/background/service-worker.js`):** Captura em tempo real de fragmentos `*.googlevideo.com/videoplayback*`, calculo de throughput (Mbps), latencia (ms) e mapeamento de `itag`.
-- **Interface Popup (`src/popup/`):** Painel tecnico de controle, visualizador de Network Logs em tempo real e exportacao de relatorio JSON.
-- **Servicos Back-end de Telemetria e Cache (`backend/`):**
-  - Servidor HTTP em Node.js (`backend/node-server/server.js`) para ingestao de logs e calculo de heuristicas de rota.
-  - Analisador estatistico em Ruby (`backend/ruby-analyzer/telemetry_analyzer.rb`) para emissao de relatorios de percentis de banda (P50/P95) e ranking de nos CDN.
-- **Documentacao e Governanca Open Source:** `LICENSE` (GNU GPLv3), `docs/TECHNICAL_REPORT.md`, `CONTRIBUTING.md`, `CODE_OF_CONDUCT.md` e nota de engenharia assistida pelo **Argon (Google Antigravity)**.
+### Added
+- **Chrome Extension Manifest V3 (`manifest.json`):** Dual-world (`MAIN` and `ISOLATED`) architecture.
+- **Hardware Codec Filter (`src/content/page-hook.js`):** Blocks software-decoded `AV1` (`av01`), `VP9 Profile 2 HDR 10-bit`, and optional `60fps` streams (`30fps` limiter) to enforce hardware-accelerated `VP9 Profile 0 SDR` in 4K (`2160p`).
+- **MSE Buffer Stabilizer:** Automatic detection and recovery of timestamp micro-gaps between segments.
+- **GPU Compositor Optimizer (`src/content/player-optimize.css`):** Disables YouTube Ambient Mode (`#cinematic-container`) and promotes `<video>` to a dedicated hardware layer.
+- **Local Telemetry Backend (`backend/`):** Node.js HTTP ingestion server and Ruby statistical CDN route analyzer.
+- **Open Source Governance:** Licensed under GNU GPLv3 (`GPL-3.0`) with an explicit AI-Assisted Engineering Transparency Notice crediting **Argon (Google Antigravity)**.
