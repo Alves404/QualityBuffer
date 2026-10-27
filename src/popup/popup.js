@@ -13,21 +13,48 @@
   'use strict';
 
   /**
-   * Detect browser default language ('pt', 'en', or 'es') in O(1)
+   * Automatically detects the user's browser language ('en', 'pt', or 'es') in O(1),
+   * using English ('en') as the default fallback language.
+   * @returns {string}
    */
-  function detectDefaultLang() {
+  function detectBrowserLanguage() {
     try {
-      const navLang = (navigator.language || 'pt').toLowerCase();
-      if (navLang.startsWith('en')) {
-        return 'en';
+      const candidates = [];
+      if (typeof chrome !== 'undefined' && chrome.i18n && typeof chrome.i18n.getUILanguage === 'function') {
+        const uiLang = chrome.i18n.getUILanguage();
+        if (uiLang) {
+          candidates.push(uiLang);
+        }
       }
-      if (navLang.startsWith('es')) {
-        return 'es';
+      if (typeof navigator !== 'undefined') {
+        if (navigator.language) {
+          candidates.push(navigator.language);
+        }
+        if (Array.isArray(navigator.languages)) {
+          for (let i = 0; i < navigator.languages.length; i += 1) {
+            if (navigator.languages[i]) {
+              candidates.push(navigator.languages[i]);
+            }
+          }
+        }
+      }
+
+      for (let i = 0; i < candidates.length; i += 1) {
+        const code = String(candidates[i]).toLowerCase().trim();
+        if (code.startsWith('pt')) {
+          return 'pt';
+        }
+        if (code.startsWith('es')) {
+          return 'es';
+        }
+        if (code.startsWith('en')) {
+          return 'en';
+        }
       }
     } catch (e) {
-      // Fallback to pt
+      // Fallback to English ('en')
     }
-    return 'pt';
+    return 'en';
   }
 
   /**
@@ -218,7 +245,8 @@
 
   const DEFAULT_CONFIG = {
     enabled: true,
-    lang: detectDefaultLang(),
+    lang: detectBrowserLanguage(),
+    userSelectedLang: null,
     targetQuality: 'hd2160',
     targetBufferSec: 120,
     deepPreBuffer: true,
@@ -302,13 +330,13 @@
   ];
 
   /**
-   * O(1) string lookup from frozen language table
+   * O(1) string lookup from frozen language table (English default fallback)
    * @param {string} key
    * @returns {string}
    */
   function t(key) {
-    const table = I18N_DICT[currentLang] || I18N_DICT.pt;
-    return table[key] || I18N_DICT.pt[key] || key;
+    const table = I18N_DICT[currentLang] || I18N_DICT.en;
+    return table[key] || I18N_DICT.en[key] || key;
   }
 
   /**
@@ -316,7 +344,10 @@
    * @param {string} langCode
    */
   function applyLanguage(langCode) {
-    currentLang = I18N_DICT[langCode] ? langCode : 'pt';
+    currentLang = I18N_DICT[langCode] ? langCode : 'en';
+    if (document.documentElement) {
+      document.documentElement.lang = currentLang;
+    }
     if (elSelectLang && elSelectLang.value !== currentLang) {
       elSelectLang.value = currentLang;
     }
@@ -400,6 +431,7 @@
     return {
       enabled: elToggleEnabled ? elToggleEnabled.checked : true,
       lang: currentLang,
+      userSelectedLang: appliedConfig.userSelectedLang || null,
       targetQuality: elSelectQuality ? elSelectQuality.value : 'hd2160',
       targetBufferSec: elSelectBufferTarget ? Number(elSelectBufferTarget.value) || 120 : 120,
       deepPreBuffer: elToggleDeepPrebuffer ? elToggleDeepPrebuffer.checked : true,
@@ -485,9 +517,11 @@
    * Applies config object to UI inputs
    */
   function renderConfigControls(cfg) {
-    if (cfg.lang && I18N_DICT[cfg.lang]) {
-      currentLang = cfg.lang;
-    }
+    const resolvedLang =
+      cfg.userSelectedLang && I18N_DICT[cfg.userSelectedLang]
+        ? cfg.userSelectedLang
+        : detectBrowserLanguage();
+    currentLang = resolvedLang;
     if (elSelectLang) {
       elSelectLang.value = currentLang;
     }
@@ -665,12 +699,14 @@
     });
   }
 
-  // Bind Language Selector (instant switch, persists language preference immediately)
+  // Bind Language Selector (instant switch, persists manual language preference immediately)
   if (elSelectLang) {
     elSelectLang.addEventListener('change', function () {
       applyLanguage(elSelectLang.value);
       appliedConfig.lang = currentLang;
+      appliedConfig.userSelectedLang = currentLang;
       currentConfig.lang = currentLang;
+      currentConfig.userSelectedLang = currentLang;
       if (chrome && chrome.storage && chrome.storage.local) {
         chrome.storage.local.set({ mq4k_config: appliedConfig });
       }
