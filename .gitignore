@@ -1,0 +1,22 @@
+# Node.js dependencies and build logs
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Runtime telemetry data and generated diagnostic reports
+backend/data/*.json
+!backend/data/.gitkeep
+
+# Packaged Chrome Extension archives
+dist/
+*.crx
+*.pem
+*.zip
+
+# Operating System and Editor files
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.swp

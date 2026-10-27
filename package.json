@@ -1,0 +1,37 @@
+{
+  "name": "my-quality-4k",
+  "version": "1.0.0",
+  "description": "Open Source browser extension and telemetry suite that optimizes 4K YouTube video playback, MSE buffer stability, and hardware codec selection on low-to-mid-range PCs.",
+  "main": "backend/node-server/server.js",
+  "scripts": {
+    "start": "node backend/node-server/server.js",
+    "telemetry:server": "node backend/node-server/server.js",
+    "telemetry:analyze": "ruby backend/ruby-analyzer/telemetry_analyzer.rb",
+    "verify": "node -c src/background/service-worker.js && node -c src/content/page-hook.js && node -c src/content/content-controller.js && node -c src/popup/popup.js && node -c backend/node-server/server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Alves404/My-Quality-4k.git"
+  },
+  "keywords": [
+    "youtube",
+    "4k",
+    "2160p",
+    "chrome-extension",
+    "manifest-v3",
+    "mse",
+    "buffer-optimization",
+    "vp9",
+    "av1",
+    "hardware-acceleration",
+    "open-source"
+  ],
+  "author": "Joao Vitor Magalhaes Alves (@Alves)",
+  "contributors": [
+    "Argon (Google Antigravity - AI-Assisted Engineering)"
+  ],
+  "license": "GPL-3.0-or-later",
+  "engines": {
+    "node": ">=16.0.0"
+  }
+}

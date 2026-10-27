@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Quality 4k - Control Panel</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <header class="app-header">
+    <div class="brand-row">
+      <div class="brand-badge">4K</div>
+      <div class="brand-info">
+        <h1>My Quality 4k</h1>
+        <p class="subtitle">MSE Buffer &amp; Hardware Codec Optimizer</p>
+      </div>
+    </div>
+    <label class="master-switch" title="Ativar ou desativar otimizacoes">
+      <input type="checkbox" id="toggle-enabled" checked>
+      <span class="switch-slider"></span>
+    </label>
+  </header>
+
+  <nav class="tab-nav">
+    <button type="button" class="tab-btn active" data-tab="tab-dashboard">Controles</button>
+    <button type="button" class="tab-btn" data-tab="tab-network">Network Logs</button>
+    <button type="button" class="tab-btn" data-tab="tab-about">Sobre &amp; Creditos</button>
+  </nav>
+
+  <main class="tab-container">
+    <!-- TAB 1: DASHBOARD & CONTROLS -->
+    <section id="tab-dashboard" class="tab-panel active">
+      <div class="metrics-grid">
+        <div class="metric-card">
+          <span class="metric-label">Resolucao / Stream</span>
+          <strong class="metric-value" id="metric-resolution">Aguardando...</strong>
+          <span class="metric-sub" id="metric-codec">Codec: N/A</span>
+        </div>
+        <div class="metric-card">
+          <span class="metric-label">Saude do Buffer</span>
+          <strong class="metric-value" id="metric-buffer">0.0 s</strong>
+          <div class="buffer-bar-track">
+            <div class="buffer-bar-fill" id="buffer-bar-fill"></div>
+          </div>
+        </div>
+        <div class="metric-card">
+          <span class="metric-label">Taxa de Rede (CDN)</span>
+          <strong class="metric-value" id="metric-throughput">0.0 Mbps</strong>
+          <span class="metric-sub" id="metric-latency">Latencia: 0 ms</span>
+        </div>
+        <div class="metric-card">
+          <span class="metric-label">Estabilidade GPU/CPU</span>
+          <strong class="metric-value" id="metric-drops">0.0% perdas</strong>
+          <span class="metric-sub" id="metric-gaps">Gaps corrigidos: 0</span>
+        </div>
+      </div>
+
+      <div class="control-group">
+        <div class="control-header">
+          <label for="select-quality">Qualidade Alvo do Player</label>
+          <button type="button" id="btn-force-now" class="btn-secondary btn-sm">Aplicar Agora</button>
+        </div>
+        <select id="select-quality" class="select-input">
+          <option value="hd2160">2160p (4K Ultra HD) - Recomendado</option>
+          <option value="hd1440">1440p (2K Quad HD)</option>
+          <option value="hd1080">1080p (Full HD)</option>
+          <option value="auto">Automatico (Apenas Otimizar Buffer/Codec)</option>
+        </select>
+      </div>
+
+      <div class="settings-list">
+        <div class="setting-item">
+          <div class="setting-text">
+            <span class="setting-title">Bloquear Codec AV1 (Forcar VP9 Hardware)</span>
+            <span class="setting-desc">Impede decodificacao AV1 via software na CPU em placas de video sem suporte nativo.</span>
+          </div>
+          <label class="toggle-control">
+            <input type="checkbox" id="toggle-block-av1" checked>
+            <span class="toggle-track"></span>
+          </label>
+        </div>
+
+        <div class="setting-item">
+          <div class="setting-text">
+            <span class="setting-title">Bloquear VP9 HDR 10-bit (Forcar 4K SDR)</span>
+            <span class="setting-desc">Evita sobrecarga de tonemapping em GPUs de 4 GB VRAM mantendo resolucao 2160p fluida.</span>
+          </div>
+          <label class="toggle-control">
+            <input type="checkbox" id="toggle-block-hdr" checked>
+            <span class="toggle-track"></span>
+          </label>
+        </div>
+
+        <div class="setting-item">
+          <div class="setting-text">
+            <span class="setting-title">Limitar Streams a 30fps (Bloquear 60fps)</span>
+            <span class="setting-desc">Reduz pela metade os quadros decodificados por segundo em videos de gameplay para aliviar GPUs modestas.</span>
+          </div>
+          <label class="toggle-control">
+            <input type="checkbox" id="toggle-block-60fps">
+            <span class="toggle-track"></span>
+          </label>
+        </div>
+
+        <div class="setting-item">
+          <div class="setting-text">
+            <span class="setting-title">Estabilizador de Buffer MSE &amp; Micro-Gaps</span>
+            <span class="setting-desc">Corrige lacunas de tempo entre segmentos no SourceBuffer para evitar travamentos.</span>
+          </div>
+          <label class="toggle-control">
+            <input type="checkbox" id="toggle-stabilize-buffer" checked>
+            <span class="toggle-track"></span>
+          </label>
+        </div>
+
+        <div class="setting-item">
+          <div class="setting-text">
+            <span class="setting-title">Desativar Modo Ambiente (Economia de GPU)</span>
+            <span class="setting-desc">Remove o canvas de iluminacao desfocada do YouTube para liberar VRAM e GPU.</span>
+          </div>
+          <label class="toggle-control">
+            <input type="checkbox" id="toggle-disable-ambient" checked>
+            <span class="toggle-track"></span>
+          </label>
+        </div>
+
+        <div class="setting-item">
+          <div class="setting-text">
+            <span class="setting-title">Protecao contra Queda Severa de Quadros</span>
+            <span class="setting-desc">Reduz automaticamente de 4K para 2K caso a perda de quadros ultrapasse 18%.</span>
+          </div>
+          <label class="toggle-control">
+            <input type="checkbox" id="toggle-drop-guard" checked>
+            <span class="toggle-track"></span>
+          </label>
+        </div>
+
+        <div class="setting-item">
+          <div class="setting-text">
+            <span class="setting-title">Sincronizar Telemetria Local (Node.js / Ruby)</span>
+            <span class="setting-desc">Envia logs de rede para localhost:3456 para diagnostico de rota e cache.</span>
+          </div>
+          <label class="toggle-control">
+            <input type="checkbox" id="toggle-telemetry-sync">
+            <span class="toggle-track"></span>
+          </label>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 2: NETWORK LOGS -->
+    <section id="tab-network" class="tab-panel">
+      <div class="network-summary-bar">
+        <div>
+          <span class="summary-label">Host CDN Ativo:</span>
+          <strong id="net-cdn-host" class="mono-text">N/A</strong>
+        </div>
+        <div class="network-stats-inline">
+          <span>Chunks: <strong id="net-total-chunks">0</strong></span>
+          <span>Dados: <strong id="net-total-mb">0.0 MB</strong></span>
+          <span>Falhas: <strong id="net-failed-chunks">0</strong></span>
+        </div>
+      </div>
+
+      <div class="log-actions-bar">
+        <button type="button" id="btn-export-logs" class="btn-secondary btn-sm">Exportar Relatorio JSON</button>
+        <button type="button" id="btn-clear-logs" class="btn-secondary btn-sm">Limpar Logs</button>
+      </div>
+
+      <div class="logs-table-wrapper">
+        <table class="logs-table">
+          <thead>
+            <tr>
+              <th>Formato / itag</th>
+              <th>Tamanho</th>
+              <th>Tempo</th>
+              <th>Banda</th>
+            </tr>
+          </thead>
+          <tbody id="network-logs-body">
+            <tr>
+              <td colspan="4" class="empty-log-row">Nenhum pacote googlevideo.com capturado ainda. Abra um video no YouTube.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- TAB 3: ABOUT & CREDITS -->
+    <section id="tab-about" class="tab-panel">
+      <div class="about-card">
+        <h2>Arquitetura Open Source</h2>
+        <p>
+          <strong>My Quality 4k</strong> otimiza o pipeline de recebimento de buffers MSE e a selecao de codecs de hardware no YouTube, permitindo assistir videos em 4K (2160p) sem travamentos em computadores de entrada ou intermediarios.
+        </p>
+      </div>
+
+      <div class="about-card highlight-box">
+        <h2>Nota de Engenharia Assistida por IA</h2>
+        <p>
+          Antes dos creditos principais, registra-se de forma transparente que a arquitetura de interceptacao MSE, a heuristica de estabilizacao de buffers, o servico de telemetria e a estruturacao deste projeto foram desenvolvidos com a assistencia direta do <strong>Argon (Google Antigravity)</strong>.
+        </p>
+      </div>
+
+      <div class="about-card">
+        <h2>Creditos e Licenca</h2>
+        <ul class="credits-list">
+          <li><strong>Autor Idealizador e Mantenedor:</strong> Joao Vitor Magalhaes Alves (@Alves)</li>
+          <li><strong>Engenharia Assistida e Co-Arquitetura:</strong> Argon (Google Antigravity)</li>
+          <li><strong>Licenca:</strong> GNU GPLv3 (Copyleft Open Source)</li>
+          <li><strong>Versao:</strong> 1.0.0 (Manifest V3)</li>
+        </ul>
+      </div>
+    </section>
+  </main>
+
+  <footer class="app-footer">
+    <span id="status-indicator">Status: Monitoramento Ativo</span>
+    <span class="mono-text">v1.0.0 | GPL-3.0 License</span>
+  </footer>
+
+  <script src="popup.js"></script>
+</body>
+</html>

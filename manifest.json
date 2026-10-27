@@ -1,0 +1,63 @@
+{
+  "manifest_version": 3,
+  "name": "My Quality 4k",
+  "short_name": "MyQuality4k",
+  "version": "1.0.0",
+  "description": "Open Source browser extension that optimizes 4K YouTube video playback, MSE buffer stability, and hardware codec selection for low-to-mid-range PCs.",
+  "author": "Joao Vitor Magalhaes Alves (with AI-assisted engineering by Argon)",
+  "homepage_url": "https://github.com/Alves404/My-Quality-4k",
+  "icons": {
+    "16": "assets/icons/icon16.png",
+    "32": "assets/icons/icon32.png",
+    "48": "assets/icons/icon48.png",
+    "128": "assets/icons/icon128.png"
+  },
+  "action": {
+    "default_title": "My Quality 4k - Buffer & Hardware Optimizer",
+    "default_popup": "src/popup/popup.html",
+    "default_icon": {
+      "16": "assets/icons/icon16.png",
+      "32": "assets/icons/icon32.png",
+      "48": "assets/icons/icon48.png",
+      "128": "assets/icons/icon128.png"
+    }
+  },
+  "permissions": [
+    "storage",
+    "tabs",
+    "webRequest"
+  ],
+  "host_permissions": [
+    "*://*.youtube.com/*",
+    "*://*.googlevideo.com/*",
+    "http://localhost:3456/*"
+  ],
+  "background": {
+    "service_worker": "src/background/service-worker.js"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "*://*.youtube.com/*"
+      ],
+      "js": [
+        "src/content/page-hook.js"
+      ],
+      "run_at": "document_start",
+      "world": "MAIN"
+    },
+    {
+      "matches": [
+        "*://*.youtube.com/*"
+      ],
+      "js": [
+        "src/content/content-controller.js"
+      ],
+      "css": [
+        "src/content/player-optimize.css"
+      ],
+      "run_at": "document_start",
+      "world": "ISOLATED"
+    }
+  ]
+}
