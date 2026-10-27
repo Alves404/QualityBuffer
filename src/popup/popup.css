@@ -1,7 +1,8 @@
 /**
  * My Quality 4k - Popup Control Interface Stylesheet
- * Pure Black Theme (OLED #050505) with Gemini Light Blue (#A8C7FA / #8AB4F8) accents,
- * Video Player square logo, Plus Jakarta Sans typography, and 8pt Web Design ergonomics.
+ * Pure Black Theme (OLED #050505) with Gemini Light Blue (#A8C7FA) accents,
+ * minimalist Play Triangle square logo, Plus Jakarta Sans typography,
+ * 2-tab layout (Controls + About), and zero-overhead multi-language selector.
  *
  * Assisted engineering by Argon (Google Antigravity).
  * License: GPL-3.0
@@ -51,7 +52,7 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
-/* Header (Web Design 64px height standard) */
+/* Header */
 .app-header {
   display: flex;
   align-items: center;
@@ -65,9 +66,10 @@ body {
   display: flex;
   align-items: center;
   gap: 12px;
+  min-width: 0;
 }
 
-/* Square frame in Gemini Light Blue (#A8C7FA) around Video Player icon on Pure Black */
+/* Square frame in Gemini Light Blue (#A8C7FA) around Play Triangle icon on Pure Black */
 .brand-badge {
   width: 40px;
   height: 40px;
@@ -84,8 +86,12 @@ body {
 
 .brand-player-icon {
   display: block;
-  width: 22px;
-  height: 22px;
+  width: 20px;
+  height: 20px;
+}
+
+.brand-info {
+  min-width: 0;
 }
 
 .brand-info h1 {
@@ -97,16 +103,46 @@ body {
 }
 
 .brand-info .subtitle {
-  font-size: 11.5px;
+  font-size: 11px;
   font-weight: 500;
   color: var(--gemini-light-blue);
   opacity: 0.88;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-/* Navigation Tabs (42px comfortable click target) */
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.lang-select {
+  height: 26px;
+  padding: 0 7px;
+  background-color: var(--bg-primary);
+  color: var(--gemini-light-blue);
+  border: 1px solid var(--border-subtle);
+  border-radius: 6px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  outline: none;
+  transition: border-color 0.2s var(--ease-fluid);
+}
+
+.lang-select:hover,
+.lang-select:focus {
+  border-color: var(--gemini-light-blue);
+}
+
+/* Navigation Tabs (2 Tabs: Controls + About & Credits) */
 .tab-nav {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(2, 1fr);
   background-color: var(--bg-secondary);
   border-bottom: 1px solid var(--border-subtle);
   padding: 0 8px;
@@ -118,7 +154,7 @@ body {
   border-bottom: 2px solid transparent;
   color: var(--text-secondary);
   height: 42px;
-  padding: 0 10px;
+  padding: 0 12px;
   font-family: var(--font-sans);
   font-size: 12.5px;
   font-weight: 600;
@@ -344,7 +380,7 @@ body {
   transform: scale(0.97);
 }
 
-/* Collapsible Features Dropdown Menu (46px header target) */
+/* Collapsible Features Dropdown Menu */
 .features-dropdown {
   background-color: var(--bg-secondary);
   border: 1px solid var(--border-subtle);
@@ -508,77 +544,6 @@ body {
 .toggle-control input:checked + .toggle-track::before {
   transform: translateX(18px);
   background-color: #050505;
-}
-
-/* Network Logs Tab */
-.network-summary-bar {
-  background-color: var(--bg-secondary);
-  border: 1px solid var(--border-subtle);
-  border-radius: 12px;
-  padding: 12px 14px;
-  margin-bottom: 12px;
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  font-size: 12px;
-}
-
-.summary-label {
-  color: var(--text-secondary);
-}
-
-.network-stats-inline {
-  display: flex;
-  justify-content: space-between;
-  color: var(--text-secondary);
-  border-top: 1px solid var(--border-subtle);
-  padding-top: 6px;
-}
-
-.log-actions-bar {
-  display: flex;
-  justify-content: flex-end;
-  gap: 8px;
-  margin-bottom: 10px;
-}
-
-.logs-table-wrapper {
-  background-color: var(--bg-secondary);
-  border: 1px solid var(--border-subtle);
-  border-radius: 12px;
-  max-height: 320px;
-  overflow-y: auto;
-}
-
-.logs-table {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: 11.5px;
-}
-
-.logs-table th {
-  background-color: var(--bg-tertiary);
-  color: var(--gemini-light-blue);
-  text-align: left;
-  padding: 8px 10px;
-  font-weight: 600;
-  position: sticky;
-  top: 0;
-  border-bottom: 1px solid var(--border-subtle);
-}
-
-.logs-table td {
-  padding: 8px 10px;
-  border-bottom: 1px solid rgba(168, 199, 250, 0.08);
-  color: var(--text-primary);
-  font-family: var(--font-mono);
-}
-
-.empty-log-row {
-  text-align: center;
-  color: var(--text-muted) !important;
-  font-family: var(--font-sans) !important;
-  padding: 24px 12px !important;
 }
 
 /* About & Credits Tab */

@@ -1,9 +1,9 @@
 /**
- * My Quality 4k v2.1 - Popup Controller Script
+ * My Quality 4k v2.1 - Popup Controller & Zero-Overhead Multi-Language Engine
  *
- * Manages user preferences, live zero-reload configuration application,
- * Green/Red switch-style apply status indicator, collapsible features dropdown,
- * real-time Deep Pre-Buffer & network metrics display, and JSON report exports.
+ * Uses a static frozen in-memory dictionary (PT / EN / ES) with O(1) lookups
+ * and single-pass DOM binding so multi-language support adds zero runtime
+ * latency or memory overhead to video playback.
  *
  * Assisted engineering by Argon (Google Antigravity) & Claude Streaming Architect.
  * License: GPL-3.0
@@ -12,8 +12,216 @@
 (function () {
   'use strict';
 
+  /**
+   * Detect browser default language ('pt', 'en', or 'es') in O(1)
+   */
+  function detectDefaultLang() {
+    try {
+      const navLang = (navigator.language || 'pt').toLowerCase();
+      if (navLang.startsWith('en')) {
+        return 'en';
+      }
+      if (navLang.startsWith('es')) {
+        return 'es';
+      }
+    } catch (e) {
+      // Fallback to pt
+    }
+    return 'pt';
+  }
+
+  /**
+   * Static frozen dictionary for zero-allocation O(1) localization
+   */
+  const I18N_DICT = Object.freeze({
+    pt: Object.freeze({
+      appSubtitle: 'SABR 512MB Pre-Buffer & Hardware Codec Engine',
+      tabControls: 'Controles',
+      tabAbout: 'Sobre & Creditos',
+      metricResLabel: 'Resolucao / Stream',
+      metricWaiting: 'Aguardando...',
+      metricBufLabel: 'Buffer Real / Meta',
+      metricNetLabel: 'Taxa de Rede (CDN)',
+      metricLatencyPrefix: 'Latencia:',
+      metricGpuLabel: 'Estabilidade GPU/CPU',
+      metricDropsSuffix: 'perdas',
+      metricGapsPrefix: 'Gaps corrigidos:',
+      labelTargetQuality: 'Qualidade Alvo do Player',
+      btnApplyNow: 'Aplicar Agora',
+      optQ2160: '2160p (4K Ultra HD) - Recomendado',
+      optQ1440: '1440p (2K Quad HD)',
+      optQ1080: '1080p (Full HD)',
+      optQAuto: 'Automatico (Apenas Otimizar Buffer/Codec)',
+      labelBufferHorizon: 'Horizonte de Pre-Carregamento (Minutos Seguintes)',
+      optBuf60: '60 segundos (1 Minuto a frente - Leve)',
+      optBuf120: '120 segundos (2 Minutos a frente - Recomendado)',
+      optBuf180: '180 segundos (3 Minutos a frente - Maximo)',
+      dropdownTitle: 'Funcionalidades de Buffer & Codecs',
+      activeCountSuffix: 'ativos',
+      featDeepTitle: 'Deep Pre-Buffer (Carregar Minutos Seguintes)',
+      featDeepDesc: 'Desbloqueia o limite de 15s do YouTube para baixar os proximos minutos continuamente na velocidade da internet.',
+      featPrefetchTitle: 'Pre-Fetch Paralelo em RAM (Cache sidx 64MB)',
+      featPrefetchDesc: 'Antecipa o download dos proximos byte-ranges em memoria RAM antes do player requisitar.',
+      featHeadstartTitle: 'Pre-Carga Inicial (Trilho Antes do Trem)',
+      featHeadstartDesc: 'Acumula um colchao inicial solido em 4K no segundo zero antes de liberar a reproducao.',
+      featAv1Title: 'Bloquear Codec AV1 (Forcar VP9 Hardware)',
+      featAv1Desc: 'Impede decodificacao AV1 via software na CPU em placas de video sem suporte nativo.',
+      featHdrTitle: 'Bloquear VP9 HDR 10-bit (Forcar 4K SDR)',
+      featHdrDesc: 'Evita sobrecarga de tonemapping em GPUs de 4 GB VRAM mantendo resolucao 2160p fluida.',
+      featFpsTitle: 'Limitar Streams a 30fps (Bloquear 60fps)',
+      featFpsDesc: 'Reduz pela metade os quadros decodificados por segundo em videos de gameplay para aliviar GPUs modestas.',
+      featMseTitle: 'Estabilizador de Buffer MSE & Micro-Gaps',
+      featMseDesc: 'Corrige lacunas de tempo entre segmentos no SourceBuffer para evitar travamentos.',
+      featAmbientTitle: 'Desativar Modo Ambiente (Economia de GPU)',
+      featAmbientDesc: 'Remove o canvas de iluminacao desfocada do YouTube para liberar VRAM e GPU.',
+      featDropTitle: 'Protecao contra Queda Severa de Quadros',
+      featDropDesc: 'Reduz automaticamente de 4K para 2K caso a perda de quadros ultrapasse 18%.',
+      featTelemetryTitle: 'Sincronizar Telemetria Local (Node.js / Ruby)',
+      featTelemetryDesc: 'Opcional para desenvolvedores: envia logs para localhost:3456 sem impacto ao usuario final.',
+      aboutArchTitle: 'Arquitetura Open Source v2.1.0',
+      aboutArchBody: 'My Quality 4k desbloqueia o limite interno de 35 MB (16s) do protocolo SABR do YouTube para 512 MB, permitindo pre-carregar 1, 2 ou 3 minutos completos de video em 4K (2160p) enquanto prioriza decodificacao de hardware VP9 SDR e aplicacao instantanea sem recarregar a pagina.',
+      aboutAiTitle: 'Nota de Engenharia Assistida por IA',
+      aboutAiBody: 'Antes dos creditos principais, registra-se de forma transparente que o motor de desbloqueio SABR 512 MB, a interceptacao de codecs de hardware, a estabilizacao de buffers MSE, o suporte multi-idiomas de latencia zero e a estruturacao deste projeto foram desenvolvidos com a assistencia direta do Argon (Google Antigravity).',
+      aboutCreditsTitle: 'Creditos, Autoria e Licenca',
+      creditAuthor: 'Autor Idealizador e Mantenedor: Joao Vitor Magalhaes Alves (@Alves)',
+      creditAi: 'Engenharia Assistida e Co-Arquitetura: Argon (Google Antigravity) & Claude Streaming Architect',
+      creditI18n: 'Idiomas Suportados (Zero-Overhead): Portugues (PT), English (EN), Espanol (ES)',
+      creditLicense: 'Licenca: GNU GPLv3 (GPL-3.0 Copyleft Open Source)',
+      creditVersion: 'Versao: 2.1.0 (Manifest V3 - SABR Deep Pre-Buffer Engine)',
+      statusActive: 'Status: Deep Pre-Buffer 4K Ativo',
+      statusPaused: 'Status: Otimizacao Pausada',
+      statusPending: 'Status: Alteracoes Pendentes (Clique em Aplicar Agora)',
+      tooltipApplied: 'Verde: Alteracoes aplicadas',
+      tooltipPending: 'Vermelho: Alteracoes nao aplicadas (clique em Aplicar Agora)',
+      codecDefault: 'VP9 SDR (Padrao)'
+    }),
+    en: Object.freeze({
+      appSubtitle: 'SABR 512MB Pre-Buffer & Hardware Codec Engine',
+      tabControls: 'Controls',
+      tabAbout: 'About & Credits',
+      metricResLabel: 'Resolution / Stream',
+      metricWaiting: 'Waiting...',
+      metricBufLabel: 'Real Buffer / Target',
+      metricNetLabel: 'Network Rate (CDN)',
+      metricLatencyPrefix: 'Latency:',
+      metricGpuLabel: 'GPU/CPU Stability',
+      metricDropsSuffix: 'drops',
+      metricGapsPrefix: 'Gaps fixed:',
+      labelTargetQuality: 'Target Player Quality',
+      btnApplyNow: 'Apply Now',
+      optQ2160: '2160p (4K Ultra HD) - Recommended',
+      optQ1440: '1440p (2K Quad HD)',
+      optQ1080: '1080p (Full HD)',
+      optQAuto: 'Auto (Optimize Buffer/Codec Only)',
+      labelBufferHorizon: 'Pre-Buffer Horizon (Upcoming Minutes)',
+      optBuf60: '60 seconds (1 Minute ahead - Light)',
+      optBuf120: '120 seconds (2 Minutes ahead - Recommended)',
+      optBuf180: '180 seconds (3 Minutes ahead - Maximum)',
+      dropdownTitle: 'Buffer & Codec Modules',
+      activeCountSuffix: 'active',
+      featDeepTitle: 'Deep Pre-Buffer (Load Upcoming Minutes)',
+      featDeepDesc: 'Unlocks YouTube 15s limit to continuously download the next minutes at full connection speed.',
+      featPrefetchTitle: 'Parallel RAM Pre-Fetch (64MB sidx Cache)',
+      featPrefetchDesc: 'Pre-fetches upcoming segment byte-ranges in RAM before the player requests them.',
+      featHeadstartTitle: 'Initial Headstart Cushion (Track Before Train)',
+      featHeadstartDesc: 'Builds a solid initial 4K buffer cushion at second zero before releasing playback.',
+      featAv1Title: 'Block AV1 Codec (Force Hardware VP9)',
+      featAv1Desc: 'Prevents CPU software AV1 decoding on graphics cards without native hardware support.',
+      featHdrTitle: 'Block VP9 10-bit HDR (Force 4K SDR)',
+      featHdrDesc: 'Prevents shader tonemapping overload on 4 GB VRAM GPUs while keeping smooth 2160p.',
+      featFpsTitle: 'Limit Streams to 30fps (Block 60fps)',
+      featFpsDesc: 'Halves decoded frames per second on high-FPS videos to relieve entry-level GPUs.',
+      featMseTitle: 'MSE Buffer & Micro-Gap Stabilizer',
+      featMseDesc: 'Bridges millisecond timestamp gaps between SourceBuffer segments to prevent stalls.',
+      featAmbientTitle: 'Disable Ambient Mode (GPU Saver)',
+      featAmbientDesc: 'Removes YouTube blurred lighting canvas to free VRAM and GPU fill-rate.',
+      featDropTitle: 'Severe Frame Drop Protection',
+      featDropDesc: 'Automatically steps down from 4K to 2K if frame drop rate exceeds 18%.',
+      featTelemetryTitle: 'Sync Local Telemetry (Node.js / Ruby)',
+      featTelemetryDesc: 'Optional for developers: sends logs to localhost:3456 with zero end-user impact.',
+      aboutArchTitle: 'Open Source Architecture v2.1.0',
+      aboutArchBody: 'My Quality 4k unlocks YouTube SABR 35 MB (16s) internal buffer cap to 512 MB, pre-buffering 1, 2, or 3 full minutes of 4K (2160p) video while enforcing hardware VP9 SDR decoding and zero-reload live updates.',
+      aboutAiTitle: 'AI-Assisted Engineering Notice',
+      aboutAiBody: 'Prior to the main credits, it is transparently recorded that the SABR 512 MB unlocker, hardware codec hooks, MSE buffer stabilization, zero-overhead multi-language engine, and project structure were engineered with the direct assistance of Argon (Google Antigravity).',
+      aboutCreditsTitle: 'Credits, Authorship & License',
+      creditAuthor: 'Creator, Lead Author & Maintainer: Joao Vitor Magalhaes Alves (@Alves)',
+      creditAi: 'AI-Assisted Engineering & Co-Architecture: Argon (Google Antigravity) & Claude Streaming Architect',
+      creditI18n: 'Supported Languages (Zero-Overhead): Portugues (PT), English (EN), Espanol (ES)',
+      creditLicense: 'License: GNU GPLv3 (GPL-3.0 Copyleft Open Source)',
+      creditVersion: 'Version: 2.1.0 (Manifest V3 - SABR Deep Pre-Buffer Engine)',
+      statusActive: 'Status: 4K Deep Pre-Buffer Active',
+      statusPaused: 'Status: Optimization Paused',
+      statusPending: 'Status: Pending Changes (Click Apply Now)',
+      tooltipApplied: 'Green: Changes applied',
+      tooltipPending: 'Red: Unapplied changes (click Apply Now)',
+      codecDefault: 'VP9 SDR (Default)'
+    }),
+    es: Object.freeze({
+      appSubtitle: 'Motor SABR 512MB Pre-Buffer y Codecs Hardware',
+      tabControls: 'Controles',
+      tabAbout: 'Acerca y Creditos',
+      metricResLabel: 'Resolucion / Stream',
+      metricWaiting: 'Esperando...',
+      metricBufLabel: 'Buffer Real / Meta',
+      metricNetLabel: 'Tasa de Red (CDN)',
+      metricLatencyPrefix: 'Latencia:',
+      metricGpuLabel: 'Estabilidad GPU/CPU',
+      metricDropsSuffix: 'perdidas',
+      metricGapsPrefix: 'Gaps corregidos:',
+      labelTargetQuality: 'Calidad Objetivo del Reproductor',
+      btnApplyNow: 'Aplicar Ahora',
+      optQ2160: '2160p (4K Ultra HD) - Recomendado',
+      optQ1440: '1440p (2K Quad HD)',
+      optQ1080: '1080p (Full HD)',
+      optQAuto: 'Automatico (Solo Optimizar Buffer/Codec)',
+      labelBufferHorizon: 'Horizonte de Pre-Carga (Minutos Siguientes)',
+      optBuf60: '60 segundos (1 Minuto adelante - Ligero)',
+      optBuf120: '120 segundos (2 Minutos adelante - Recomendado)',
+      optBuf180: '180 segundos (3 Minutos adelante - Maximo)',
+      dropdownTitle: 'Modulos de Buffer y Codecs',
+      activeCountSuffix: 'activos',
+      featDeepTitle: 'Deep Pre-Buffer (Cargar Minutos Siguientes)',
+      featDeepDesc: 'Desbloquea el limite de 15s de YouTube para descargar los proximos minutos continuamente.',
+      featPrefetchTitle: 'Pre-Fetch Paralelo en RAM (Cache sidx 64MB)',
+      featPrefetchDesc: 'Anticipa la descarga de los proximos rangos de bytes en memoria RAM.',
+      featHeadstartTitle: 'Pre-Carga Inicial (Riel Antes del Tren)',
+      featHeadstartDesc: 'Acumula un colchon inicial solido en 4K en el segundo cero antes de reproducir.',
+      featAv1Title: 'Bloquear Codec AV1 (Forzar VP9 Hardware)',
+      featAv1Desc: 'Impide la decodificacion AV1 por software en la CPU en tarjetas sin soporte nativo.',
+      featHdrTitle: 'Bloquear VP9 HDR 10-bit (Forzar 4K SDR)',
+      featHdrDesc: 'Evita la sobrecarga de tonemapping en GPUs de 4 GB VRAM manteniendo 2160p fluido.',
+      featFpsTitle: 'Limitar Streams a 30fps (Bloquear 60fps)',
+      featFpsDesc: 'Reduce a la mitad los cuadros decodificados por segundo para aliviar GPUs modestas.',
+      featMseTitle: 'Estabilizador de Buffer MSE y Micro-Gaps',
+      featMseDesc: 'Corrige brechas de tiempo entre segmentos en el SourceBuffer para evitar pausas.',
+      featAmbientTitle: 'Desactivar Modo Ambiente (Ahorro de GPU)',
+      featAmbientDesc: 'Elimina el canvas de iluminacion difuminada de YouTube para liberar VRAM y GPU.',
+      featDropTitle: 'Proteccion contra Caida Severa de Cuadros',
+      featDropDesc: 'Reduce automaticamente de 4K a 2K si la perdida de cuadros supera el 18%.',
+      featTelemetryTitle: 'Sincronizar Telemetria Local (Node.js / Ruby)',
+      featTelemetryDesc: 'Opcional para desarrolladores: envia logs a localhost:3456 sin impacto al usuario.',
+      aboutArchTitle: 'Arquitectura Open Source v2.1.0',
+      aboutArchBody: 'My Quality 4k desbloquea el limite interno de 35 MB (16s) de YouTube SABR a 512 MB, permitiendo pre-cargar 1, 2 o 3 minutos completos en 4K (2160p) con decodificacion de hardware VP9 SDR y aplicacion instantanea sin recargar la pagina.',
+      aboutAiTitle: 'Nota de Ingenieria Asistida por IA',
+      aboutAiBody: 'Antes de los creditos principales, se registra de forma transparente que el desbloqueador SABR 512 MB, la intercepcion de codecs, la estabilizacion MSE, el soporte multi-idioma sin latencia y la estructura del proyecto fueron desarrollados con la asistencia directa de Argon (Google Antigravity).',
+      aboutCreditsTitle: 'Creditos, Autoria y Licencia',
+      creditAuthor: 'Autor Creador y Mantenedor: Joao Vitor Magalhaes Alves (@Alves)',
+      creditAi: 'Ingenieria Asistida y Co-Arquitectura: Argon (Google Antigravity) & Claude Streaming Architect',
+      creditI18n: 'Idiomas Soportados (Zero-Overhead): Portugues (PT), English (EN), Espanol (ES)',
+      creditLicense: 'Licencia: GNU GPLv3 (GPL-3.0 Copyleft Open Source)',
+      creditVersion: 'Version: 2.1.0 (Manifest V3 - SABR Deep Pre-Buffer Engine)',
+      statusActive: 'Estado: Deep Pre-Buffer 4K Activo',
+      statusPaused: 'Estado: Optimizacion Pausada',
+      statusPending: 'Estado: Cambios Pendientes (Clic en Aplicar Ahora)',
+      tooltipApplied: 'Verde: Cambios aplicados',
+      tooltipPending: 'Rojo: Cambios no aplicados (clic en Aplicar Ahora)',
+      codecDefault: 'VP9 SDR (Predeterminado)'
+    })
+  });
+
   const DEFAULT_CONFIG = {
     enabled: true,
+    lang: detectDefaultLang(),
     targetQuality: 'hd2160',
     targetBufferSec: 120,
     deepPreBuffer: true,
@@ -43,17 +251,18 @@
     auto: 'Auto'
   };
 
+  let currentLang = DEFAULT_CONFIG.lang;
   let appliedConfig = Object.assign({}, DEFAULT_CONFIG);
   let currentConfig = Object.assign({}, DEFAULT_CONFIG);
   let lastDashboardData = null;
 
   // DOM Elements
+  const elSelectLang = document.getElementById('select-lang');
   const elToggleEnabled = document.getElementById('toggle-enabled');
   const elSelectQuality = document.getElementById('select-quality');
   const elSelectBufferTarget = document.getElementById('select-buffer-target');
   const elBtnForceNow = document.getElementById('btn-force-now');
   const elApplyStatusSwitch = document.getElementById('apply-status-switch');
-  const elApplyStatusText = document.getElementById('apply-status-text');
 
   const elFeaturesDropdown = document.getElementById('features-dropdown');
   const elBtnFeaturesDropdown = document.getElementById('btn-features-dropdown');
@@ -79,15 +288,8 @@
   const elMetricDrops = document.getElementById('metric-drops');
   const elMetricGaps = document.getElementById('metric-gaps');
 
-  const elNetCdnHost = document.getElementById('net-cdn-host');
-  const elNetTotalChunks = document.getElementById('net-total-chunks');
-  const elNetTotalMb = document.getElementById('net-total-mb');
-  const elNetFailedChunks = document.getElementById('net-failed-chunks');
-  const elNetworkLogsBody = document.getElementById('network-logs-body');
-
-  const elBtnExportLogs = document.getElementById('btn-export-logs');
-  const elBtnClearLogs = document.getElementById('btn-clear-logs');
   const elStatusIndicator = document.getElementById('status-indicator');
+  const i18nElements = document.querySelectorAll('[data-i18n]');
 
   const featureToggleElements = [
     elToggleDeepPrebuffer,
@@ -101,6 +303,42 @@
     elToggleDropGuard,
     elToggleTelemetrySync
   ];
+
+  /**
+   * O(1) string lookup from frozen language table
+   * @param {string} key
+   * @returns {string}
+   */
+  function t(key) {
+    const table = I18N_DICT[currentLang] || I18N_DICT.pt;
+    return table[key] || I18N_DICT.pt[key] || key;
+  }
+
+  /**
+   * Single-pass DOM localization update (only runs on startup or language switch)
+   * @param {string} langCode
+   */
+  function applyLanguage(langCode) {
+    currentLang = I18N_DICT[langCode] ? langCode : 'pt';
+    if (elSelectLang && elSelectLang.value !== currentLang) {
+      elSelectLang.value = currentLang;
+    }
+
+    for (let i = 0; i < i18nElements.length; i += 1) {
+      const el = i18nElements[i];
+      const key = el.getAttribute('data-i18n');
+      if (key) {
+        el.textContent = t(key);
+      }
+    }
+
+    updateApplyStatusIndicator();
+    if (lastDashboardData) {
+      renderDashboardState(lastDashboardData);
+    } else if (elMetricResolution) {
+      elMetricResolution.textContent = t('metricWaiting');
+    }
+  }
 
   /**
    * Initializes tab switching behavior
@@ -154,16 +392,17 @@
         activeCount += 1;
       }
     });
-    elDropdownActiveCount.textContent = `${activeCount}/${featureToggleElements.length} ativos`;
+    elDropdownActiveCount.textContent = `${activeCount}/${featureToggleElements.length} ${t('activeCountSuffix')}`;
   }
 
   /**
-   * Reads current UI control values into a configuration object without saving yet
+   * Reads current UI control values into a configuration object
    * @returns {object}
    */
   function readConfigFromUI() {
     return {
       enabled: elToggleEnabled ? elToggleEnabled.checked : true,
+      lang: currentLang,
       targetQuality: elSelectQuality ? elSelectQuality.value : 'hd2160',
       targetBufferSec: elSelectBufferTarget ? Number(elSelectBufferTarget.value) || 120 : 120,
       deepPreBuffer: elToggleDeepPrebuffer ? elToggleDeepPrebuffer.checked : true,
@@ -216,8 +455,6 @@
 
   /**
    * Updates the Green/Red switch-style indicator next to "Aplicar Agora"
-   * - Green ("Aplicado"): UI matches appliedConfig
-   * - Red ("Nao Aplicado"): User modified settings and needs to click "Aplicar Agora"
    */
   function updateApplyStatusIndicator() {
     const uiCfg = readConfigFromUI();
@@ -230,21 +467,19 @@
       if (isApplied) {
         elApplyStatusSwitch.classList.remove('is-pending');
         elApplyStatusSwitch.classList.add('is-applied');
-        elApplyStatusSwitch.title = 'Verde: Alteracoes aplicadas';
+        elApplyStatusSwitch.title = t('tooltipApplied');
       } else {
         elApplyStatusSwitch.classList.remove('is-applied');
         elApplyStatusSwitch.classList.add('is-pending');
-        elApplyStatusSwitch.title = 'Vermelho: Alteracoes nao aplicadas (clique em Aplicar Agora)';
+        elApplyStatusSwitch.title = t('tooltipPending');
       }
     }
 
     if (elStatusIndicator) {
       if (!isApplied) {
-        elStatusIndicator.textContent = 'Status: Alteracoes Pendentes (Clique em Aplicar Agora)';
+        elStatusIndicator.textContent = t('statusPending');
       } else {
-        elStatusIndicator.textContent = appliedConfig.enabled
-          ? 'Status: Deep Pre-Buffer 4K Ativo'
-          : 'Status: Otimizacao Pausada';
+        elStatusIndicator.textContent = appliedConfig.enabled ? t('statusActive') : t('statusPaused');
       }
     }
   }
@@ -253,6 +488,12 @@
    * Applies config object to UI inputs
    */
   function renderConfigControls(cfg) {
+    if (cfg.lang && I18N_DICT[cfg.lang]) {
+      currentLang = cfg.lang;
+    }
+    if (elSelectLang) {
+      elSelectLang.value = currentLang;
+    }
     elToggleEnabled.checked = Boolean(cfg.enabled);
     elSelectQuality.value = cfg.targetQuality || 'hd2160';
     if (elSelectBufferTarget) {
@@ -277,7 +518,7 @@
     elToggleDropGuard.checked = Boolean(cfg.smartDropGuard);
     elToggleTelemetrySync.checked = Boolean(cfg.telemetrySync);
 
-    updateApplyStatusIndicator();
+    applyLanguage(currentLang);
   }
 
   /**
@@ -285,7 +526,7 @@
    */
   function formatCodecLabel(mimeString) {
     if (!mimeString || mimeString === 'unknown') {
-      return 'VP9 SDR (Padrao)';
+      return t('codecDefault');
     }
     const lower = mimeString.toLowerCase();
     if (lower.includes('vp09.00') || lower.includes('vp9')) {
@@ -301,7 +542,7 @@
   }
 
   /**
-   * Updates dashboard cards and network logs table
+   * Updates dashboard cards
    */
   function renderDashboardState(data) {
     if (!data) {
@@ -311,7 +552,6 @@
 
     const player = data.playerTelemetry;
     const netSummary = data.networkSummary || {};
-    const logs = data.networkLogs || [];
 
     if (player) {
       const qLabel = QUALITY_LABELS[player.currentQuality] || player.currentQuality || 'Auto';
@@ -326,55 +566,17 @@
       const targetSec = Number(player.targetBufferSec || appliedConfig.targetBufferSec || 120);
       elMetricBuffer.textContent = `${bufSec.toFixed(1)}s / ${targetSec}s`;
 
-      // Scale buffer progress bar against user's configured targetBufferSec
       const pct = Math.min(100, Math.max(4, Math.round((bufSec / targetSec) * 100)));
       elBufferBarFill.style.width = `${pct}%`;
       elBufferBarFill.classList.toggle('buffer-low', bufSec < 12);
 
-      elMetricDrops.textContent = `${Number(player.dropRatePercent || 0).toFixed(1)}% perdas`;
+      elMetricDrops.textContent = `${Number(player.dropRatePercent || 0).toFixed(1)}% ${t('metricDropsSuffix')}`;
       const gaps = player.microGapsRecovered || 0;
-      const evicted = player.evictedBackBufferCount || 0;
-      elMetricGaps.textContent = `Gaps: ${gaps} | Reciclados: ${evicted}`;
+      elMetricGaps.textContent = `${t('metricGapsPrefix')} ${gaps}`;
     }
 
     elMetricThroughput.textContent = `${Number(netSummary.avgThroughputMbps || 0).toFixed(1)} Mbps`;
-    elMetricLatency.textContent = `Latencia: ${netSummary.avgLatencyMs || 0} ms`;
-
-    elNetCdnHost.textContent = netSummary.lastCdnHost || 'N/A';
-    elNetTotalChunks.textContent = String(netSummary.totalChunks || 0);
-    elNetTotalMb.textContent = `${Number(netSummary.totalMB || 0).toFixed(1)} MB`;
-    elNetFailedChunks.textContent = String(netSummary.failedChunks || 0);
-
-    renderNetworkTable(logs);
-  }
-
-  /**
-   * Populates the network logs table
-   */
-  function renderNetworkTable(logs) {
-    if (!Array.isArray(logs) || logs.length === 0) {
-      elNetworkLogsBody.innerHTML =
-        '<tr><td colspan="4" class="empty-log-row">Nenhum pacote googlevideo.com capturado ainda. Abra um video no YouTube.</td></tr>';
-      return;
-    }
-
-    const rowsHtml = logs
-      .slice(0, 20)
-      .map(function (entry) {
-        const formatLabel = entry.itag ? `itag=${entry.itag}` : 'chunk';
-        const sizeStr = `${entry.chunkKB || 0} KB`;
-        const timeStr = `${entry.durationMs || 0} ms`;
-        const speedStr = entry.status === 'OK' ? `${entry.throughputMbps || 0} Mbps` : 'ERRO';
-        return `<tr>
-        <td title="${entry.itagDescription || ''}">${formatLabel}</td>
-        <td>${sizeStr}</td>
-        <td>${timeStr}</td>
-        <td>${speedStr}</td>
-      </tr>`;
-      })
-      .join('');
-
-    elNetworkLogsBody.innerHTML = rowsHtml;
+    elMetricLatency.textContent = `${t('metricLatencyPrefix')} ${netSummary.avgLatencyMs || 0} ms`;
   }
 
   /**
@@ -396,7 +598,6 @@
   /**
    * Applies all pending UI settings immediately to chrome.storage.local AND hot-applies
    * them to the active YouTube tab without requiring a page reload (F5).
-   * Turns the switch-style indicator next to "Aplicar Agora" from Red to Green.
    */
   function applyConfigurationNow() {
     const newConfig = readConfigFromUI();
@@ -431,7 +632,6 @@
             chrome.scripting &&
             typeof chrome.scripting.executeScript === 'function'
           ) {
-            // If YouTube tab was already open before extension load/reload, inject hooks on the fly without page reload
             chrome.scripting.executeScript(
               {
                 target: { tabId: tabId },
@@ -468,44 +668,19 @@
     });
   }
 
-  /**
-   * Exports current telemetry and network log history as a JSON file
-   */
-  function exportDiagnosticReport() {
-    const report = {
-      project: 'My Quality 4k',
-      version: '2.1.0',
-      license: 'GPL-3.0',
-      aiAssistedEngineering: 'Argon (Google Antigravity) & Claude Streaming Architect',
-      exportedAt: new Date().toISOString(),
-      configuration: appliedConfig,
-      dashboardSnapshot: lastDashboardData
-    };
-
-    const blob = new Blob([JSON.stringify(report, null, 2)], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = `my-quality-4k-telemetry-${Date.now()}.json`;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    URL.revokeObjectURL(url);
-  }
-
-  /**
-   * Clears captured network logs in the Background Service Worker
-   */
-  function clearNetworkLogs() {
-    if (!chrome || !chrome.runtime) {
-      return;
-    }
-    chrome.runtime.sendMessage({ type: 'MQ4K_CLEAR_NETWORK_LOGS' }, function () {
-      refreshTelemetry();
+  // Bind Language Selector (instant switch, persists language preference immediately)
+  if (elSelectLang) {
+    elSelectLang.addEventListener('change', function () {
+      applyLanguage(elSelectLang.value);
+      appliedConfig.lang = currentLang;
+      currentConfig.lang = currentLang;
+      if (chrome && chrome.storage && chrome.storage.local) {
+        chrome.storage.local.set({ mq4k_config: appliedConfig });
+      }
     });
   }
 
-  // Bind Event Listeners: changing any control marks status as Red ("Nao Aplicado") until "Aplicar Agora" is clicked
+  // Bind Control Listeners
   [
     elToggleEnabled,
     elSelectQuality,
@@ -531,12 +706,6 @@
   }
   if (elApplyStatusSwitch) {
     elApplyStatusSwitch.addEventListener('click', applyConfigurationNow);
-  }
-  if (elBtnExportLogs) {
-    elBtnExportLogs.addEventListener('click', exportDiagnosticReport);
-  }
-  if (elBtnClearLogs) {
-    elBtnClearLogs.addEventListener('click', clearNetworkLogs);
   }
 
   // Initialization
