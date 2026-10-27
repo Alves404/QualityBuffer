@@ -58,8 +58,9 @@ Many computers equipped with 4-core processors (e.g., Intel Core i3) and entry-l
 * **Zero-Track-Laying Bootstrap & CDN Preconnect:** Spoofs `navigator.connection` (`100 Mbps / 5ms RTT`), pre-seeds `yt-player-quality = 2160` in `localStorage`/`sessionStorage` prior to player initialization, and injects `<link rel="preconnect">` for active `*.googlevideo.com` CDN origins.
 * **MSE Buffer Stabilizer & Micro-Gap Recovery:** Monitors `SourceBuffer.prototype.appendBuffer` byte volume and automatically steps over sub-second timestamp gaps.
 * **Smart 4K Quality Lock (`hd2160`) & Drop Guard:** Locks playback quality on YouTube's `#movie_player` API and includes an optional **Smart Drop Guard** that steps down from 4K to 2K (`1440p`) only if frame drops exceed 18%.
-* **Real-Time Network Logs (`googlevideo.com`):** Passive `chrome.webRequest` inspection that calculates live CDN throughput (Mbps), chunk latency (ms), payload size (KB/MB), and `itag` stream profiles (including multiplexed SABR chunks via `Content-Length` headers).
-* **Baby Blue Dark UI, Video Player Identity & Collapsible Features Menu:** Clean dark technical control panel accented in Baby Blue (`#89CFF0` / `#B6E3FF`) featuring a **Zero-Reload "Apply Now" Engine** with a **Green/Red Switch-Style Status Indicator** (Green = Applied, Red = Unapplied Changes), a collapsible dropdown menu for the 10 buffer/codec modules, and one-click JSON telemetry export.
+* **Real-Time CDN Throughput & Latency Telemetry (`googlevideo.com`):** Passive `chrome.webRequest` inspection that calculates live CDN throughput (Mbps) and chunk latency (ms) (including multiplexed SABR chunks via `Content-Length` headers) with zero DOM table overhead.
+* **Zero-Overhead Multi-Language Support (`EN` / `PT` / `ES`):** Defaults to **English (`EN`)** and automatically selects **English (`EN`)**, **Portuguese (`PT`)**, or **Spanish (`ES`)** based on the user's browser language (`chrome.i18n.getUILanguage()` / `navigator.language`) using a frozen `O(1)` in-memory dictionary inside the popup—incurring zero CPU or memory overhead during YouTube playback.
+* **Pure Black OLED UI, Gemini Light Blue Accents & Zero-Reload Live Apply:** High-contrast Pure Black (`#050505`) 2-tab interface (`Controls` + `About & Credits`) accented in Gemini Light Blue (`#A8C7FA`) with a minimalist sideways Play Triangle square logo, featuring a **Zero-Reload "Apply Now" Engine**, a **Green/Red Switch-Style Status Indicator** (Green = Applied, Red = Unapplied Changes), and a collapsible **Features (`Funcionalidades`)** dropdown menu for the 10 buffer/codec modules.
 * **Optional Developer Local Telemetry & Route Analysis Backend:** Zero-dependency Node.js HTTP ingestion server and Ruby statistical analyzer for developer CDN route diagnostics (strictly optional; zero impact on normal end-user playback).
 
 ---
@@ -67,9 +68,9 @@ Many computers equipped with 4-core processors (e.g., Intel Core i3) and entry-l
 ## 3. Technology Stack
 
 * **Front-End (Browser Extension):**
-  * Vanilla JavaScript (ES6+, zero external runtime dependencies)
+  * Vanilla JavaScript (ES6+, zero external runtime dependencies, frozen `O(1)` multi-language engine)
   * Chrome Extension Manifest V3 (`MAIN` and `ISOLATED` world content scripts + Background Service Worker)
-  * HTML5 & CSS3 (GPU compositor layer isolation & Baby Blue Dark Mode Popup UI)
+  * HTML5 & CSS3 (GPU compositor layer isolation & Pure Black `#050505` + Gemini Light Blue `#A8C7FA` Popup UI)
 * **Back-End (Local Telemetry & Caching Services):**
   * **Node.js:** Native HTTP server (`backend/node-server/server.js`) on port `3456` for Network Log ingestion and adaptive cache heuristics.
   * **Ruby:** Statistical analyzer (`backend/ruby-analyzer/telemetry_analyzer.rb`) computing P50/P95 bandwidth and latency percentiles across `googlevideo.com` CDN edge nodes.
@@ -88,18 +89,18 @@ My-Quality-4k/
 ├── CODE_OF_CONDUCT.md            # Contributor Covenant Code of Conduct
 ├── CHANGELOG.md                  # Version history and release notes
 ├── assets/
-│   └── icons/                    # Baby Blue Video Player extension icons (16, 32, 48, 128px)
+│   └── icons/                    # Pure Black & Gemini Light Blue Play Triangle icons (16, 32, 48, 128px)
 ├── src/
 │   ├── background/
 │   │   └── service-worker.js     # googlevideo.com chunk monitor & throughput calculator
 │   ├── content/
 │   │   ├── page-hook.js          # MAIN world engine: SABR 512MB Unlocker, Codecs & MSE hooks
-│   │   ├── content-controller.js # ISOLATED world bridge for chrome.storage & telemetry
+│   │   ├── content-controller.js # ISOLATED world bridge for chrome.storage & live apply
 │   │   └── player-optimize.css   # GPU layer promotion & Ambient Mode neutralizer
 │   └── popup/
-│       ├── popup.html            # Control interface & Network Logs viewer
-│       ├── popup.css             # Baby Blue Dark Theme stylesheet
-│       └── popup.js              # Popup state controller & JSON report exporter
+│       ├── popup.html            # 2-Tab Control & About interface (EN default)
+│       ├── popup.css             # Pure Black (#050505) & Gemini Light Blue (#A8C7FA) stylesheet
+│       └── popup.js              # Popup state controller, Zero-Reload Apply & O(1) i18n (EN/PT/ES)
 ├── backend/
 │   ├── data/                     # Persisted network logs and route reports
 │   ├── node-server/

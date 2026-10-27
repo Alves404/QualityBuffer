@@ -202,7 +202,7 @@ function sendTelemetryToLocalBackend(logEntry) {
       },
       body: JSON.stringify({
         source: 'My-Quality-4k-Extension',
-        version: '1.0.0',
+        version: '2.1.0',
         timestamp: Date.now(),
         networkChunk: logEntry,
         playerMetrics: latestPlayerTelemetry,
@@ -344,8 +344,7 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
       playerTelemetry: latestPlayerTelemetry,
       networkSummary: Object.assign({}, networkSummary, {
         totalMB: Number((networkSummary.totalBytes / (1024 * 1024)).toFixed(2))
-      }),
-      networkLogs: networkLogs.slice(0, 30)
+      })
     });
     return true;
   }
