@@ -89,7 +89,8 @@ My-Quality-4k/
 ├── CODE_OF_CONDUCT.md            # Contributor Covenant Code of Conduct
 ├── CHANGELOG.md                  # Version history and release notes
 ├── assets/
-│   └── icons/                    # Pure Black & Gemini Light Blue Play Triangle icons (16, 32, 48, 128px)
+│   ├── icons/                    # Pure Black & Gemini Light Blue Play Triangle icons (16, 32, 48, 128px)
+│   └── images/                   # README images (Gemini 4 Argon & Google Student Ambassadors 2026)
 ├── src/
 │   ├── background/
 │   │   └── service-worker.js     # googlevideo.com chunk monitor & throughput calculator
@@ -172,14 +173,26 @@ npm run telemetry:analyze
 
 ---
 
-## 8. AI-Assisted Engineering Notice (Argon)
+## 8. AI-Assisted Development Notice (Gemini 4 Argon)
 
-Prior to the main authorship credits, it is transparently recorded that the Open Source architecture of this project, the SABR and MSE buffer unlocking engine, the hardware codec interception hooks, the `googlevideo.com` Network Logs capture pipeline, the Node.js and Ruby telemetry services, and the technical documentation were developed with the direct AI-assisted engineering of **Argon (Google Antigravity)**, working in pair programming with the repository author.
+<p align="center">
+  <img src="assets/images/gemini-4-argon.jpg" alt="Gemini 4 Argon" width="600">
+</p>
+
+Prior to the main authorship credits, it is transparently recorded that the Open Source architecture of this project, the SABR 512 MB and MSE buffer unlocking engine, the hardware codec interception hooks, the zero-overhead multi-language engine, the Node.js and Ruby telemetry services, and the technical documentation were developed with the direct AI-assisted development of **Gemini 4 Argon (Google Antigravity)**, working in pair programming with the repository author.
 
 ---
 
 ## 9. Credits & Authorship
 
-* **Creator, Lead Author & Maintainer:** Joao Vitor Magalhaes Alves (`@Alves`)
-* **AI-Assisted Engineering & Co-Architecture:** Argon (Google Antigravity) & Claude Streaming Architect
+<p align="center">
+  <img src="assets/images/google-student-ambassadors-2026.jpg" alt="Embaixadores Estudantis do Google 2026 (Google Student Ambassadors 2026)" width="600">
+</p>
+
+* **Creator, Lead Author & Maintainer:** Joao Vitor Magalhaes Alves — [github.com/Alves404](https://github.com/Alves404) (`@Alves404`)
+* **Official Open Source Repository:** [github.com/Alves404/My-Quality-4k](https://github.com/Alves404/My-Quality-4k)
+* **AI-Assisted Development:** Gemini 4 Argon (Google Antigravity) — Co-architecture of the 512 MB SABR engine, hardware codec filters, and MSE stabilization
+* **Supported Languages (Zero-Overhead):** English (`EN` - Default), Portugues (`PT`), and Espanol (`ES`) with automatic browser detection
+* **License:** GNU General Public License v3.0 (`GPL-3.0` Copyleft Open Source)
+* **Version:** `2.1.0` (Manifest V3 — 512 MB SABR Pre-Buffer & Hardware VP9 SDR Decoding Engine)
 * **Conceptual Open Source References:** Inspired by architectural best practices from community projects such as `enhanced-h264ify` (MIT) and `uBlock Origin` (GPLv3).

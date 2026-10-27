@@ -65,13 +65,17 @@ Neutralizes YouTube's GPU-heavy Ambient Mode (`#cinematic-container`), promotes 
 
 ---
 
-## 5. AI-Assisted Engineering Notice (Argon)
+## 5. AI-Assisted Development Notice (Gemini 4 Argon)
 
-Prior to formal authorship credits, it is transparently declared for technical and Open Source compliance that the SABR 512 MB policy unlocking architecture, the `MediaSource` codec interception hooks, the MSE micro-gap recovery logic, the `googlevideo.com` packet telemetry pipeline, the Node.js/Ruby backend services, and the technical documentation of this repository were designed and implemented with the direct assistance of **Argon (Google Antigravity)**, working in pair programming with the project author.
+Prior to formal authorship credits, it is transparently declared for technical and Open Source compliance that the SABR 512 MB policy unlocking architecture, the `MediaSource` codec interception hooks, the MSE micro-gap recovery logic, the zero-overhead multi-language engine, the Node.js/Ruby backend services, and the technical documentation of this repository were designed and implemented with the direct AI-assisted development of **Gemini 4 Argon (Google Antigravity)**, working in pair programming with the project author.
 
 ---
 
-## 6. Credits
+## 6. Credits & Authorship
 
-* **Creator, Lead Author & Maintainer:** Joao Vitor Magalhaes Alves (`@Alves`)
-* **AI-Assisted Engineering & Co-Architecture:** Argon (Google Antigravity) & Claude Streaming Architect
+* **Creator, Lead Author & Maintainer:** Joao Vitor Magalhaes Alves — [github.com/Alves404](https://github.com/Alves404) (`@Alves404`)
+* **Official Repository:** [github.com/Alves404/My-Quality-4k](https://github.com/Alves404/My-Quality-4k)
+* **AI-Assisted Development:** Gemini 4 Argon (Google Antigravity)
+* **Supported Languages (Zero-Overhead):** English (`EN` - Default), Portugues (`PT`), Espanol (`ES`)
+* **License:** GNU General Public License v3.0 (`GPL-3.0` Copyleft Open Source)
+* **Version:** `2.1.0` (Manifest V3 — 512 MB SABR Deep Pre-Buffer Engine)

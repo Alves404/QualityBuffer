@@ -622,9 +622,35 @@ body {
   list-style: none;
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 8px;
   font-size: 12px;
+  line-height: 1.45;
   color: var(--text-secondary);
+}
+
+.credits-list li {
+  padding-bottom: 6px;
+  border-bottom: 1px solid rgba(168, 199, 250, 0.08);
+}
+
+.credits-list li:last-child {
+  padding-bottom: 0;
+  border-bottom: none;
+}
+
+.credit-link {
+  color: var(--gemini-light-blue);
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  font-weight: 600;
+  text-decoration: none;
+  border-bottom: 1px dashed rgba(168, 199, 250, 0.45);
+  transition: color 0.2s var(--ease-fluid), border-color 0.2s var(--ease-fluid);
+}
+
+.credit-link:hover {
+  color: #ffffff;
+  border-bottom-color: #ffffff;
 }
 
 .mono-text {
