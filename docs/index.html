@@ -4,22 +4,24 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>My Quality 4k v2.1.0 - Official Documentation &amp; Release Download</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
     :root {
-      --bg-primary: #0b1017;
-      --bg-secondary: #111823;
-      --bg-tertiary: #172231;
-      --border-subtle: #233246;
-      --border-accent: #89cff0;
-      --text-primary: #edf4fa;
-      --text-secondary: #9cb3c9;
-      --text-muted: #677d94;
-      --baby-blue: #89cff0;
-      --baby-blue-light: #b6e3ff;
-      --baby-blue-deep: #5bb5e6;
-      --baby-blue-gradient: linear-gradient(135deg, #b6e3ff 0%, #89cff0 55%, #5bb5e6 100%);
-      --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, sans-serif;
-      --font-mono: "Consolas", "SFMono-Regular", Menlo, Monaco, monospace;
+      --bg-primary: #050505;
+      --bg-secondary: #0c0d10;
+      --bg-tertiary: #13151b;
+      --border-subtle: rgba(168, 199, 250, 0.14);
+      --border-hover: rgba(168, 199, 250, 0.35);
+      --text-primary: #f4f6fb;
+      --text-secondary: #a0a8b8;
+      --text-muted: #687082;
+      --gemini-light-blue: #a8c7fa;
+      --gemini-soft-blue: #8ab4f8;
+      --font-sans: "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+      --font-mono: "JetBrains Mono", "SFMono-Regular", Consolas, monospace;
+      --ease-fluid: cubic-bezier(0.32, 0.72, 0, 1);
     }
 
     * {
@@ -30,36 +32,41 @@
 
     body {
       background-color: var(--bg-primary);
-      background-image: radial-gradient(circle at 85% 0%, rgba(137, 207, 240, 0.12) 0%, rgba(91, 181, 230, 0.04) 45%, transparent 70%);
+      background-image: radial-gradient(circle at 80% 0%, rgba(168, 199, 250, 0.08) 0%, transparent 55%);
       color: var(--text-primary);
       font-family: var(--font-sans);
-      line-height: 1.6;
-      font-size: 15px;
+      line-height: 1.65;
+      font-size: 16px;
+      letter-spacing: -0.01em;
+      -webkit-font-smoothing: antialiased;
     }
 
     a {
-      color: var(--baby-blue-light);
+      color: var(--gemini-light-blue);
       text-decoration: none;
+      transition: color 0.2s var(--ease-fluid);
     }
 
     a:hover {
-      text-decoration: underline;
+      color: #ffffff;
     }
 
-    /* Top Navigation */
-    .navbar {
+    /* Floating Pill Navbar */
+    .navbar-wrap {
       position: sticky;
-      top: 0;
+      top: 16px;
       z-index: 100;
-      background-color: rgba(17, 24, 35, 0.92);
-      backdrop-filter: blur(10px);
-      border-bottom: 1px solid var(--border-subtle);
-      padding: 14px 24px;
+      padding: 0 24px;
     }
 
-    .navbar-inner {
+    .navbar {
       max-width: 1080px;
       margin: 0 auto;
+      background-color: rgba(12, 13, 16, 0.88);
+      backdrop-filter: blur(16px);
+      border: 1px solid var(--border-subtle);
+      border-radius: 16px;
+      padding: 12px 22px;
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -70,90 +77,99 @@
     .brand {
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: 14px;
     }
 
+    /* Square in Gemini Light Blue (#A8C7FA) around Video Player Icon */
     .brand-icon {
-      width: 40px;
-      height: 40px;
+      width: 42px;
+      height: 42px;
       border-radius: 10px;
-      background: var(--baby-blue-gradient);
-      color: #08131f;
+      background-color: #050505;
+      color: var(--gemini-light-blue);
       display: flex;
       align-items: center;
       justify-content: center;
-      border: 1px solid rgba(255, 255, 255, 0.35);
-      box-shadow: 0 3px 14px rgba(137, 207, 240, 0.28);
+      border: 2px solid var(--gemini-light-blue);
+      box-shadow: 0 0 14px rgba(168, 199, 250, 0.18), inset 0 0 8px rgba(168, 199, 250, 0.08);
     }
 
     .brand-title {
       font-size: 18px;
       font-weight: 700;
-      color: var(--baby-blue-light);
-      letter-spacing: -0.3px;
+      color: var(--text-primary);
+      letter-spacing: -0.02em;
     }
 
     .brand-sub {
       font-size: 12px;
-      color: var(--text-secondary);
+      color: var(--gemini-light-blue);
       display: block;
     }
 
     .nav-links {
       display: flex;
       align-items: center;
-      gap: 20px;
-      font-size: 13.5px;
+      gap: 24px;
+      font-size: 14px;
       font-weight: 600;
     }
 
-    /* Main Container */
     .container {
       max-width: 1080px;
       margin: 0 auto;
-      padding: 48px 24px 72px;
+      padding: 56px 24px 88px;
     }
 
-    /* Hero Section */
+    /* Double-Bezel Hero Card */
+    .hero-shell {
+      background-color: rgba(255, 255, 255, 0.02);
+      border: 1px solid var(--border-subtle);
+      border-radius: 24px;
+      padding: 8px;
+      margin-bottom: 56px;
+    }
+
     .hero {
       background-color: var(--bg-secondary);
-      background-image: linear-gradient(135deg, rgba(137, 207, 240, 0.10) 0%, rgba(17, 24, 35, 0.95) 65%);
-      border: 1px solid var(--border-subtle);
-      border-radius: 14px;
-      padding: 42px 36px;
-      margin-bottom: 40px;
+      border: 1px solid rgba(168, 199, 250, 0.1);
+      border-radius: 18px;
+      padding: 48px 42px;
+      box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.06);
     }
 
     .version-pill {
       display: inline-block;
-      background: rgba(137, 207, 240, 0.14);
-      color: var(--baby-blue-light);
-      border: 1px solid rgba(137, 207, 240, 0.4);
-      border-radius: 20px;
-      padding: 4px 12px;
-      font-size: 12px;
+      background-color: rgba(168, 199, 250, 0.1);
+      color: var(--gemini-light-blue);
+      border: 1px solid rgba(168, 199, 250, 0.35);
+      border-radius: 999px;
+      padding: 5px 14px;
+      font-size: 11.5px;
       font-weight: 600;
       font-family: var(--font-mono);
-      margin-bottom: 16px;
+      letter-spacing: 0.06em;
+      margin-bottom: 20px;
     }
 
     .hero h1 {
-      font-size: 34px;
-      line-height: 1.2;
-      margin-bottom: 14px;
+      font-size: 38px;
+      line-height: 1.18;
+      margin-bottom: 16px;
       color: var(--text-primary);
-      letter-spacing: -0.5px;
+      letter-spacing: -0.03em;
+      font-weight: 800;
     }
 
     .hero h1 span {
-      color: var(--baby-blue);
+      color: var(--gemini-light-blue);
     }
 
     .hero p {
       color: var(--text-secondary);
-      max-width: 780px;
-      font-size: 16px;
-      margin-bottom: 26px;
+      max-width: 760px;
+      font-size: 17px;
+      margin-bottom: 30px;
     }
 
     .cta-row {
@@ -163,92 +179,96 @@
     }
 
     .btn-primary {
-      background: var(--baby-blue-gradient);
-      color: #08131f;
+      background-color: var(--gemini-light-blue);
+      color: #050505;
       font-weight: 700;
-      padding: 11px 22px;
-      border-radius: 8px;
-      font-size: 14px;
-      border: 1px solid var(--baby-blue-light);
-      box-shadow: 0 4px 16px rgba(137, 207, 240, 0.25);
-      transition: transform 0.15s ease, box-shadow 0.15s ease;
+      padding: 12px 24px;
+      border-radius: 999px;
+      font-size: 14.5px;
+      border: 1px solid var(--gemini-light-blue);
+      transition: transform 0.25s var(--ease-fluid), background-color 0.25s var(--ease-fluid);
     }
 
     .btn-primary:hover {
-      text-decoration: none;
-      transform: translateY(-1px);
-      box-shadow: 0 6px 20px rgba(137, 207, 240, 0.38);
+      color: #050505;
+      background-color: #c6dafc;
+      transform: translateY(-2px);
     }
 
     .btn-outline {
       background-color: var(--bg-tertiary);
-      color: var(--baby-blue-light);
+      color: var(--gemini-light-blue);
       font-weight: 600;
-      padding: 11px 20px;
-      border-radius: 8px;
-      font-size: 14px;
-      border: 1px solid rgba(137, 207, 240, 0.38);
+      padding: 12px 22px;
+      border-radius: 999px;
+      font-size: 14.5px;
+      border: 1px solid rgba(168, 199, 250, 0.35);
+      transition: background-color 0.25s var(--ease-fluid);
     }
 
     .btn-outline:hover {
-      text-decoration: none;
-      background-color: rgba(137, 207, 240, 0.15);
+      background-color: rgba(168, 199, 250, 0.14);
     }
 
-    /* Section Headings */
     .section-title {
-      font-size: 22px;
+      font-size: 24px;
       font-weight: 700;
-      color: var(--baby-blue-light);
-      margin: 40px 0 18px;
-      padding-bottom: 8px;
+      color: var(--text-primary);
+      letter-spacing: -0.02em;
+      margin: 48px 0 20px;
+      padding-bottom: 10px;
       border-bottom: 1px solid var(--border-subtle);
     }
 
-    /* Feature Grid */
     .grid-2 {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(310px, 1fr));
-      gap: 18px;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 20px;
     }
 
     .card {
       background-color: var(--bg-secondary);
       border: 1px solid var(--border-subtle);
-      border-radius: 10px;
-      padding: 20px 22px;
+      border-radius: 16px;
+      padding: 24px;
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+      transition: border-color 0.25s var(--ease-fluid);
+    }
+
+    .card:hover {
+      border-color: var(--border-hover);
     }
 
     .card h3 {
-      font-size: 16px;
-      color: var(--baby-blue);
-      margin-bottom: 8px;
+      font-size: 17px;
+      color: var(--gemini-light-blue);
+      margin-bottom: 10px;
+      font-weight: 700;
     }
 
     .card p {
-      font-size: 14px;
+      font-size: 14.5px;
       color: var(--text-secondary);
     }
 
-    /* Code Blocks */
     pre {
-      background-color: #080c12;
+      background-color: #08090c;
       border: 1px solid var(--border-subtle);
-      border-radius: 8px;
-      padding: 14px 16px;
+      border-radius: 12px;
+      padding: 16px 18px;
       overflow-x: auto;
       font-family: var(--font-mono);
-      font-size: 13px;
-      color: var(--baby-blue-light);
-      margin: 12px 0;
+      font-size: 13.5px;
+      color: var(--gemini-light-blue);
+      margin: 14px 0;
     }
 
     code {
       font-family: var(--font-mono);
-      background-color: rgba(137, 207, 240, 0.12);
-      color: var(--baby-blue-light);
+      background-color: rgba(168, 199, 250, 0.12);
+      color: var(--gemini-light-blue);
       padding: 2px 6px;
-      border-radius: 4px;
+      border-radius: 5px;
       font-size: 13px;
     }
 
@@ -257,24 +277,23 @@
       padding: 0;
     }
 
-    /* AI Transparency Notice */
     .notice-box {
-      border-left: 4px solid var(--baby-blue);
-      background: linear-gradient(90deg, rgba(137, 207, 240, 0.12) 0%, rgba(17, 24, 35, 0.8) 100%);
-      border-radius: 8px;
-      padding: 18px 22px;
+      border-left: 4px solid var(--gemini-light-blue);
+      background-color: rgba(168, 199, 250, 0.06);
+      border-radius: 12px;
+      padding: 20px 24px;
       margin: 24px 0;
     }
 
     .notice-box h3 {
-      color: var(--baby-blue-light);
-      font-size: 16px;
+      color: var(--gemini-light-blue);
+      font-size: 16.5px;
       margin-bottom: 6px;
     }
 
     .notice-box p {
       color: var(--text-secondary);
-      font-size: 14px;
+      font-size: 14.5px;
     }
 
     .steps-list {
@@ -282,22 +301,32 @@
       color: var(--text-secondary);
       display: flex;
       flex-direction: column;
-      gap: 8px;
+      gap: 10px;
+      font-size: 14.5px;
     }
 
     footer {
       border-top: 1px solid var(--border-subtle);
       background-color: var(--bg-secondary);
-      padding: 24px;
+      padding: 28px;
       text-align: center;
-      font-size: 13px;
+      font-size: 13.5px;
       color: var(--text-muted);
+    }
+
+    @media (max-width: 768px) {
+      .hero {
+        padding: 32px 24px;
+      }
+      .hero h1 {
+        font-size: 28px;
+      }
     }
   </style>
 </head>
 <body>
-  <nav class="navbar">
-    <div class="navbar-inner">
+  <div class="navbar-wrap">
+    <nav class="navbar">
       <div class="brand">
         <div class="brand-icon" aria-label="Video Player Symbol">
           <svg viewBox="0 0 24 24" width="22" height="22" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -315,29 +344,31 @@
       <div class="nav-links">
         <a href="#architecture">Architecture</a>
         <a href="#installation">Installation</a>
-        <a href="#telemetry">Telemetry API</a>
+        <a href="#telemetry">Developer Telemetry</a>
         <a href="#credits">Credits &amp; License</a>
         <a href="https://github.com/Alves404/My-Quality-4k/releases/latest">Releases</a>
       </div>
-    </div>
-  </nav>
+    </nav>
+  </div>
 
   <main class="container">
-    <section class="hero">
-      <span class="version-pill">RELEASE v2.1.0 | MANIFEST V3 | GNU GPLv3</span>
-      <h1>Unlock Multi-Minute <span>4K YouTube Pre-Buffering</span> on Any PC</h1>
-      <p>
-        My Quality 4k removes YouTube's hardcoded 35 MB (16-second) 4K SABR buffer cap to pre-load 1, 2, or 3 upcoming minutes of 2160p video while enforcing hardware-accelerated VP9 SDR decoding for entry-level and mid-range GPUs.
-      </p>
-      <div class="cta-row">
-        <a class="btn-primary" href="https://github.com/Alves404/My-Quality-4k/releases/download/v2.1.0/My-Quality-4k-v2.1.0.zip">
-          Download My-Quality-4k-v2.1.0.zip
-        </a>
-        <a class="btn-outline" href="https://github.com/Alves404/My-Quality-4k">
-          View Source on GitHub
-        </a>
-      </div>
-    </section>
+    <div class="hero-shell">
+      <section class="hero">
+        <span class="version-pill">RELEASE v2.1.0 | MANIFEST V3 | GNU GPLv3</span>
+        <h1>Unlock Multi-Minute <span>4K YouTube Pre-Buffering</span> on Any PC</h1>
+        <p>
+          My Quality 4k removes YouTube's hardcoded 35 MB (16-second) 4K SABR buffer cap to pre-load 1, 2, or 3 upcoming minutes of 2160p video while enforcing hardware-accelerated VP9 SDR decoding and zero-reload live configuration updates.
+        </p>
+        <div class="cta-row">
+          <a class="btn-primary" href="https://github.com/Alves404/My-Quality-4k/releases/download/v2.1.0/My-Quality-4k-v2.1.0.zip">
+            Download My-Quality-4k-v2.1.0.zip
+          </a>
+          <a class="btn-outline" href="https://github.com/Alves404/My-Quality-4k">
+            View Source on GitHub
+          </a>
+        </div>
+      </section>
+    </div>
 
     <h2 id="architecture" class="section-title">1. Core Engineering Architecture (v2.1.0)</h2>
     <div class="grid-2">
@@ -354,9 +385,9 @@
         </p>
       </div>
       <div class="card">
-        <h3>30fps Limiter &amp; Smart Drop Guard</h3>
+        <h3>Zero-Reload Live Apply &amp; Switch Indicator</h3>
         <p>
-          Includes an optional 30fps stream filter (blocking <code>framerate &gt; 30</code>) to cut GPU decode load in half on 4 GB VRAM cards, paired with an automatic Smart Drop Guard if frame loss exceeds 18%.
+          Features a switch-style Green/Red status indicator beside the <strong>Aplicar Agora</strong> button (Green = Applied, Red = Unapplied Changes) that hot-applies resolution, SABR horizon, and codec changes live without reloading the YouTube page.
         </p>
       </div>
       <div class="card">
@@ -374,7 +405,7 @@
         <li>Open Google Chrome, Brave, or Edge and navigate to <code>chrome://extensions/</code>.</li>
         <li>Enable <strong>Developer mode</strong> in the top-right corner.</li>
         <li>Click <strong>Load unpacked</strong> in the top-left corner and select the extracted folder containing <code>manifest.json</code>.</li>
-        <li>Open any 4K YouTube video and click the Baby Blue <strong>Video Player</strong> extension icon to select your target resolution (<code>2160p 4K</code>) and pre-buffer horizon (<code>60s</code>, <code>120s</code>, or <code>180s</code>).</li>
+        <li>Open any 4K YouTube video, click the <strong>Video Player</strong> extension icon, choose your settings, and click <strong>Aplicar Agora</strong> (no page reload required).</li>
       </ol>
     </div>
 

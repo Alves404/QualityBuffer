@@ -95,23 +95,12 @@ function updateToolbarBadge() {
 
   if (!activeConfig.enabled) {
     chrome.action.setBadgeText({ text: 'OFF' });
-    chrome.action.setBadgeBackgroundColor({ color: '#555b66' });
+    chrome.action.setBadgeBackgroundColor({ color: '#27272a' });
     return;
   }
 
-  const labelMap = {
-    hd2160: '4K',
-    hd1440: '2K',
-    hd1080: 'FHD',
-    auto: 'ON'
-  };
-
-  const badgeText = labelMap[activeConfig.targetQuality] || '4K';
-  chrome.action.setBadgeText({ text: badgeText });
-  chrome.action.setBadgeBackgroundColor({ color: '#89cff0' });
-  if (typeof chrome.action.setBadgeTextColor === 'function') {
-    chrome.action.setBadgeTextColor({ color: '#08131f' });
-  }
+  // Keep toolbar icon clean without "4K" overlay so the Video Player logo is fully visible
+  chrome.action.setBadgeText({ text: '' });
 }
 
 /**
