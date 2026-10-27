@@ -42,7 +42,9 @@ Neutralizes YouTube's GPU-heavy Ambient Mode (`#cinematic-container`), promotes 
 
 ---
 
-## 3. Network Monitoring & Telemetry Services (Node.js & Ruby)
+## 3. Network Monitoring & Telemetry Services (Node.js & Ruby — Optional for Developers)
+
+> **Note:** The local Node.js and Ruby telemetry services are **strictly optional developer tools** for offline CDN route analysis and have **zero impact on the end-user experience**. The browser extension performs all 4K SABR pre-buffering, MSE stabilization, and hardware codec enforcement 100% standalone.
 
 1. **Passive Browser Capture (`src/background/service-worker.js`):**
    Uses `chrome.webRequest` filtered to `*://*.googlevideo.com/videoplayback*` (including `responseHeaders` `Content-Length` inspection for SABR chunks) to compute real-time throughput in **Mbps**, latency in **ms**, and `itag` format distribution.

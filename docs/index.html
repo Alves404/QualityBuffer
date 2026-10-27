@@ -378,18 +378,18 @@
       </ol>
     </div>
 
-    <h2 id="telemetry" class="section-title">3. Local Telemetry Services (Node.js &amp; Ruby)</h2>
+    <h2 id="telemetry" class="section-title">3. Local Telemetry Services (Node.js &amp; Ruby) — Optional for Developers</h2>
     <div class="card">
-      <p>
-        The extension runs 100% standalone in the browser. For advanced CDN route diagnostics and statistical P50/P95 throughput reports, run the included local backend services:
+      <p style="margin-bottom: 10px;">
+        <strong>Developer-Only Optional Feature (Zero End-User Impact):</strong> The browser extension operates <strong>100% standalone</strong>. All 4K pre-buffering (60s/120s/180s), 512 MB SABR unlocking, hardware codec filtering, and MSE stabilization work natively in Chrome without running any backend service. The Node.js and Ruby scripts below are <strong>strictly optional for developers</strong> who want to persist raw network logs to disk or compute statistical P50/P95 CDN routing reports; not running them has <strong>zero impact on the end-user experience</strong>.
       </p>
-      <pre><code># Verify syntax across all extension and backend scripts
+      <pre><code># 6.1. Verify Script Syntax Integrity
 npm run verify
 
-# Start the local Node.js HTTP telemetry server on http://localhost:3456
+# 6.2. Start the Node.js Telemetry Ingestion Server (http://localhost:3456)
 npm run telemetry:server
 
-# Run the Ruby statistical route &amp; cache analyzer
+# 6.3. Run the Ruby Statistical Route &amp; Cache Analyzer
 npm run telemetry:analyze</code></pre>
     </div>
 

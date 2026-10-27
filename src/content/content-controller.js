@@ -153,7 +153,14 @@
         }
 
         if (message.type === 'MQ4K_FORCE_QUALITY') {
-          window.dispatchEvent(new CustomEvent('MQ4K_FORCE_QUALITY_NOW'));
+          if (message.config && typeof message.config === 'object') {
+            syncConfigToMainWorld(message.config);
+          }
+          window.dispatchEvent(
+            new CustomEvent('MQ4K_FORCE_QUALITY_NOW', {
+              detail: message.config || null
+            })
+          );
           sendResponse({ ok: true });
           return true;
         }

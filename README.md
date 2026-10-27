@@ -59,8 +59,8 @@ Many computers equipped with 4-core processors (e.g., Intel Core i3) and entry-l
 * **MSE Buffer Stabilizer & Micro-Gap Recovery:** Monitors `SourceBuffer.prototype.appendBuffer` byte volume and automatically steps over sub-second timestamp gaps.
 * **Smart 4K Quality Lock (`hd2160`) & Drop Guard:** Locks playback quality on YouTube's `#movie_player` API and includes an optional **Smart Drop Guard** that steps down from 4K to 2K (`1440p`) only if frame drops exceed 18%.
 * **Real-Time Network Logs (`googlevideo.com`):** Passive `chrome.webRequest` inspection that calculates live CDN throughput (Mbps), chunk latency (ms), payload size (KB/MB), and `itag` stream profiles (including multiplexed SABR chunks via `Content-Length` headers).
-* **Baby Blue Dark UI & Video Player Identity:** Clean dark technical control panel accented in Baby Blue (`#89CFF0` / `#B6E3FF`) with live buffer progress bar, hardware toggles, and one-click JSON telemetry export.
-* **Local Telemetry & Route Analysis Backend:** Zero-dependency Node.js HTTP ingestion server and Ruby statistical analyzer for CDN route diagnostics.
+* **Baby Blue Dark UI, Video Player Identity & Collapsible Features Menu:** Clean dark technical control panel accented in Baby Blue (`#89CFF0` / `#B6E3FF`) featuring a **Zero-Reload "Apply Now" Engine** with a **Green/Red Switch-Style Status Indicator** (Green = Applied, Red = Unapplied Changes), a collapsible dropdown menu for the 10 buffer/codec modules, and one-click JSON telemetry export.
+* **Optional Developer Local Telemetry & Route Analysis Backend:** Zero-dependency Node.js HTTP ingestion server and Ruby statistical analyzer for developer CDN route diagnostics (strictly optional; zero impact on normal end-user playback).
 
 ---
 
@@ -137,9 +137,14 @@ Then load the cloned `My-Quality-4k` root folder via `chrome://extensions/` -> *
 
 ---
 
-## 6. Running the Local Telemetry Services (Node.js & Ruby)
+## 6. Running the Local Telemetry Services (Node.js & Ruby) — Optional for Developers
 
-The browser extension operates **100% standalone**. If you wish to persist network logs locally and generate statistical CDN route reports:
+> [!NOTE]
+> **Optional Developer Tooling (Zero End-User Impact):** The browser extension operates **100% standalone and autonomously** inside the browser. All core features—including 60s/120s/180s 4K pre-buffering, 512 MB SABR policy unlocking, hardware codec filtering (`VP9 SDR` / `AV1` blocker / `30fps` limiter), and MSE micro-gap stabilization—run natively in the extension without any external server.
+>
+> The Node.js and Ruby services below are **strictly optional diagnostic tools intended for developers** who wish to persist raw `googlevideo.com` network logs to disk and generate statistical CDN routing reports. **End users do not need to run or install these commands, and leaving them off has zero impact on video playback performance.**
+
+If you are a developer and wish to persist network logs locally and generate statistical CDN route reports:
 
 ### 6.1. Verify Script Syntax Integrity
 ```bash
@@ -150,7 +155,7 @@ npm run verify
 ```bash
 npm run telemetry:server
 ```
-*(Then enable the local telemetry sync toggle inside the extension popup).*
+*(Then enable the local telemetry sync toggle inside the extension popup and click "Aplicar Agora").*
 
 ### 6.3. Run the Ruby Statistical Route & Cache Analyzer
 ```bash

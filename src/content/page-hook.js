@@ -1260,14 +1260,46 @@
     }
   });
 
-  // Listen for manual quality enforcement requests from Popup
-  window.addEventListener('MQ4K_FORCE_QUALITY_NOW', function () {
+  // Listen for manual quality & live configuration enforcement requests from Popup (zero page reload)
+  window.addEventListener('MQ4K_FORCE_QUALITY_NOW', function (event) {
     const player = document.getElementById('movie_player');
+    const video = document.querySelector('video.html5-main-video') || document.querySelector('video');
+
+    let codecOrFpsChanged = false;
+    let qualityChanged = false;
+
+    if (event && event.detail && typeof event.detail === 'object') {
+      const nextCfg = Object.assign({}, DEFAULT_CONFIG, event.detail);
+      codecOrFpsChanged =
+        nextCfg.blockAV1 !== state.config.blockAV1 ||
+        nextCfg.blockHDR60 !== state.config.blockHDR60 ||
+        nextCfg.block60fps !== state.config.block60fps;
+      qualityChanged = nextCfg.targetQuality !== state.config.targetQuality;
+      state.config = nextCfg;
+    }
+
     state.dropGuardTriggered = false;
     state.bufferGoalReached = false;
+    state.mseQuotaWarning = false;
     state.qualityAppliedForVideo = null;
+
+    optimizePlayerDOM();
     seedYouTubeQualityStorage(state.config.targetQuality);
     enforcePlayerQuality(player, true);
+
+    // Hot-reload stream at current timestamp without reloading the page when codec/FPS or quality changed
+    try {
+      if (player && video && !video.ended && (codecOrFpsChanged || qualityChanged)) {
+        const currentPos = video.currentTime || 0;
+        if (typeof player.seekTo === 'function' && currentPos > 0.1) {
+          player.seekTo(currentPos, true);
+        }
+      }
+    } catch (e) {
+      // Ignore seek errors
+    }
+
+    pumpYouTubePreBufferLoader(video);
     runMonitorCycle();
   });
 
