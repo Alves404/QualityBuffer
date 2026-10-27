@@ -35,7 +35,6 @@
    */
   const I18N_DICT = Object.freeze({
     pt: Object.freeze({
-      appSubtitle: 'SABR 512MB Pre-Buffer & Hardware Codec Engine',
       tabControls: 'Controles',
       tabAbout: 'Sobre & Creditos',
       metricResLabel: 'Resolucao / Stream',
@@ -96,7 +95,6 @@
       codecDefault: 'VP9 SDR (Padrao)'
     }),
     en: Object.freeze({
-      appSubtitle: 'SABR 512MB Pre-Buffer & Hardware Codec Engine',
       tabControls: 'Controls',
       tabAbout: 'About & Credits',
       metricResLabel: 'Resolution / Stream',
@@ -157,7 +155,6 @@
       codecDefault: 'VP9 SDR (Default)'
     }),
     es: Object.freeze({
-      appSubtitle: 'Motor SABR 512MB Pre-Buffer y Codecs Hardware',
       tabControls: 'Controles',
       tabAbout: 'Acerca y Creditos',
       metricResLabel: 'Resolucion / Stream',

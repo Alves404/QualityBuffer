@@ -54,6 +54,7 @@ body {
 
 /* Header */
 .app-header {
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -91,7 +92,11 @@ body {
 }
 
 .brand-info {
-  min-width: 0;
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  text-align: center;
+  pointer-events: none;
 }
 
 .brand-info h1 {
@@ -100,16 +105,7 @@ body {
   letter-spacing: -0.02em;
   color: var(--text-primary);
   line-height: 1.25;
-}
-
-.brand-info .subtitle {
-  font-size: 11px;
-  font-weight: 500;
-  color: var(--gemini-light-blue);
-  opacity: 0.88;
   white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
 }
 
 .header-actions {
