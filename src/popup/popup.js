@@ -217,7 +217,7 @@
       // Scale buffer progress bar against user's configured targetBufferSec
       const pct = Math.min(100, Math.max(4, Math.round((bufSec / targetSec) * 100)));
       elBufferBarFill.style.width = `${pct}%`;
-      elBufferBarFill.style.backgroundColor = bufSec >= 12 ? '#1db954' : '#f59e0b';
+      elBufferBarFill.classList.toggle('buffer-low', bufSec < 12);
 
       elMetricDrops.textContent = `${Number(player.dropRatePercent || 0).toFixed(1)}% perdas`;
       const gaps = player.microGapsRecovered || 0;

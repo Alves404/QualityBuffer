@@ -108,7 +108,7 @@ function updateToolbarBadge() {
 
   const badgeText = labelMap[activeConfig.targetQuality] || '4K';
   chrome.action.setBadgeText({ text: badgeText });
-  chrome.action.setBadgeBackgroundColor({ color: '#e50914' });
+  chrome.action.setBadgeBackgroundColor({ color: '#4285f4' });
 }
 
 /**
@@ -248,37 +248,57 @@ if (chrome.webRequest) {
     }
   }, filter);
 
-  chrome.webRequest.onCompleted.addListener(function (details) {
-    const tracked = inFlightRequests.get(details.requestId);
-    inFlightRequests.delete(details.requestId);
+  chrome.webRequest.onCompleted.addListener(
+    function (details) {
+      const tracked = inFlightRequests.get(details.requestId);
+      inFlightRequests.delete(details.requestId);
 
-    if (!tracked) {
-      return;
-    }
+      if (!tracked) {
+        return;
+      }
 
-    const endTime = details.timeStamp || Date.now();
-    const durationMs = Math.max(1, Math.round(endTime - tracked.startTime));
-    const chunkBytes = tracked.parsed.chunkBytes || 0;
-    const durationSec = durationMs / 1000;
-    const throughputMbps = chunkBytes > 0
-      ? Number(((chunkBytes * 8) / (durationSec * 1000000)).toFixed(2))
-      : 0;
+      const endTime = details.timeStamp || Date.now();
+      const durationMs = Math.max(1, Math.round(endTime - tracked.startTime));
+      let chunkBytes = tracked.parsed.chunkBytes || 0;
 
-    recordNetworkLog({
-      id: details.requestId,
-      timestamp: Date.now(),
-      status: 'OK',
-      statusCode: details.statusCode,
-      cdnHost: tracked.parsed.cdnHost,
-      itag: tracked.parsed.itag,
-      itagDescription: tracked.parsed.itagDescription,
-      chunkBytes,
-      chunkKB: Number((chunkBytes / 1024).toFixed(1)),
-      durationMs,
-      throughputMbps,
-      readaheadBufferMs: tracked.parsed.readaheadBufferMs
-    });
-  }, filter);
+      if (chunkBytes === 0 && Array.isArray(details.responseHeaders)) {
+        for (let i = 0; i < details.responseHeaders.length; i += 1) {
+          const h = details.responseHeaders[i];
+          if (h && h.name && h.name.toLowerCase() === 'content-length' && h.value) {
+            const parsedLen = parseInt(h.value, 10);
+            if (!isNaN(parsedLen) && parsedLen > 0) {
+              chunkBytes = parsedLen;
+              break;
+            }
+          }
+        }
+      }
+
+      const durationSec = durationMs / 1000;
+      const throughputMbps =
+        chunkBytes > 0 ? Number(((chunkBytes * 8) / (durationSec * 1000000)).toFixed(2)) : 0;
+
+      recordNetworkLog({
+        id: details.requestId,
+        timestamp: Date.now(),
+        status: 'OK',
+        statusCode: details.statusCode,
+        cdnHost: tracked.parsed.cdnHost,
+        itag: tracked.parsed.itag === 'unknown' ? 'SABR/4K' : tracked.parsed.itag,
+        itagDescription:
+          tracked.parsed.itag === 'unknown'
+            ? 'SABR Multiplexed 4K Stream'
+            : tracked.parsed.itagDescription,
+        chunkBytes,
+        chunkKB: Number((chunkBytes / 1024).toFixed(1)),
+        durationMs,
+        throughputMbps,
+        readaheadBufferMs: tracked.parsed.readaheadBufferMs
+      });
+    },
+    filter,
+    ['responseHeaders']
+  );
 
   chrome.webRequest.onErrorOccurred.addListener(function (details) {
     const tracked = inFlightRequests.get(details.requestId);

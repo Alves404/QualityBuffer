@@ -1,23 +1,27 @@
 /**
- * My Quality 4k v2.0 - Deep Pre-Buffer & Zero-Track-Laying Engine (MAIN World)
+ * My Quality 4k v2.1 - Deep Pre-Buffer & SABR Horizon Unlocker Engine (MAIN World)
  *
  * Executes in the main page context at document_start before YouTube initializes
- * its HTML5 player (#movie_player) and MediaSource Extensions (MSE).
+ * its HTML5 player (#movie_player), MediaSource Extensions (MSE), and SABR
+ * (Server-Driven Adaptive Bitrate) streaming coordinator.
  *
- * Core Engineering Pillars (v2.0):
+ * Core Engineering Pillars:
  * 1. Hardware Codec & MediaCapabilities Acceleration (MediaSource + MediaCapabilities API):
- *    Blocks software-heavy AV1 (av01) and 10-bit HDR (vp09.02) across both MediaSource
- *    and navigator.mediaCapabilities.decodingInfo, while certifying VP9 Profile 0 (4K SDR)
- *    as { supported: true, smooth: true, powerEfficient: true } so YouTube unlocks
- *    maximum 4K buffer depth and large chunk sizes on low-to-mid-range GPUs.
- * 2. Deep Pre-Buffer Horizon (Safe HTMLMediaElement.buffered Horizon Control):
- *    Keeps SourceBuffer.prototype.buffered 100% native for MSE segment verification,
- *    while reporting a controlled lookahead horizon on HTMLMediaElement.prototype.buffered
- *    until the user's target buffer (60s / 120s / 180s) is reached.
+ *    Blocks software-heavy AV1 (av01), 10-bit HDR (vp09.02), and optional >30fps streams
+ *    across both MediaSource and navigator.mediaCapabilities.decodingInfo, while certifying
+ *    VP9 Profile 0 (4K SDR) as { supported: true, smooth: true, powerEfficient: true }.
+ * 2. Deep Pre-Buffer SABR & Policy Unlocker (60s / 120s / 180s Multi-Minute Buffering):
+ *    - Intercepts YouTube's internal player policy (g.vWa) via Object.prototype.videoTrack
+ *      to unlock the hardcoded 35 MB 4K video byte cap (ya: 36700160 -> 512 MB / 536870912)
+ *      and 5 MB audio byte cap (Ta: 5242880 -> 64 MB / 67108864), as well as min/max
+ *      readahead seconds (sb / ha -> targetBufferSec).
+ *    - Hooks SABR NextRequestPolicy (Mq / targetVideoReadaheadMs / targetAudioReadaheadMs)
+ *      and outgoing SABR request builder (RO / bc / mp / UF / TF) so googlevideo.com
+ *      continues streaming 4K segments past the default 15-16 second ceiling up to the
+ *      user-selected horizon (60s, 120s, or 180s).
  * 3. Zero-Track-Laying Bootstrap & CDN Preconnect:
- *    Spoofs navigator.connection (100 Mbps / 5ms RTT) so YouTube requests large multi-MB
- *    segments instead of tiny 256KB chunks, pre-seeds localStorage/sessionStorage
- *    yt-player-quality to 2160p before second zero, and pre-warms googlevideo.com CDN nodes.
+ *    Spoofs navigator.connection (100 Mbps / 5ms RTT), pre-seeds yt-player-quality to
+ *    2160p before second zero, and pre-warms googlevideo.com CDN nodes.
  * 4. Main-Thread Telemetry Blocker & Compositor Optimization:
  *    Short-circuits heavy YouTube tracking beacons (/log_event, /api/stats/qoe, /ptracking)
  *    with valid JSON responses while preserving /api/stats/watchtime.
@@ -76,7 +80,9 @@
     tiny: 144
   };
 
-  const VIRTUAL_BUFFER_HORIZON_SEC = 10.0;
+  const VIDEO_BUFFER_BYTE_CAP = 536870912; // 512 MB (replaces YouTube's 35 MB cap that stops 4K at 16s)
+  const AUDIO_BUFFER_BYTE_CAP = 67108864;  // 64 MB (replaces YouTube's 5-8 MB audio cap)
+  const CHUNK_REQUEST_BYTE_CAP = 16777216; // 16 MB per request
 
   const state = {
     config: Object.assign({}, DEFAULT_CONFIG),
@@ -106,6 +112,10 @@
     mseQuotaWarningUntil: 0,
     realBufferAheadSec: 0,
     virtualBufferActive: false,
+    activeYtLoader: null,
+    activeSabrCoordinator: null,
+    patchedPolicies: new WeakSet(),
+    patchedProtos: new WeakSet(),
     preconnectedOrigins: new Set(),
     boundPlayers: new WeakSet(),
     headstartState: {
@@ -117,31 +127,14 @@
     }
   };
 
-  // Capture native HTMLMediaElement.prototype.buffered descriptor before installing hooks
-  const nativeVideoBufferedDesc =
-    typeof window.HTMLMediaElement !== 'undefined' && window.HTMLMediaElement.prototype
-      ? Object.getOwnPropertyDescriptor(window.HTMLMediaElement.prototype, 'buffered')
-      : null;
-
   const originalFetch = typeof window.fetch === 'function' ? window.fetch.bind(window) : null;
 
   /**
-   * Returns the real, unclamped TimeRanges of an HTMLMediaElement
-   * @param {HTMLMediaElement} video
-   * @returns {TimeRanges | null}
+   * Returns the configured target pre-buffer horizon in seconds (60, 120, or 180)
+   * @returns {number}
    */
-  function getRealVideoBuffered(video) {
-    if (!video) {
-      return null;
-    }
-    try {
-      if (nativeVideoBufferedDesc && typeof nativeVideoBufferedDesc.get === 'function') {
-        return nativeVideoBufferedDesc.get.call(video);
-      }
-      return video.buffered;
-    } catch (e) {
-      return null;
-    }
+  function getTargetBufferSeconds() {
+    return Math.max(30, Number(state.config.targetBufferSec) || 120);
   }
 
   /**
@@ -181,7 +174,7 @@
 
   /**
    * PILAR 3.2: Pre-seed YouTube's internal quality storage keys before player bootstrap
-   * so the very first DASH manifest request targets 2160p (4K) instead of 480p/720p.
+   * so the very first manifest/SABR request targets 2160p (4K) instead of 480p/720p.
    * @param {string} targetQuality
    */
   function seedYouTubeQualityStorage(targetQuality) {
@@ -251,8 +244,7 @@
 
   /**
    * PILAR 1: Installs hardware codec filtering hooks on MediaSource, HTMLMediaElement,
-   * AND navigator.mediaCapabilities.decodingInfo (used by modern YouTube to benchmark
-   * GPU smoothness and decide buffer allocation at 4K).
+   * AND navigator.mediaCapabilities.decodingInfo.
    */
   function installCodecHooks() {
     if (typeof window.MediaSource !== 'undefined' && typeof window.MediaSource.isTypeSupported === 'function') {
@@ -277,8 +269,6 @@
       };
     }
 
-    // Hook MediaCapabilities.prototype.decodingInfo so YouTube sees 4K VP9 Profile 0
-    // as 100% smooth & power-efficient hardware decoding, unlocking aggressive pre-buffering
     if (
       typeof window.MediaCapabilities !== 'undefined' &&
       window.MediaCapabilities.prototype &&
@@ -302,7 +292,6 @@
               });
             }
 
-            // Certify VP9 Profile 0 SDR and H.264 as ultra-smooth & power-efficient
             const lower = contentType.toLowerCase();
             if (lower.includes('vp09.00') || lower.includes('vp9') || lower.includes('avc1')) {
               return originalDecodingInfo.call(this, configuration).then(function (info) {
@@ -326,136 +315,386 @@
   }
 
   /**
-   * PILAR 2: Creates a safe virtual TimeRanges view for HTMLMediaElement.prototype.buffered
-   * that preserves all ranges while clamping the active range's end to (currentTime + maxAheadSec)
-   * when real buffer is below targetBufferSec.
-   * Note: SourceBuffer.prototype.buffered is intentionally left 100% native so MSE
-   * appendBuffer verification never throws errors.
-   * @param {TimeRanges} realRanges
-   * @param {number} currentTime
-   * @param {number} maxAheadSec
-   * @returns {TimeRanges}
+   * Locks a property on YouTube's internal policy object (g.vWa) to a dynamic getter
+   * so internal functions like fPa (which caps 4K at 35MB / 16.3s) or tQa cannot lower it.
+   * @param {object} obj
+   * @param {string} key
+   * @param {() => number} activeValueGetter
    */
-  function createClampedVideoTimeRanges(realRanges, currentTime, maxAheadSec) {
-    if (!realRanges || realRanges.length === 0) {
-      return realRanges;
+  function lockPolicyProperty(obj, key, activeValueGetter) {
+    let rawValue = obj[key];
+    try {
+      Object.defineProperty(obj, key, {
+        get: function () {
+          if (state.config.enabled && state.config.deepPreBuffer && !state.mseQuotaWarning) {
+            return activeValueGetter();
+          }
+          return rawValue;
+        },
+        set: function (val) {
+          rawValue = val;
+        },
+        enumerable: true,
+        configurable: true
+      });
+    } catch (e) {
+      // Ignore non-configurable properties
+    }
+  }
+
+  /**
+   * Patches YouTube's internal player policy instance (g.vWa) to remove the 35 MB (16.0s)
+   * 4K buffer ceiling and unlock full multi-minute readahead (60s / 120s / 180s).
+   * @param {object} policy
+   */
+  function patchYouTubePolicyObject(policy) {
+    if (!policy || typeof policy !== 'object' || state.patchedPolicies.has(policy)) {
+      return;
+    }
+    state.patchedPolicies.add(policy);
+
+    try {
+      const keys = Object.keys(policy);
+
+      for (let i = 0; i < keys.length; i += 1) {
+        const k = keys[i];
+        const val = policy[k];
+        const nextKey = i + 1 < keys.length ? keys[i + 1] : null;
+        const nextVal = nextKey ? policy[nextKey] : undefined;
+        const nextNextKey = i + 2 < keys.length ? keys[i + 2] : null;
+        const nextNextVal = nextNextKey ? policy[nextNextKey] : undefined;
+
+        // Match [ya (20971520 / 36700160 / 104857600), Ta (8388608 / 5242880 / 13107200), ha (120)]
+        if (
+          (val === 20971520 || val === 36700160 || val === 104857600) &&
+          (nextVal === 8388608 || nextVal === 5242880 || nextVal === 13107200)
+        ) {
+          lockPolicyProperty(policy, k, function () {
+            return VIDEO_BUFFER_BYTE_CAP;
+          });
+          if (nextKey) {
+            lockPolicyProperty(policy, nextKey, function () {
+              return AUDIO_BUFFER_BYTE_CAP;
+            });
+          }
+          if (nextNextKey && typeof nextNextVal === 'number' && nextNextVal >= 30 && nextNextVal <= 300) {
+            lockPolicyProperty(policy, nextNextKey, function () {
+              return Math.max(180, getTargetBufferSeconds());
+            });
+          }
+          continue;
+        }
+
+        // Match [lD (1000), sb (15), al (1)] -> min readahead sec & growth rate
+        if (val === 1000 && typeof nextVal === 'number' && nextVal >= 5 && nextVal <= 30 && nextNextVal === 1) {
+          if (nextKey) {
+            lockPolicyProperty(policy, nextKey, function () {
+              return getTargetBufferSeconds();
+            });
+          }
+          if (nextNextKey) {
+            lockPolicyProperty(policy, nextNextKey, function () {
+              return 60;
+            });
+          }
+          continue;
+        }
+
+        // Match za (2097152 or 4194304) -> max chunk request size in bytes
+        if ((val === 2097152 || val === 4194304) && k !== 'jc') {
+          lockPolicyProperty(policy, k, function () {
+            return CHUNK_REQUEST_BYTE_CAP;
+          });
+        }
+      }
+
+      // Also lock explicit property names if present in current build
+      if (typeof policy.ya === 'number') {
+        lockPolicyProperty(policy, 'ya', function () {
+          return VIDEO_BUFFER_BYTE_CAP;
+        });
+      }
+      if (typeof policy.Ta === 'number') {
+        lockPolicyProperty(policy, 'Ta', function () {
+          return AUDIO_BUFFER_BYTE_CAP;
+        });
+      }
+      if (typeof policy.ha === 'number') {
+        lockPolicyProperty(policy, 'ha', function () {
+          return Math.max(180, getTargetBufferSeconds());
+        });
+      }
+      if (typeof policy.sb === 'number') {
+        lockPolicyProperty(policy, 'sb', function () {
+          return getTargetBufferSeconds();
+        });
+      }
+      if (typeof policy.f$ === 'number') {
+        lockPolicyProperty(policy, 'f$', function () {
+          return getTargetBufferSeconds() * 1000;
+        });
+      }
+    } catch (e) {
+      // Never break player initialization
+    }
+  }
+
+  /**
+   * Wraps prototype methods on YouTube's SABR coordinator (qkb) to:
+   * 1. Boost Owa NextRequestPolicy (targetVideoReadaheadMs / targetAudioReadaheadMs -> targetBufferSec * 1000)
+   * 2. Unlock SABR request byte budgets (UF = 512MB, TF = 64MB) and advance reported media
+   *    horizon (mp) inside active buffered ranges (bc) so googlevideo.com streams continuously
+   *    up to the user's selected minutes (60s / 120s / 180s).
+   * @param {object} instance
+   */
+  function patchCoordinatorPrototype(instance) {
+    if (!instance || typeof instance !== 'object') {
+      return;
     }
 
-    const clampedPairs = [];
-    const horizon = currentTime + maxAheadSec;
-    let didClamp = false;
+    // Disable client-side SABR request rate-limit counter (GRa: a.U > 0 -> toomanyrequests)
+    try {
+      if (typeof instance.U === 'number' && instance.U > 0 && instance.fa && typeof instance.fa.vp === 'number') {
+        instance.U = 0;
+        state.activeSabrCoordinator = instance;
+      }
+    } catch (e) {
+      // Ignore
+    }
 
-    for (let i = 0; i < realRanges.length; i += 1) {
-      const start = realRanges.start(i);
-      const end = realRanges.end(i);
+    const proto = Object.getPrototypeOf(instance);
+    if (!proto || proto === Object.prototype || state.patchedProtos.has(proto)) {
+      return;
+    }
+    state.patchedProtos.add(proto);
 
-      if (currentTime >= start - 0.5 && currentTime <= end && end > horizon) {
-        clampedPairs.push([start, Math.max(start, horizon)]);
-        didClamp = true;
-      } else {
-        clampedPairs.push([start, end]);
+    const propNames = Object.getOwnPropertyNames(proto);
+    for (let i = 0; i < propNames.length; i += 1) {
+      const name = propNames[i];
+      if (name === 'constructor') {
+        continue;
+      }
+
+      let desc;
+      try {
+        desc = Object.getOwnPropertyDescriptor(proto, name);
+      } catch (e) {
+        continue;
+      }
+
+      if (!desc || typeof desc.value !== 'function') {
+        continue;
+      }
+
+      const originalMethod = desc.value;
+
+      try {
+        proto[name] = function () {
+          const isPreBufferActive =
+            state.config.enabled && state.config.deepPreBuffer && !state.mseQuotaWarning;
+
+          if (isPreBufferActive) {
+            // Ensure SABR rate-limit ceiling (this.U) stays unlocked on coordinator instances
+            if (typeof this.U === 'number' && this.U > 0 && this.fa && typeof this.fa.vp === 'number') {
+              this.U = 0;
+              state.activeSabrCoordinator = this;
+            }
+
+            // Intercept Mq(a, b) where a is Owa { targetAudioReadaheadMs, targetVideoReadaheadMs, backoffTimeMs }
+            if (arguments.length > 0 && arguments[0] && typeof arguments[0] === 'object') {
+              const arg0 = arguments[0];
+              if ('targetVideoReadaheadMs' in arg0 || 'targetAudioReadaheadMs' in arg0) {
+                const targetSec = getTargetBufferSeconds();
+                const targetMs = targetSec * 1000;
+                arg0.targetVideoReadaheadMs = Math.max(Number(arg0.targetVideoReadaheadMs) || 0, targetMs);
+                arg0.targetAudioReadaheadMs = Math.max(Number(arg0.targetAudioReadaheadMs) || 0, targetMs);
+                if (typeof arg0.backoffTimeMs === 'number' && state.realBufferAheadSec < targetSec) {
+                  arg0.backoffTimeMs = Math.min(arg0.backoffTimeMs, 180);
+                }
+              }
+            }
+          }
+
+          const result = originalMethod.apply(this, arguments);
+
+          // Intercept RO(a) return payload { bc, Sl, mp, nextRequestPolicy, UF, TF, ... }
+          if (
+            isPreBufferActive &&
+            result &&
+            typeof result === 'object' &&
+            Array.isArray(result.bc) &&
+            typeof result.mp === 'number' &&
+            'nextRequestPolicy' in result
+          ) {
+            try {
+              const targetSec = getTargetBufferSeconds();
+              const targetMs = targetSec * 1000;
+
+              if (result.nextRequestPolicy && typeof result.nextRequestPolicy === 'object') {
+                result.nextRequestPolicy.targetVideoReadaheadMs = Math.max(
+                  Number(result.nextRequestPolicy.targetVideoReadaheadMs) || 0,
+                  targetMs
+                );
+                result.nextRequestPolicy.targetAudioReadaheadMs = Math.max(
+                  Number(result.nextRequestPolicy.targetAudioReadaheadMs) || 0,
+                  targetMs
+                );
+              }
+
+              // Boost max audio/video buffer byte limits sent in SABR ClientAbrState (fields 74 & 75)
+              if (typeof result.UF === 'number') {
+                result.UF = Math.max(result.UF, VIDEO_BUFFER_BYTE_CAP);
+              }
+              if (typeof result.TF === 'number') {
+                result.TF = Math.max(result.TF, AUDIO_BUFFER_BYTE_CAP);
+              }
+
+              // Inspect active buffered ranges in result.bc covering current media position (result.mp)
+              const realMp = result.mp;
+              const activeRangeEnds = [];
+              for (let j = 0; j < result.bc.length; j += 1) {
+                const r = result.bc[j];
+                if (
+                  r &&
+                  typeof r.startTimeMs === 'number' &&
+                  typeof r.durationMs === 'number' &&
+                  r.durationMs > 0
+                ) {
+                  const endMs = r.startTimeMs + r.durationMs;
+                  if (realMp >= r.startTimeMs - 2500 && realMp <= endMs + 500) {
+                    activeRangeEnds.push(endMs);
+                  }
+                }
+              }
+
+              if (activeRangeEnds.length > 0) {
+                const minActiveEndMs = Math.min.apply(null, activeRangeEnds);
+                const bufferedAheadMs = minActiveEndMs - realMp;
+
+                if (bufferedAheadMs > 8000 && bufferedAheadMs < targetMs) {
+                  // Report playhead 6s before the end of the active buffered range so
+                  // googlevideo.com SABR server streams the next segments immediately
+                  result.mp = Math.max(realMp, Math.round(minActiveEndMs - 6000));
+                  state.virtualBufferActive = true;
+                  state.bufferGoalReached = false;
+                } else if (bufferedAheadMs >= targetMs) {
+                  state.virtualBufferActive = false;
+                  state.bufferGoalReached = true;
+                }
+              }
+            } catch (e) {
+              // Preserve original SABR payload on any unexpected structure
+            }
+          }
+
+          return result;
+        };
+      } catch (e) {
+        // Ignore read-only prototype methods
       }
     }
+  }
 
-    if (!didClamp) {
-      return realRanges;
-    }
+  /**
+   * PILAR 2: Installs Deep Pre-Buffer Unlocker across:
+   * - Object.prototype.maxReadAheadMediaTimeMs / minReadAheadMediaTimeMs / readAheadGrowthRateMs
+   * - Object.prototype.videoTrack (captures policy g.vWa, loader AWa, and SABR coordinator qkb)
+   * - JSON.parse (rewrites dynamicReadaheadConfig & streamSelectionConfig in player responses)
+   */
+  function installDeepPreBufferUnlocker() {
+    const readaheadProps = {
+      maxReadAheadMediaTimeMs: function () {
+        return Math.max(180000, getTargetBufferSeconds() * 1000);
+      },
+      minReadAheadMediaTimeMs: function () {
+        return getTargetBufferSeconds() * 1000;
+      },
+      readAheadGrowthRateMs: function () {
+        return 60000;
+      }
+    };
 
-    const proto =
-      typeof window.TimeRanges !== 'undefined' && window.TimeRanges.prototype
-        ? window.TimeRanges.prototype
-        : Object.prototype;
-
-    const virtualRanges = Object.create(proto);
-
-    Object.defineProperty(virtualRanges, 'length', {
-      get: function () {
-        return clampedPairs.length;
+    Object.keys(readaheadProps).forEach(function (propName) {
+      const symbolKey = Symbol('mq4k_' + propName);
+      const getterFn = readaheadProps[propName];
+      try {
+        Object.defineProperty(Object.prototype, propName, {
+          get: function () {
+            if (state.config.enabled && state.config.deepPreBuffer && !state.mseQuotaWarning) {
+              return getterFn();
+            }
+            return this[symbolKey];
+          },
+          set: function (val) {
+            this[symbolKey] = val;
+          },
+          enumerable: false,
+          configurable: true
+        });
+      } catch (e) {
+        // Ignore if Object.prototype is frozen
       }
     });
 
-    virtualRanges.start = function (index) {
-      const idx = index >>> 0;
-      if (idx >= clampedPairs.length) {
-        throw new DOMException('Index or size is negative or greater than the allowed amount', 'IndexSizeError');
-      }
-      return clampedPairs[idx][0];
-    };
-
-    virtualRanges.end = function (index) {
-      const idx = index >>> 0;
-      if (idx >= clampedPairs.length) {
-        throw new DOMException('Index or size is negative or greater than the allowed amount', 'IndexSizeError');
-      }
-      return clampedPairs[idx][1];
-    };
-
-    return virtualRanges;
-  }
-
-  /**
-   * Determines if HTMLMediaElement.prototype.buffered clamping should be active
-   * @param {HTMLVideoElement | null} video
-   * @returns {boolean}
-   */
-  function shouldClampVideoBufferHorizon(video) {
-    if (!state.config.enabled || !state.config.deepPreBuffer || !video) {
-      state.virtualBufferActive = false;
-      return false;
-    }
-
-    if (video.paused || video.ended || video.seeking || video.currentTime < 2.0) {
-      state.virtualBufferActive = false;
-      return false;
-    }
-
-    const now = Date.now();
-    if (state.mseQuotaWarning && now < state.mseQuotaWarningUntil) {
-      state.virtualBufferActive = false;
-      return false;
-    }
-    if (state.mseQuotaWarning && now >= state.mseQuotaWarningUntil) {
-      state.mseQuotaWarning = false;
-    }
-
-    const targetSec = Math.max(30, Number(state.config.targetBufferSec) || 120);
-    const realAhead = state.realBufferAheadSec;
-
-    if (realAhead >= targetSec) {
-      state.bufferGoalReached = true;
-    } else if (realAhead < targetSec * 0.82) {
-      state.bufferGoalReached = false;
-    }
-
-    if (state.bufferGoalReached || realAhead <= VIRTUAL_BUFFER_HORIZON_SEC) {
-      state.virtualBufferActive = false;
-      return false;
-    }
-
-    state.virtualBufferActive = true;
-    return true;
-  }
-
-  /**
-   * Installs Virtual Buffer Horizon on HTMLMediaElement.prototype.buffered
-   */
-  function installVirtualBufferHorizon() {
-    if (nativeVideoBufferedDesc && typeof nativeVideoBufferedDesc.get === 'function') {
-      try {
-        Object.defineProperty(window.HTMLMediaElement.prototype, 'buffered', {
-          get: function () {
-            const realRanges = nativeVideoBufferedDesc.get.call(this);
-            if (shouldClampVideoBufferHorizon(this)) {
-              return createClampedVideoTimeRanges(realRanges, this.currentTime || 0, VIRTUAL_BUFFER_HORIZON_SEC);
+    // Hook Object.prototype.videoTrack to intercept YouTube's internal loader, policy, and SABR coordinator
+    const videoTrackSym = Symbol('mq4k_videoTrack');
+    try {
+      Object.defineProperty(Object.prototype, 'videoTrack', {
+        get: function () {
+          return this[videoTrackSym];
+        },
+        set: function (val) {
+          this[videoTrackSym] = val;
+          try {
+            if (this && typeof this === 'object') {
+              if (this.policy && typeof this.policy === 'object') {
+                patchYouTubePolicyObject(this.policy);
+              }
+              if (this.oe && typeof this.oe === 'object') {
+                patchYouTubePolicyObject(this.oe);
+              }
+              if (typeof this.mf === 'function' && typeof this.qp === 'function' && this.policy) {
+                state.activeYtLoader = this;
+              }
+              patchCoordinatorPrototype(this);
             }
-            return realRanges;
-          },
-          configurable: true
-        });
-      } catch (err) {
-        // Fallback silently
-      }
+          } catch (e) {
+            // Never interrupt property assignment
+          }
+        },
+        enumerable: false,
+        configurable: true
+      });
+    } catch (e) {
+      // Ignore if already defined
     }
+
+    // Hook JSON.parse to rewrite playerConfig.mediaCommonConfig.dynamicReadaheadConfig on arrival
+    const origJsonParse = JSON.parse;
+    JSON.parse = function () {
+      const parsed = origJsonParse.apply(this, arguments);
+      try {
+        if (state.config.enabled && parsed && typeof parsed === 'object') {
+          const pc = parsed.playerConfig || (parsed.playerResponse && parsed.playerResponse.playerConfig);
+          if (pc && typeof pc === 'object') {
+            const targetMs = getTargetBufferSeconds() * 1000;
+            if (pc.mediaCommonConfig && typeof pc.mediaCommonConfig === 'object') {
+              pc.mediaCommonConfig.dynamicReadaheadConfig = {
+                maxReadAheadMediaTimeMs: Math.max(180000, targetMs),
+                minReadAheadMediaTimeMs: targetMs,
+                readAheadGrowthRateMs: 60000
+              };
+            }
+            if (pc.streamSelectionConfig && typeof pc.streamSelectionConfig === 'object') {
+              pc.streamSelectionConfig.maxBitrate = '999999999';
+            }
+          }
+        }
+      } catch (e) {
+        // Ignore
+      }
+      return parsed;
+    };
   }
 
   /**
@@ -498,6 +737,7 @@
               if (err && err.name === 'QuotaExceededError') {
                 state.mseQuotaWarning = true;
                 state.mseQuotaWarningUntil = Date.now() + 10000;
+                state.virtualBufferActive = false;
               }
               throw err;
             }
@@ -603,16 +843,16 @@
   }
 
   /**
-   * Calculates real buffered time ahead of current playback position using unclamped native getter
+   * Calculates real buffered time ahead of current playback position
    * @param {HTMLVideoElement} video
    * @returns {{ bufferAhead: number, nextGapStart: number | null }}
    */
   function analyzeVideoBuffer(video) {
-    const ranges = getRealVideoBuffered(video);
-    if (!video || !ranges || ranges.length === 0) {
+    if (!video || !video.buffered || video.buffered.length === 0) {
       return { bufferAhead: 0, nextGapStart: null };
     }
 
+    const ranges = video.buffered;
     const currentTime = video.currentTime;
     let bufferAhead = 0;
     let nextGapStart = null;
@@ -825,8 +1065,54 @@
   }
 
   /**
-   * Periodic Monitor Loop: Evaluates player state, real vs. virtual buffer health,
-   * frame drops, headstart boost, and dispatches metrics to Popup & Service Worker.
+   * Proactively wakes YouTube's internal SABR/DASH loader when real buffer ahead
+   * is below the user's selected targetBufferSec (60s / 120s / 180s).
+   * @param {HTMLVideoElement | null} video
+   */
+  function pumpYouTubePreBufferLoader(video) {
+    if (!state.config.enabled || !state.config.deepPreBuffer || !video || video.ended || video.seeking) {
+      return;
+    }
+
+    const now = Date.now();
+    if (state.mseQuotaWarning && now < state.mseQuotaWarningUntil) {
+      return;
+    }
+    if (state.mseQuotaWarning && now >= state.mseQuotaWarningUntil) {
+      state.mseQuotaWarning = false;
+    }
+
+    const targetSec = getTargetBufferSeconds();
+    if (state.realBufferAheadSec >= targetSec) {
+      state.bufferGoalReached = true;
+      state.virtualBufferActive = false;
+      return;
+    }
+
+    state.bufferGoalReached = false;
+
+    try {
+      // Clear any lingering SABR backoff timestamp (this.K) when buffer is below target
+      if (state.activeSabrCoordinator && typeof state.activeSabrCoordinator === 'object') {
+        const coord = state.activeSabrCoordinator;
+        if (coord.A && typeof coord.A === 'object') {
+          const targetMs = targetSec * 1000;
+          coord.A.targetVideoReadaheadMs = Math.max(Number(coord.A.targetVideoReadaheadMs) || 0, targetMs);
+          coord.A.targetAudioReadaheadMs = Math.max(Number(coord.A.targetAudioReadaheadMs) || 0, targetMs);
+        }
+      }
+
+      if (state.activeYtLoader && typeof state.activeYtLoader.mf === 'function') {
+        state.activeYtLoader.mf();
+      }
+    } catch (e) {
+      // Ignore internal loader exceptions
+    }
+  }
+
+  /**
+   * Periodic Monitor Loop: Evaluates player state, real buffer health, pumps SABR
+   * pre-buffering, checks frame drops, and dispatches metrics to Popup & Service Worker.
    */
   function runMonitorCycle() {
     const player = document.getElementById('movie_player');
@@ -854,12 +1140,14 @@
       state.qualityAppliedForVideo = null;
       state.dropGuardTriggered = false;
       state.bufferGoalReached = false;
+      state.mseQuotaWarning = false;
       seedYouTubeQualityStorage(state.config.targetQuality);
     }
 
     const bufferInfo = analyzeVideoBuffer(video);
     state.realBufferAheadSec = bufferInfo.bufferAhead;
 
+    pumpYouTubePreBufferLoader(video);
     applyHeadstartBufferBoost(video, currentVideoId, bufferInfo.bufferAhead);
     recoverFromMicroGap(video, bufferInfo);
 
@@ -951,9 +1239,14 @@
   window.addEventListener('MQ4K_CONFIG_SYNC', function (event) {
     if (event && event.detail && typeof event.detail === 'object') {
       const prevTarget = state.config.targetQuality;
+      const prevBuffer = state.config.targetBufferSec;
       state.config = Object.assign({}, DEFAULT_CONFIG, event.detail);
       optimizePlayerDOM();
       seedYouTubeQualityStorage(state.config.targetQuality);
+
+      if (prevBuffer !== state.config.targetBufferSec) {
+        state.bufferGoalReached = false;
+      }
 
       if (prevTarget !== state.config.targetQuality) {
         state.dropGuardTriggered = false;
@@ -961,6 +1254,9 @@
         const player = document.getElementById('movie_player');
         enforcePlayerQuality(player, true);
       }
+
+      const video = document.querySelector('video.html5-main-video') || document.querySelector('video');
+      pumpYouTubePreBufferLoader(video);
     }
   });
 
@@ -990,11 +1286,11 @@
     );
   });
 
-  // Bootstrap all v2.0 engines immediately at document_start
+  // Bootstrap all v2.1 engines immediately at document_start
   installNetworkInfoSpoof();
   seedYouTubeQualityStorage(state.config.targetQuality);
   installCodecHooks();
-  installVirtualBufferHorizon();
+  installDeepPreBufferUnlocker();
   installMSEBufferHooks();
   installStreamAndBeaconHooks();
 
@@ -1008,5 +1304,5 @@
     setTimeout(runMonitorCycle, 150);
   });
 
-  setInterval(runMonitorCycle, 750);
+  setInterval(runMonitorCycle, 650);
 })();
