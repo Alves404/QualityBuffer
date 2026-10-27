@@ -17,7 +17,7 @@ const DEFAULT_CONFIG = {
   targetBufferSec: 120,
   deepPreBuffer: true,
   parallelPrefetch: true,
-  headstartBoost: true,
+  headstartBoost: false,
   blockAV1: true,
   blockHDR60: true,
   block60fps: false,

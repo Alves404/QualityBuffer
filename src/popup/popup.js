@@ -17,7 +17,7 @@
     targetBufferSec: 120,
     deepPreBuffer: true,
     parallelPrefetch: true,
-    headstartBoost: true,
+    headstartBoost: false,
     blockAV1: true,
     blockHDR60: true,
     block60fps: false,
@@ -121,7 +121,7 @@
       elToggleParallelPrefetch.checked = cfg.parallelPrefetch !== false;
     }
     if (elToggleHeadstartBoost) {
-      elToggleHeadstartBoost.checked = cfg.headstartBoost !== false;
+      elToggleHeadstartBoost.checked = Boolean(cfg.headstartBoost);
     }
     elToggleBlockAv1.checked = Boolean(cfg.blockAV1);
     elToggleBlockHdr.checked = Boolean(cfg.blockHDR60);
