@@ -37,8 +37,8 @@
           <span class="metric-sub" id="metric-codec">Codec: N/A</span>
         </div>
         <div class="metric-card">
-          <span class="metric-label">Saude do Buffer</span>
-          <strong class="metric-value" id="metric-buffer">0.0 s</strong>
+          <span class="metric-label">Buffer Real / Meta</span>
+          <strong class="metric-value" id="metric-buffer">0.0 s / 120s</strong>
           <div class="buffer-bar-track">
             <div class="buffer-bar-fill" id="buffer-bar-fill"></div>
           </div>
@@ -66,9 +66,50 @@
           <option value="hd1080">1080p (Full HD)</option>
           <option value="auto">Automatico (Apenas Otimizar Buffer/Codec)</option>
         </select>
+
+        <div class="control-header" style="margin-top: 8px;">
+          <label for="select-buffer-target">Horizonte de Pre-Carregamento (Minutos Seguintes)</label>
+        </div>
+        <select id="select-buffer-target" class="select-input">
+          <option value="60">60 segundos (1 Minuto a frente - Leve)</option>
+          <option value="120" selected>120 segundos (2 Minutos a frente - Recomendado)</option>
+          <option value="180">180 segundos (3 Minutos a frente - Maximo)</option>
+        </select>
       </div>
 
       <div class="settings-list">
+        <div class="setting-item">
+          <div class="setting-text">
+            <span class="setting-title">Deep Pre-Buffer (Carregar Minutos Seguintes)</span>
+            <span class="setting-desc">Desbloqueia o limite de 15s do YouTube para baixar os proximos minutos continuamente na velocidade da internet.</span>
+          </div>
+          <label class="toggle-control">
+            <input type="checkbox" id="toggle-deep-prebuffer" checked>
+            <span class="toggle-track"></span>
+          </label>
+        </div>
+
+        <div class="setting-item">
+          <div class="setting-text">
+            <span class="setting-title">Pre-Fetch Paralelo em RAM (Cache sidx 64MB)</span>
+            <span class="setting-desc">Antecipa o download dos proximos byte-ranges em memoria RAM antes do player requisitar.</span>
+          </div>
+          <label class="toggle-control">
+            <input type="checkbox" id="toggle-parallel-prefetch" checked>
+            <span class="toggle-track"></span>
+          </label>
+        </div>
+
+        <div class="setting-item">
+          <div class="setting-text">
+            <span class="setting-title">Pre-Carga Inicial (Trilho Antes do Trem)</span>
+            <span class="setting-desc">Acumula um colchao inicial solido em 4K no segundo zero antes de liberar a reproducao.</span>
+          </div>
+          <label class="toggle-control">
+            <input type="checkbox" id="toggle-headstart-boost" checked>
+            <span class="toggle-track"></span>
+          </label>
+        </div>
         <div class="setting-item">
           <div class="setting-text">
             <span class="setting-title">Bloquear Codec AV1 (Forcar VP9 Hardware)</span>
@@ -206,9 +247,9 @@
         <h2>Creditos e Licenca</h2>
         <ul class="credits-list">
           <li><strong>Autor Idealizador e Mantenedor:</strong> Joao Vitor Magalhaes Alves (@Alves)</li>
-          <li><strong>Engenharia Assistida e Co-Arquitetura:</strong> Argon (Google Antigravity)</li>
+          <li><strong>Engenharia Assistida e Co-Arquitetura:</strong> Argon (Google Antigravity) &amp; Claude Streaming Architect</li>
           <li><strong>Licenca:</strong> GNU GPLv3 (Copyleft Open Source)</li>
-          <li><strong>Versao:</strong> 1.0.0 (Manifest V3)</li>
+          <li><strong>Versao:</strong> 2.0.0 (Manifest V3 - Deep Pre-Buffer Engine)</li>
         </ul>
       </div>
     </section>
@@ -216,7 +257,7 @@
 
   <footer class="app-footer">
     <span id="status-indicator">Status: Monitoramento Ativo</span>
-    <span class="mono-text">v1.0.0 | GPL-3.0 License</span>
+    <span class="mono-text">v2.0.0 | GPL-3.0 License</span>
   </footer>
 
   <script src="popup.js"></script>

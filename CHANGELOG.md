@@ -6,6 +6,17 @@ O formato baseia-se em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.0
 
 ---
 
+## [2.0.0] - 2026-10-26
+
+### Adicionado
+- **Virtual Buffer Horizon (`TimeRanges` Clamping em `page-hook.js`):** Desbloqueia o limite nativo de ~15-20s do agendador DASH do YouTube em 4K, reportando um horizonte virtual de `7.5s` enquanto o buffer real ainda nao atingiu a meta configurada pelo usuario (`60s`, `120s` ou `180s` a frente) e mantendo o `TimeRanges` real intacto para telemetria e buscas (`seeking`).
+- **Eviccao Proativa de Back-Buffer MSE & Protecao `QuotaExceededError`:** Recicla automaticamente os segmentos de video ja assistidos (`>22s` atras do ponteiro atual) para dedicar toda a janela de RAM do Chromium aos proximos minutos do video.
+- **Motor de Pre-Fetch Paralelo em RAM (`sidx` Segment Index Parser):** Inspeciona o box `sidx` nos pacotes iniciais (`range=0-...`) e antecipa o download dos proximos byte-ranges em um cache LRU de 64 MB em memoria RAM.
+- **Zero-Track-Laying Bootstrap:** Spoofing de `navigator.connection` (`100 Mbps / 5ms RTT`), pre-seeding de `localStorage` e `sessionStorage` (`yt-player-quality = 2160`) antes do segundo zero e correcao da race condition de `qualityAppliedForVideo`.
+- **Headstart Buffer Boost & Bloqueio de Beacons Pesados:** Formacao de colchao inicial em 4K antes de liberar a reproducao e bloqueio de endpoints pesados na thread principal (`/youtubei/v1/log_event`, `/api/stats/qoe`, `/ptracking`), preservando `/api/stats/watchtime`.
+
+---
+
 ## [1.0.0] - 2026-10-26
 
 ### Adicionado

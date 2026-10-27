@@ -1,10 +1,10 @@
 /**
- * My Quality 4k - Popup Controller Script
+ * My Quality 4k v2.0 - Popup Controller Script
  *
- * Manages user preferences, real-time player & network metrics display,
+ * Manages user preferences, real-time Deep Pre-Buffer & network metrics display,
  * and diagnostic report exports.
  *
- * Assisted engineering by Argon (Google Antigravity).
+ * Assisted engineering by Argon (Google Antigravity) & Claude Streaming Architect.
  * License: GPL-3.0
  */
 
@@ -14,6 +14,10 @@
   const DEFAULT_CONFIG = {
     enabled: true,
     targetQuality: 'hd2160',
+    targetBufferSec: 120,
+    deepPreBuffer: true,
+    parallelPrefetch: true,
+    headstartBoost: true,
     blockAV1: true,
     blockHDR60: true,
     block60fps: false,
@@ -44,7 +48,11 @@
   // DOM Elements
   const elToggleEnabled = document.getElementById('toggle-enabled');
   const elSelectQuality = document.getElementById('select-quality');
+  const elSelectBufferTarget = document.getElementById('select-buffer-target');
   const elBtnForceNow = document.getElementById('btn-force-now');
+  const elToggleDeepPrebuffer = document.getElementById('toggle-deep-prebuffer');
+  const elToggleParallelPrefetch = document.getElementById('toggle-parallel-prefetch');
+  const elToggleHeadstartBoost = document.getElementById('toggle-headstart-boost');
   const elToggleBlockAv1 = document.getElementById('toggle-block-av1');
   const elToggleBlockHdr = document.getElementById('toggle-block-hdr');
   const elToggleBlock60fps = document.getElementById('toggle-block-60fps');
@@ -103,6 +111,18 @@
   function renderConfigControls(cfg) {
     elToggleEnabled.checked = Boolean(cfg.enabled);
     elSelectQuality.value = cfg.targetQuality || 'hd2160';
+    if (elSelectBufferTarget) {
+      elSelectBufferTarget.value = String(cfg.targetBufferSec || 120);
+    }
+    if (elToggleDeepPrebuffer) {
+      elToggleDeepPrebuffer.checked = cfg.deepPreBuffer !== false;
+    }
+    if (elToggleParallelPrefetch) {
+      elToggleParallelPrefetch.checked = cfg.parallelPrefetch !== false;
+    }
+    if (elToggleHeadstartBoost) {
+      elToggleHeadstartBoost.checked = cfg.headstartBoost !== false;
+    }
     elToggleBlockAv1.checked = Boolean(cfg.blockAV1);
     elToggleBlockHdr.checked = Boolean(cfg.blockHDR60);
     if (elToggleBlock60fps) {
@@ -114,7 +134,7 @@
     elToggleTelemetrySync.checked = Boolean(cfg.telemetrySync);
 
     elStatusIndicator.textContent = cfg.enabled
-      ? 'Status: Otimizacao 4K Ativa'
+      ? 'Status: Deep Pre-Buffer 4K Ativo'
       : 'Status: Otimizacao Pausada';
   }
 
@@ -125,6 +145,10 @@
     currentConfig = {
       enabled: elToggleEnabled.checked,
       targetQuality: elSelectQuality.value,
+      targetBufferSec: elSelectBufferTarget ? Number(elSelectBufferTarget.value) || 120 : 120,
+      deepPreBuffer: elToggleDeepPrebuffer ? elToggleDeepPrebuffer.checked : true,
+      parallelPrefetch: elToggleParallelPrefetch ? elToggleParallelPrefetch.checked : true,
+      headstartBoost: elToggleHeadstartBoost ? elToggleHeadstartBoost.checked : true,
       blockAV1: elToggleBlockAv1.checked,
       blockHDR60: elToggleBlockHdr.checked,
       block60fps: elToggleBlock60fps ? elToggleBlock60fps.checked : false,
@@ -136,7 +160,7 @@
     };
 
     elStatusIndicator.textContent = currentConfig.enabled
-      ? 'Status: Otimizacao 4K Ativa'
+      ? 'Status: Deep Pre-Buffer 4K Ativo'
       : 'Status: Otimizacao Pausada';
 
     if (chrome && chrome.storage && chrome.storage.local) {
@@ -179,22 +203,26 @@
 
     if (player) {
       const qLabel = QUALITY_LABELS[player.currentQuality] || player.currentQuality || 'Auto';
-      elMetricResolution.textContent = player.resolution && player.resolution !== 'N/A'
-        ? `${qLabel} (${player.resolution})`
-        : qLabel;
+      elMetricResolution.textContent =
+        player.resolution && player.resolution !== 'N/A'
+          ? `${qLabel} (${player.resolution})`
+          : qLabel;
 
       elMetricCodec.textContent = `Codec: ${formatCodecLabel(player.videoMimeType)}`;
 
       const bufSec = Number(player.bufferAheadSec || 0);
-      elMetricBuffer.textContent = `${bufSec.toFixed(1)} s`;
+      const targetSec = Number(player.targetBufferSec || currentConfig.targetBufferSec || 120);
+      elMetricBuffer.textContent = `${bufSec.toFixed(1)}s / ${targetSec}s`;
 
-      // Scale buffer progress bar (0s to 25s = 0% to 100%)
-      const pct = Math.min(100, Math.max(4, Math.round((bufSec / 25) * 100)));
+      // Scale buffer progress bar against user's configured targetBufferSec
+      const pct = Math.min(100, Math.max(4, Math.round((bufSec / targetSec) * 100)));
       elBufferBarFill.style.width = `${pct}%`;
-      elBufferBarFill.style.backgroundColor = bufSec >= 6 ? '#1db954' : '#f59e0b';
+      elBufferBarFill.style.backgroundColor = bufSec >= 12 ? '#1db954' : '#f59e0b';
 
       elMetricDrops.textContent = `${Number(player.dropRatePercent || 0).toFixed(1)}% perdas`;
-      elMetricGaps.textContent = `Gaps corrigidos: ${player.microGapsRecovered || 0}`;
+      const gaps = player.microGapsRecovered || 0;
+      const evicted = player.evictedBackBufferCount || 0;
+      elMetricGaps.textContent = `Gaps: ${gaps} | Reciclados: ${evicted}`;
     }
 
     elMetricThroughput.textContent = `${Number(netSummary.avgThroughputMbps || 0).toFixed(1)} Mbps`;
@@ -218,18 +246,21 @@
       return;
     }
 
-    const rowsHtml = logs.slice(0, 20).map(function (entry) {
-      const formatLabel = entry.itag ? `itag=${entry.itag}` : 'chunk';
-      const sizeStr = `${entry.chunkKB || 0} KB`;
-      const timeStr = `${entry.durationMs || 0} ms`;
-      const speedStr = entry.status === 'OK' ? `${entry.throughputMbps || 0} Mbps` : 'ERRO';
-      return `<tr>
+    const rowsHtml = logs
+      .slice(0, 20)
+      .map(function (entry) {
+        const formatLabel = entry.itag ? `itag=${entry.itag}` : 'chunk';
+        const sizeStr = `${entry.chunkKB || 0} KB`;
+        const timeStr = `${entry.durationMs || 0} ms`;
+        const speedStr = entry.status === 'OK' ? `${entry.throughputMbps || 0} Mbps` : 'ERRO';
+        return `<tr>
         <td title="${entry.itagDescription || ''}">${formatLabel}</td>
         <td>${sizeStr}</td>
         <td>${timeStr}</td>
         <td>${speedStr}</td>
       </tr>`;
-    }).join('');
+      })
+      .join('');
 
     elNetworkLogsBody.innerHTML = rowsHtml;
   }
@@ -274,9 +305,9 @@
   function exportDiagnosticReport() {
     const report = {
       project: 'My Quality 4k',
-      version: '1.0.0',
+      version: '2.0.0',
       license: 'GPL-3.0',
-      aiAssistedEngineering: 'Argon (Google Antigravity)',
+      aiAssistedEngineering: 'Argon (Google Antigravity) & Claude Streaming Architect',
       exportedAt: new Date().toISOString(),
       configuration: currentConfig,
       dashboardSnapshot: lastDashboardData
@@ -309,6 +340,10 @@
   [
     elToggleEnabled,
     elSelectQuality,
+    elSelectBufferTarget,
+    elToggleDeepPrebuffer,
+    elToggleParallelPrefetch,
+    elToggleHeadstartBoost,
     elToggleBlockAv1,
     elToggleBlockHdr,
     elToggleBlock60fps,

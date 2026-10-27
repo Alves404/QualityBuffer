@@ -1,7 +1,7 @@
 # Relatorio Tecnico de Engenharia e Conformidade Open Source — My Quality 4k
 
 **Projeto:** My Quality 4k  
-**Versao:** 1.0.0  
+**Versao:** 2.0.0 (Deep Pre-Buffer & Zero-Track-Laying Engine)  
 **Plataforma Alvo Inicial:** Google Chrome / Chromium (Manifest V3)  
 **Licenca:** GNU General Public License v3.0 (GPL-3.0 / Copyleft Open Source)  
 **Repositorio:** `https://github.com/Alves404/My-Quality-4k`
@@ -30,7 +30,9 @@ O player HTML5 do YouTube utiliza `MediaSource Extensions (MSE)` para anexar fra
 **Solucao Implementada (`src/content/page-hook.js`):**
 1. **Monitoramento de `SourceBuffer`:** Hook direto em `MediaSource.prototype.addSourceBuffer` para contabilizar o volume real de bytes anexados na fila de video.
 2. **Auto-Recuperacao de Micro-Gaps:** Um ciclo de verificacao inspeciona os intervalos de `video.buffered`. Caso o video entre em estado de espera (`readyState < 3`) e exista um bloco ja carregado a menos de `0.85s` de distancia, o ponteiro `video.currentTime` avanca automaticamente para o inicio do proximo segmento valido (`nextGapStart + 0.02s`), eliminando congelamentos.
-3. **Trava de Heuristica de Qualidade (`setPlaybackQualityRange`):** Impede que o algoritmo ABR rebaixe a resolucao de 2160p para 720p durante picos momentaneos, evitando o descarte (flush) de chunks 4K que ja foram baixados pela rede.
+3. **Trava de Heuristica de Qualidade (`setPlaybackQualityRange`) e Zero-Track-Laying Bootstrap (v2.0):** Pre-configura `yt-player-quality = 2160` no `localStorage`/`sessionStorage`, informa `100 Mbps / 5ms RTT` em `navigator.connection` e trava a resolucao 4K desde o segundo zero, impedindo que o algoritmo ABR inicie em baixa qualidade e troque de faixa com o video em movimento.
+4. **Virtual Buffer Horizon (`TimeRanges` Clamping) & Eviccao de Back-Buffer (v2.0):** O agendador nativo do YouTube interrompe o download de chunks quando detecta ~15-20s de buffer em 4K. O motor v2.0 intercepta `HTMLMediaElement.prototype.buffered` e `SourceBuffer.prototype.buffered`, reportando um horizonte virtual de `7.5s` ao agendador do YouTube enquanto o buffer real nao atinge a meta de `60s`, `120s` ou `180s` (os proximos minutos do video). Simultaneamente, remove proativamente segmentos ja assistidos (`>22s` atras de `currentTime`) para evitar `QuotaExceededError` na memoria MSE do Chromium.
+5. **Pre-Fetch Paralelo em RAM via Indice `sidx` e Bloqueio de Beacons (v2.0):** Extrai a tabela de byte-ranges do box `sidx` na inicializacao da stream, pre-carrega segmentos futuros em cache LRU de 64 MB na RAM e bloqueia endpoints pesados de telemetria interna do YouTube (`/youtubei/v1/log_event`, `/api/stats/qoe`, `/ptracking`) para aliviar CPUs de 4 nucleos.
 
 ### 2.3. Sobrecarga de Composicao Grafica (YouTube Ambient Mode)
 O recurso "Modo Ambiente" (`#cinematic-container`) do YouTube renderiza um elemento `<canvas>` secundário que amostra e desfoca o video principal em tempo real. Em placas de video com largura de banda de memoria restrita (4 GB GDDR5), esse efeito consome ate 30% do orcamento de tempo de quadro.

@@ -37,6 +37,9 @@ Muitos computadores com processadores de 4 nucleos (ex: Intel Core i3) e placas 
 
 ## 2. Funcionalidades Implementadas
 
+* **Deep Pre-Buffer (Virtual Buffer Horizon - v2.0):** Desbloqueia o limite interno de ~15s do agendador DASH do YouTube ao gerenciar dinamicamente `HTMLMediaElement.prototype.buffered` e `SourceBuffer.prototype.buffered`, forcando o pre-carregamento continuo dos **proximos 1, 2 ou 3 minutos** de video em 4K enquanto recicla o back-buffer ja assistido para evitar `QuotaExceededError`.
+* **Pre-Fetch Paralelo em RAM (Parser `sidx` 64 MB - v2.0):** Le o indice de segmentos (`sidx`) no pacote inicial (`range=0-...`) e antecipa o download dos proximos byte-ranges em cache RAM antes de o player requisita-los.
+* **Zero-Track-Laying Bootstrap & Headstart Boost (v2.0):** Informa `100 Mbps / 5ms RTT` via `navigator.connection`, pre-configura `yt-player-quality = 2160` no `localStorage`/`sessionStorage` antes do segundo zero e forma um colchao inicial de 4K antes de liberar a reproducao.
 * **Modificacao da Heuristica de Codec e Cache:** Bloqueio seletivo de `av01` (AV1), `vp09.02` (HDR 10-bit) e limitador opcional de **30fps (bloqueio de 60fps)** no `MAIN world` para garantir reproducao 4K via hardware em `VP9 Profile 0` sem engasgar GPUs de entrada.
 * **Estabilizacao de Buffer MSE e Recuperacao de Micro-Gaps:** Monitoramento de chamadas `SourceBuffer.prototype.appendBuffer` e recuperacao automatica de travamentos em fronteiras de segmento.
 * **Trava Inteligente de Resolucao 4K (`hd2160`):** Fixa a faixa de qualidade na API `#movie_player` do YouTube para impedir que o algoritmo adaptativo (ABR) descarte o buffer 4K ja baixado, contando com **Smart Drop Guard** caso a taxa de perda de quadros ultrapasse 18%.

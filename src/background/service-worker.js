@@ -14,6 +14,10 @@
 const DEFAULT_CONFIG = {
   enabled: true,
   targetQuality: 'hd2160',
+  targetBufferSec: 120,
+  deepPreBuffer: true,
+  parallelPrefetch: true,
+  headstartBoost: true,
   blockAV1: true,
   blockHDR60: true,
   block60fps: false,
