@@ -48,11 +48,15 @@ Many computers equipped with 4-core processors (e.g., Intel Core i3) and entry-l
 4. **Background Shader & Telemetry Overhead:**
    YouTube's "Ambient Mode" (`#cinematic-container`) renders a real-time blurred `<canvas>` that consumes up to 30% of entry-level GPU fill-rate, while periodic `/youtubei/v1/log_event` and `/api/stats/qoe` beacons cause main-thread serialization spikes. Both are neutralized automatically.
 
+> [!TIP]
+> **Beneficial Side-Effect on Sub-4K Videos (1440p / 1080p / 720p / etc.):**
+> While engineered specifically to eliminate 4K buffering bottlenecks, expanding YouTube's SABR byte cap to **512 MB** and unlocking readahead targets (**60s, 120s, or 180s**) delivers an extraordinary positive side-effect for lower resolutions. Because sub-4K streams require vastly lower bitrates (e.g., 2–5 Mbps for 1080p vs. 25–45 Mbps for 4K), the 512 MB buffer pool is practically limitless. YouTube's loader pumps and downloads the pre-selected minutes with blisteringly fast speed—often caching the entire 1, 2, or 3 minutes in just seconds, ensuring instant seeking and buffer-free playback even on slower or fluctuating internet connections.
+
 ---
 
 ## 2. Key Features (v2.1.0)
 
-* **SABR & Policy Deep Pre-Buffer Unlocker (60s / 120s / 180s):** Removes YouTube's 35 MB (16-second) 4K buffer limit by locking internal `policy` byte budgets (`ya = 512 MB`, `Ta = 64 MB`), overriding SABR `NextRequestPolicy` (`targetVideoReadaheadMs` / `targetAudioReadaheadMs`), and pumping the internal loader until the user-selected multi-minute horizon is reached.
+* **SABR & Policy Deep Pre-Buffer Unlocker (60s / 120s / 180s) & Sub-4K Turbo Load:** Removes YouTube's 35 MB (16-second) 4K buffer limit by locking internal `policy` byte budgets (`ya = 512 MB`, `Ta = 64 MB`), overriding SABR `NextRequestPolicy` (`targetVideoReadaheadMs` / `targetAudioReadaheadMs`), and pumping the internal loader until the user-selected multi-minute horizon is reached. *(Bonus: Sub-4K videos like 1080p and 720p load their pre-selected minutes almost instantaneously due to lower stream bitrates).*
 * **Hardware Codec Enforcement (AV1 & HDR10 Blocker):** Selectively blocks `av01` (AV1) and `vp09.02` (10-bit HDR) across `MediaSource` and `MediaCapabilities` APIs while certifying 4K `VP9 Profile 0 SDR` as `smooth: true, powerEfficient: true`.
 * **Optional 30fps Stream Limiter (60fps Blocker):** Halves the number of decoded frames per second on high-framerate gameplay videos to keep 4 GB VRAM GPUs cool and responsive at 2160p.
 * **Zero-Track-Laying Bootstrap & CDN Preconnect:** Spoofs `navigator.connection` (`100 Mbps / 5ms RTT`), pre-seeds `yt-player-quality = 2160` in `localStorage`/`sessionStorage` prior to player initialization, and injects `<link rel="preconnect">` for active `*.googlevideo.com` CDN origins.

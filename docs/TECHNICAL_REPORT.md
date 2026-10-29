@@ -28,6 +28,8 @@ In modern YouTube (`base.js`), all adaptive streams are delivered via `serverAbr
 - Locks `policy.ya` to **512 MB** (`536,870,912` bytes), `policy.Ta` to **64 MB** (`67,108,864` bytes), and `policy.sb` / `policy.ha` to the user's configured `targetBufferSec` (`60s`, `120s`, or `180s`).
 - Wraps the SABR coordinator prototype methods (`Mq` and `RO`) so `targetVideoReadaheadMs` and `targetAudioReadaheadMs` are boosted to `targetBufferSec * 1000`, `UF`/`TF` byte budgets report 512 MB / 64 MB, and the outgoing media position (`mp`) advances inside the active buffered range (`bc`) until the full multi-minute buffer target is reached.
 
+> **Beneficial Side-Effect on Sub-4K Streams (1440p / 1080p / 720p):** Because bitrates for non-4K streams are significantly lower (~2–5 Mbps vs 25–45 Mbps for 4K), raising the SABR byte ceiling to 512 MB allows the player to fulfill the user's pre-selected multi-minute buffer target (60s, 120s, or 180s) with extreme velocity. Minutes of video are pre-buffered into memory almost instantaneously, delivering instant seek responsiveness and resilience against network jitter.
+
 ### 2.2. Hardware Codec Incompatibility with AV1 (`av01`) and 10-bit HDR (`vp09.02`)
 YouTube prioritizes **AV1** (`av01.*`, such as `itag=401`) for 4K delivery. GPUs released prior to RDNA 2 / RTX 3000 / Intel Arc lack a dedicated hardware AV1 decoder block, forcing software decoding (`dav1d`) on the CPU at 100% utilization and causing severe frame drops.
 
