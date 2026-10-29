@@ -94,7 +94,7 @@ My-Quality-4k/
 ├── CHANGELOG.md                  # Version history and release notes
 ├── assets/
 │   ├── icons/                    # Pure Black & Gemini Light Blue Play Triangle icons (16, 32, 48, 128px)
-│   └── images/                   # README images (Gemini 4 Argon & Google Student Ambassadors 2026)
+│   └── images/                   # README visual assets
 ├── src/
 │   ├── background/
 │   │   └── service-worker.js     # googlevideo.com chunk monitor & throughput calculator
@@ -189,10 +189,6 @@ Prior to the main authorship credits, it is transparently recorded that the Open
 
 ## 9. Credits & Authorship
 
-<p align="center">
-  <img src="assets/images/google-student-ambassadors-2026.jpg" alt="Embaixadores Estudantis do Google 2026 (Google Student Ambassadors 2026)" width="600">
-</p>
-
 * **Creator, Lead Author & Maintainer:** Joao Vitor Alves —  **Google Student Ambassador 2026**  — [github.com/Alves404](https://github.com/Alves404) (`@Alves404`)
 * **Official Open Source Repository:** [github.com/Alves404/My-Quality-4k](https://github.com/Alves404/My-Quality-4k)
 * **AI-Assisted Development:** Gemini 4 Argon (Google Antigravity) — Co-architecture of the 512 MB SABR engine, hardware codec filters, and MSE stabilization
@@ -200,3 +196,5 @@ Prior to the main authorship credits, it is transparently recorded that the Open
 * **License:** GNU General Public License v3.0 (`GPL-3.0` Copyleft Open Source)
 * **Version:** `2.1.0` (Manifest V3 — 512 MB SABR Pre-Buffer & Hardware VP9 SDR Decoding Engine)
 * **Conceptual Open Source References:** Inspired by architectural best practices from community projects such as `enhanced-h264ify` (MIT) and `uBlock Origin` (GPLv3).
+
+<sub>*Google Gemini is a trademark of Google LLC, and this project is not affiliated with or endorsed by Google.*</sub>
