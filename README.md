@@ -193,7 +193,7 @@ Prior to the main authorship credits, it is transparently recorded that the Open
   <img src="assets/images/google-student-ambassadors-2026.jpg" alt="Embaixadores Estudantis do Google 2026 (Google Student Ambassadors 2026)" width="600">
 </p>
 
-* **Creator, Lead Author & Maintainer:** Joao Vitor Magalhaes Alves — [github.com/Alves404](https://github.com/Alves404) (`@Alves404`)
+* **Creator, Lead Author & Maintainer:** Joao Vitor Alves —  **Google Student Ambassador 2026**  — [github.com/Alves404](https://github.com/Alves404) (`@Alves404`)
 * **Official Open Source Repository:** [github.com/Alves404/My-Quality-4k](https://github.com/Alves404/My-Quality-4k)
 * **AI-Assisted Development:** Gemini 4 Argon (Google Antigravity) — Co-architecture of the 512 MB SABR engine, hardware codec filters, and MSE stabilization
 * **Supported Languages (Zero-Overhead):** English (`EN` - Default), Portugues (`PT`), and Espanol (`ES`) with automatic browser detection
