@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Quality 4k - Control Panel</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <header class="app-header">
+    <div class="brand-row">
+      <div class="brand-badge" aria-label="Video Player Icon">
+        <svg class="brand-player-icon" viewBox="0 0 24 24" width="20" height="20" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <polygon points="7,4.5 7,19.5 19,12" fill="currentColor"/>
+        </svg>
+      </div>
+    </div>
+    <div class="brand-info">
+      <h1>My Quality 4k</h1>
+    </div>
+    <div class="header-actions">
+      <select id="select-lang" class="lang-select" aria-label="Language">
+        <option value="en" selected>EN</option>
+        <option value="pt">PT</option>
+        <option value="es">ES</option>
+      </select>
+      <label class="master-switch" id="master-switch-label" title="Enable or disable optimizations">
+        <input type="checkbox" id="toggle-enabled" checked>
+        <span class="switch-slider"></span>
+      </label>
+    </div>
+  </header>
+
+  <nav class="tab-nav">
+    <button type="button" class="tab-btn active" data-tab="tab-dashboard" data-i18n="tabControls">Controls</button>
+    <button type="button" class="tab-btn" data-tab="tab-about" data-i18n="tabAbout">About &amp; Credits</button>
+  </nav>
+
+  <main class="tab-container">
+    <!-- TAB 1: DASHBOARD & CONTROLS -->
+    <section id="tab-dashboard" class="tab-panel active">
+      <div class="metrics-grid">
+        <div class="metric-card">
+          <span class="metric-label" data-i18n="metricResLabel">Resolution / Stream</span>
+          <strong class="metric-value" id="metric-resolution">Waiting...</strong>
+          <span class="metric-sub" id="metric-codec">Codec: N/A</span>
+        </div>
+        <div class="metric-card">
+          <span class="metric-label" data-i18n="metricBufLabel">Real Buffer / Target</span>
+          <strong class="metric-value" id="metric-buffer">0.0 s / 120s</strong>
+          <div class="buffer-bar-track">
+            <div class="buffer-bar-fill" id="buffer-bar-fill"></div>
+          </div>
+        </div>
+        <div class="metric-card">
+          <span class="metric-label" data-i18n="metricNetLabel">Network Rate (CDN)</span>
+          <strong class="metric-value" id="metric-throughput">0.0 Mbps</strong>
+          <span class="metric-sub" id="metric-latency">Latency: 0 ms</span>
+        </div>
+        <div class="metric-card">
+          <span class="metric-label" data-i18n="metricGpuLabel">GPU/CPU Stability</span>
+          <strong class="metric-value" id="metric-drops">0.0% drops</strong>
+          <span class="metric-sub" id="metric-gaps">Gaps fixed: 0</span>
+        </div>
+      </div>
+
+      <div class="control-group">
+        <div class="control-header">
+          <label for="select-quality" data-i18n="labelTargetQuality">Target Player Quality</label>
+          <div class="apply-action-group">
+            <button type="button" id="btn-force-now" class="btn-secondary" data-i18n="btnApplyNow">Apply Now</button>
+            <button
+              type="button"
+              id="apply-status-switch"
+              class="apply-status-switch is-applied"
+              title="Green: Changes applied | Red: Unapplied changes"
+              aria-label="Applied changes indicator"
+            >
+              <span class="apply-status-dot" id="apply-status-dot"></span>
+            </button>
+          </div>
+        </div>
+        <select id="select-quality" class="select-input">
+          <option value="hd2160" data-i18n="optQ2160">2160p (4K Ultra HD) - Recommended</option>
+          <option value="hd1440" data-i18n="optQ1440">1440p (2K Quad HD)</option>
+          <option value="hd1080" data-i18n="optQ1080">1080p (Full HD)</option>
+          <option value="auto" data-i18n="optQAuto">Auto (Optimize Buffer/Codec Only)</option>
+        </select>
+
+        <div class="control-header">
+          <label for="select-buffer-target" data-i18n="labelBufferHorizon">Pre-Buffer Horizon (Upcoming Minutes)</label>
+        </div>
+        <select id="select-buffer-target" class="select-input">
+          <option value="60" data-i18n="optBuf60">60 seconds (1 Minute ahead - Light)</option>
+          <option value="120" selected data-i18n="optBuf120">120 seconds (2 Minutes ahead - Recommended)</option>
+          <option value="180" data-i18n="optBuf180">180 seconds (3 Minutes ahead - Maximum)</option>
+        </select>
+      </div>
+
+      <!-- DROPDOWN MENU FOR ADVANCED BUFFER & CODEC FEATURES -->
+      <div class="features-dropdown" id="features-dropdown">
+        <button
+          type="button"
+          class="dropdown-toggle-btn"
+          id="btn-features-dropdown"
+          aria-expanded="false"
+        >
+          <div class="dropdown-header-left">
+            <span class="dropdown-title" data-i18n="dropdownTitle">Features</span>
+            <span class="dropdown-badge" id="dropdown-active-count">7/10 active</span>
+          </div>
+          <svg class="dropdown-chevron" viewBox="0 0 24 24" width="16" height="16" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <polyline points="6 9 12 15 18 9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+
+        <div class="dropdown-content" id="dropdown-features-panel">
+          <div class="settings-list">
+            <div class="setting-item">
+              <div class="setting-text">
+                <span class="setting-title" data-i18n="featDeepTitle">Deep Pre-Buffer (Load Upcoming Minutes)</span>
+                <span class="setting-desc" data-i18n="featDeepDesc">Unlocks YouTube 15s limit to continuously download the next minutes at full connection speed.</span>
+              </div>
+              <label class="toggle-control">
+                <input type="checkbox" id="toggle-deep-prebuffer" checked>
+                <span class="toggle-track"></span>
+              </label>
+            </div>
+
+            <div class="setting-item">
+              <div class="setting-text">
+                <span class="setting-title" data-i18n="featPrefetchTitle">Parallel RAM Pre-Fetch (64MB sidx Cache)</span>
+                <span class="setting-desc" data-i18n="featPrefetchDesc">Pre-fetches upcoming segment byte-ranges in RAM before the player requests them.</span>
+              </div>
+              <label class="toggle-control">
+                <input type="checkbox" id="toggle-parallel-prefetch" checked>
+                <span class="toggle-track"></span>
+              </label>
+            </div>
+
+            <div class="setting-item">
+              <div class="setting-text">
+                <span class="setting-title" data-i18n="featHeadstartTitle">Initial Headstart Cushion (Track Before Train)</span>
+                <span class="setting-desc" data-i18n="featHeadstartDesc">Builds a solid initial 4K buffer cushion at second zero before releasing playback.</span>
+              </div>
+              <label class="toggle-control">
+                <input type="checkbox" id="toggle-headstart-boost">
+                <span class="toggle-track"></span>
+              </label>
+            </div>
+
+            <div class="setting-item">
+              <div class="setting-text">
+                <span class="setting-title" data-i18n="featAv1Title">Block AV1 Codec (Force Hardware VP9)</span>
+                <span class="setting-desc" data-i18n="featAv1Desc">Prevents CPU software AV1 decoding on graphics cards without native hardware support.</span>
+              </div>
+              <label class="toggle-control">
+                <input type="checkbox" id="toggle-block-av1" checked>
+                <span class="toggle-track"></span>
+              </label>
+            </div>
+
+            <div class="setting-item">
+              <div class="setting-text">
+                <span class="setting-title" data-i18n="featHdrTitle">Block VP9 10-bit HDR (Force 4K SDR)</span>
+                <span class="setting-desc" data-i18n="featHdrDesc">Prevents shader tonemapping overload on 4 GB VRAM GPUs while keeping smooth 2160p.</span>
+              </div>
+              <label class="toggle-control">
+                <input type="checkbox" id="toggle-block-hdr" checked>
+                <span class="toggle-track"></span>
+              </label>
+            </div>
+
+            <div class="setting-item">
+              <div class="setting-text">
+                <span class="setting-title" data-i18n="featFpsTitle">Limit Streams to 30fps (Block 60fps)</span>
+                <span class="setting-desc" data-i18n="featFpsDesc">Halves decoded frames per second on high-FPS videos to relieve entry-level GPUs.</span>
+              </div>
+              <label class="toggle-control">
+                <input type="checkbox" id="toggle-block-60fps">
+                <span class="toggle-track"></span>
+              </label>
+            </div>
+
+            <div class="setting-item">
+              <div class="setting-text">
+                <span class="setting-title" data-i18n="featMseTitle">MSE Buffer &amp; Micro-Gap Stabilizer</span>
+                <span class="setting-desc" data-i18n="featMseDesc">Bridges millisecond timestamp gaps between SourceBuffer segments to prevent stalls.</span>
+              </div>
+              <label class="toggle-control">
+                <input type="checkbox" id="toggle-stabilize-buffer" checked>
+                <span class="toggle-track"></span>
+              </label>
+            </div>
+
+            <div class="setting-item">
+              <div class="setting-text">
+                <span class="setting-title" data-i18n="featAmbientTitle">Disable Ambient Mode (GPU Saver)</span>
+                <span class="setting-desc" data-i18n="featAmbientDesc">Removes YouTube blurred lighting canvas to free VRAM and GPU fill-rate.</span>
+              </div>
+              <label class="toggle-control">
+                <input type="checkbox" id="toggle-disable-ambient" checked>
+                <span class="toggle-track"></span>
+              </label>
+            </div>
+
+            <div class="setting-item">
+              <div class="setting-text">
+                <span class="setting-title" data-i18n="featDropTitle">Severe Frame Drop Protection</span>
+                <span class="setting-desc" data-i18n="featDropDesc">Automatically steps down from 4K to 2K if frame drop rate exceeds 18%.</span>
+              </div>
+              <label class="toggle-control">
+                <input type="checkbox" id="toggle-drop-guard" checked>
+                <span class="toggle-track"></span>
+              </label>
+            </div>
+
+            <div class="setting-item">
+              <div class="setting-text">
+                <span class="setting-title" data-i18n="featTelemetryTitle">Sync Local Telemetry (Node.js / Ruby)</span>
+                <span class="setting-desc" data-i18n="featTelemetryDesc">Optional for developers: sends logs to localhost:3456 with zero end-user impact.</span>
+              </div>
+              <label class="toggle-control">
+                <input type="checkbox" id="toggle-telemetry-sync">
+                <span class="toggle-track"></span>
+              </label>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 2: ABOUT & CREDITS -->
+    <section id="tab-about" class="tab-panel">
+      <div class="about-card">
+        <h2 data-i18n="aboutArchTitle">Open Source Architecture v2.1.0</h2>
+        <p data-i18n="aboutArchBody">
+          My Quality 4k unlocks YouTube SABR 35 MB (16s) internal buffer cap to 512 MB, pre-buffering 1, 2, or 3 full minutes of 4K (2160p) video while enforcing hardware VP9 SDR decoding and zero-reload live updates.
+        </p>
+      </div>
+
+      <div class="about-card highlight-box">
+        <h2 data-i18n="aboutAiTitle">AI-Assisted Development Notice (Gemini 4 Argon)</h2>
+        <p data-i18n="aboutAiBody">
+          Prior to the main credits, it is transparently recorded that the SABR 512 MB unlocker, hardware codec hooks, MSE buffer stabilization, zero-overhead multi-language engine, and project architecture were developed with the direct AI-assisted engineering of Gemini 4 Argon (Google Antigravity).
+        </p>
+      </div>
+
+      <div class="about-card">
+        <h2 data-i18n="aboutCreditsTitle">Credits, Authorship &amp; License</h2>
+        <ul class="credits-list">
+          <li>
+            <span data-i18n="creditAuthor">Creator, Lead Author &amp; Maintainer: Joao Vitor Magalhaes Alves</span>
+            — <a class="credit-link" href="https://github.com/Alves404" target="_blank" rel="noopener noreferrer">github.com/Alves404 (@Alves404)</a>
+          </li>
+          <li>
+            <span data-i18n="creditRepo">Official Open Source Repository:</span>
+            <a class="credit-link" href="https://github.com/Alves404/My-Quality-4k" target="_blank" rel="noopener noreferrer">github.com/Alves404/My-Quality-4k</a>
+          </li>
+          <li data-i18n="creditAi">AI-Assisted Development: Gemini 4 Argon (Google Antigravity) — Co-architecture of the 512 MB SABR engine, hardware codec filters, and MSE stabilization.</li>
+          <li data-i18n="creditI18n">Supported Languages (Zero-Overhead): English (EN - Default), Portugues (PT), and Espanol (ES) with automatic browser detection.</li>
+          <li data-i18n="creditLicense">Open Source License: GNU General Public License v3.0 (GPL-3.0 Copyleft) — 100% free, open, and auditable source code.</li>
+          <li data-i18n="creditVersion">Version: 2.1.0 (Manifest V3 — 512 MB SABR Pre-Buffer &amp; Hardware VP9 SDR Decoding Engine).</li>
+        </ul>
+      </div>
+    </section>
+  </main>
+
+  <footer class="app-footer">
+    <span id="status-indicator">Status: 4K Deep Pre-Buffer Active</span>
+    <span class="mono-text">v2.1.0 | GPL-3.0</span>
+  </footer>
+
+  <script src="popup.js"></script>
+</body>
+</html>

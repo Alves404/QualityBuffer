@@ -23,8 +23,8 @@
  *    Spoofs navigator.connection (100 Mbps / 5ms RTT), pre-seeds yt-player-quality to
  *    2160p before second zero, and pre-warms googlevideo.com CDN nodes.
  * 4. Main-Thread Telemetry Blocker & Compositor Optimization:
- *    Short-circuits heavy YouTube tracking beacons (/log_event, /api/stats/qoe, /ptracking)
- *    with valid JSON responses while preserving /api/stats/watchtime.
+ *    Short-circuits heavy YouTube diagnostic beacons (/log_event, /api/stats/qoe)
+ *    with valid JSON responses while preserving /api/stats/watchtime, /ptracking, and /api/stats/atr.
  *
  * Architecture & Planning: Claude Streaming Architect & Argon (Google Antigravity).
  * License: GPL-3.0
@@ -774,8 +774,8 @@
   }
 
   /**
-   * Checks if a URL is a heavy main-thread YouTube telemetry/logging endpoint
-   * (Preserves /api/stats/watchtime so watch history works normally)
+   * Checks if a URL is a heavy main-thread YouTube diagnostic/logging endpoint
+   * (Preserves /api/stats/watchtime, /ptracking, and /api/stats/atr for full YouTube playback & creator attribution compliance)
    * @param {string} urlStr
    * @returns {boolean}
    */
@@ -783,14 +783,16 @@
     if (!state.config.enabled || typeof urlStr !== 'string') {
       return false;
     }
-    if (urlStr.includes('/api/stats/watchtime')) {
+    if (
+      urlStr.includes('/api/stats/watchtime') ||
+      urlStr.includes('/ptracking') ||
+      urlStr.includes('/api/stats/atr')
+    ) {
       return false;
     }
     return (
       urlStr.includes('/youtubei/v1/log_event') ||
-      urlStr.includes('/api/stats/qoe') ||
-      urlStr.includes('/api/stats/atr') ||
-      urlStr.includes('/ptracking')
+      urlStr.includes('/api/stats/qoe')
     );
   }
 

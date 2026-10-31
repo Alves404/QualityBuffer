@@ -7,7 +7,8 @@
     "start": "node backend/node-server/server.js",
     "telemetry:server": "node backend/node-server/server.js",
     "telemetry:analyze": "ruby backend/ruby-analyzer/telemetry_analyzer.rb",
-    "verify": "node -c src/background/service-worker.js && node -c src/content/page-hook.js && node -c src/content/content-controller.js && node -c src/popup/popup.js && node -c backend/node-server/server.js"
+    "build:cws": "node scripts/build-cws.js",
+    "verify": "node -c src/background/service-worker.js && node -c src/content/page-hook.js && node -c src/content/content-controller.js && node -c src/popup/popup.js && node -c backend/node-server/server.js && node -c scripts/build-cws.js"
   },
   "repository": {
     "type": "git",

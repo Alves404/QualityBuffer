@@ -22,6 +22,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   - Added full English documentation site and updated technical documentation with direct GitHub Release `.zip` download links.
 - **SABR `Content-Length` Throughput Inspection (`src/background/service-worker.js`):**
   - Reads `Content-Length` response headers on multiplexed SABR `videoplayback` responses to compute exact Mbps throughput and chunk sizes.
+- **Chrome Web Store Publication & Policy Compliance Suite (`chrome-web-store/`, `scripts/build-cws.js`, `PRIVACY_POLICY.md`):**
+  - Replaced broad `"tabs"` permission with `"activeTab"` and removed `"http://localhost:3456/*"` from required `host_permissions` (relying on native CORS for optional local developer telemetry) to follow the Chrome Web Store Principle of Least Privilege.
+  - Optimized `manifest.json` `"description"` to 122 characters (strictly within the Chrome Web Store 132-character limit).
+  - Preserved `/ptracking` and `/api/stats/atr` alongside `/api/stats/watchtime` in `isHeavyTelemetryEndpoint` for full YouTube playback and creator attribution compliance.
+  - Added dedicated `chrome-web-store/` directory containing the isolated production build (`chrome-web-store/My-Quality-4k-CWS/`), ready-to-upload `My-Quality-4k-ChromeWebStore-v2.1.0.zip`, `STORE_LISTING_GUIDE.md`, and `PRIVACY_POLICY.md`.
 
 ### Fixed
 - Resolved `Uncaught Error: Extension context invalidated` in `src/content/content-controller.js` when reloading the extension while a YouTube tab remains open.

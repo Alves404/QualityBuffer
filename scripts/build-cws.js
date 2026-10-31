@@ -1,0 +1,122 @@
+/**
+ * My Quality 4k - Chrome Web Store Publication Package Builder & Validator
+ *
+ * Verifies Chrome Web Store Manifest V3 policy compliance (description <= 132 chars,
+ * least-privilege permissions, zero remote code, required icons) and builds a clean,
+ * ready-to-publish unpacked directory and ZIP archive in ./chrome-web-store/.
+ *
+ * Assisted engineering by Gemini 4 Argon (Google Antigravity).
+ * License: GPL-3.0
+ */
+
+'use strict';
+
+const fs = require('fs');
+const path = require('path');
+const { execSync } = require('child_process');
+
+const ROOT_DIR = path.resolve(__dirname, '..');
+const CWS_ROOT = path.join(ROOT_DIR, 'chrome-web-store');
+const CWS_UNPACKED_DIR = path.join(CWS_ROOT, 'My-Quality-4k-CWS');
+
+function copyRecursiveSync(src, dest) {
+  const stat = fs.statSync(src);
+  if (stat.isDirectory()) {
+    fs.mkdirSync(dest, { recursive: true });
+    for (const entry of fs.readdirSync(src)) {
+      copyRecursiveSync(path.join(src, entry), path.join(dest, entry));
+    }
+  } else {
+    fs.mkdirSync(path.dirname(dest), { recursive: true });
+    fs.copyFileSync(src, dest);
+  }
+}
+
+function validateManifest(manifestPath) {
+  const raw = fs.readFileSync(manifestPath, 'utf8');
+  const manifest = JSON.parse(raw);
+
+  if (manifest.manifest_version !== 3) {
+    throw new Error('Manifest must use manifest_version: 3');
+  }
+  if (!manifest.description || manifest.description.length > 132) {
+    throw new Error(
+      `Manifest description length (${manifest.description ? manifest.description.length : 0}) exceeds Chrome Web Store 132-character limit`
+    );
+  }
+  if (Array.isArray(manifest.permissions) && manifest.permissions.includes('tabs')) {
+    throw new Error('Manifest should use "activeTab" instead of broad "tabs" permission for CWS compliance');
+  }
+  if (
+    Array.isArray(manifest.host_permissions) &&
+    manifest.host_permissions.some((h) => h.includes('localhost'))
+  ) {
+    throw new Error('Manifest host_permissions must not include localhost for CWS production package');
+  }
+
+  for (const size of ['16', '32', '48', '128']) {
+    const iconRel = manifest.icons && manifest.icons[size];
+    if (!iconRel || !fs.existsSync(path.join(ROOT_DIR, iconRel))) {
+      throw new Error(`Missing required icon size ${size}: ${iconRel}`);
+    }
+  }
+
+  return manifest;
+}
+
+function buildChromeWebStorePackage() {
+  console.log('[CWS-Builder] Validating manifest.json against Chrome Web Store policies...');
+  const manifest = validateManifest(path.join(ROOT_DIR, 'manifest.json'));
+  console.log(
+    `[CWS-Builder] Manifest valid: ${manifest.name} v${manifest.version} (description: ${manifest.description.length}/132 chars)`
+  );
+
+  // Clean previous unpacked publication build
+  if (fs.existsSync(CWS_UNPACKED_DIR)) {
+    fs.rmSync(CWS_UNPACKED_DIR, { recursive: true, force: true });
+  }
+  fs.mkdirSync(CWS_UNPACKED_DIR, { recursive: true });
+
+  const includeItems = [
+    'manifest.json',
+    'LICENSE',
+    'PRIVACY_POLICY.md',
+    'src',
+    path.join('assets', 'icons')
+  ];
+
+  for (const item of includeItems) {
+    const srcPath = path.join(ROOT_DIR, item);
+    const destPath = path.join(CWS_UNPACKED_DIR, item);
+    copyRecursiveSync(srcPath, destPath);
+  }
+
+  const cwsZipName = `My-Quality-4k-ChromeWebStore-v${manifest.version}.zip`;
+  const cwsZipPath = path.join(CWS_ROOT, cwsZipName);
+  const stdZipName = `My-Quality-4k-v${manifest.version}.zip`;
+  const stdZipPath = path.join(CWS_ROOT, stdZipName);
+
+  if (fs.existsSync(cwsZipPath)) {
+    fs.unlinkSync(cwsZipPath);
+  }
+  if (fs.existsSync(stdZipPath)) {
+    fs.unlinkSync(stdZipPath);
+  }
+
+  if (process.platform === 'win32') {
+    execSync(
+      `powershell -NoProfile -Command "Compress-Archive -Path '${CWS_UNPACKED_DIR}\\*' -DestinationPath '${cwsZipPath}' -Force"`,
+      { stdio: 'inherit' }
+    );
+  } else {
+    execSync(`cd "${CWS_UNPACKED_DIR}" && zip -r "${cwsZipPath}" .`, { stdio: 'inherit' });
+  }
+
+  fs.copyFileSync(cwsZipPath, stdZipPath);
+
+  console.log(`[CWS-Builder] Unpacked publication folder ready: ${CWS_UNPACKED_DIR}`);
+  console.log(`[CWS-Builder] Chrome Web Store ZIP archive ready: ${cwsZipPath}`);
+  console.log(`[CWS-Builder] Standard Release ZIP archive ready: ${stdZipPath}`);
+}
+
+buildChromeWebStorePackage();

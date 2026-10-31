@@ -3,7 +3,7 @@
   "name": "My Quality 4k",
   "short_name": "MyQuality4k",
   "version": "2.1.0",
-  "description": "Open Source browser extension that unlocks deep multi-minute 4K YouTube pre-buffering, MSE stability, and hardware codec selection for low-to-mid-range PCs.",
+  "description": "Unlocks multi-minute 4K YouTube pre-buffering, MSE buffer stability, and hardware VP9 codec selection for smooth playback.",
   "author": "Joao Vitor Magalhaes Alves (https://github.com/Alves404) — AI-Assisted Development by Gemini 4 Argon",
   "homepage_url": "https://github.com/Alves404/My-Quality-4k",
   "icons": {
@@ -24,14 +24,13 @@
   },
   "permissions": [
     "storage",
-    "tabs",
+    "activeTab",
     "scripting",
     "webRequest"
   ],
   "host_permissions": [
     "*://*.youtube.com/*",
-    "*://*.googlevideo.com/*",
-    "http://localhost:3456/*"
+    "*://*.googlevideo.com/*"
   ],
   "background": {
     "service_worker": "src/background/service-worker.js"

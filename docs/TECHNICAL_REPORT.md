@@ -40,7 +40,7 @@ Intercepts `MediaSource.isTypeSupported()`, `HTMLMediaElement.prototype.canPlayT
 Small timestamp discontinuities (e.g., `0.02s` gaps between segments) cause the HTML5 `<video>` element to enter a stalled waiting state (`readyState < 3`). The extension's monitor loop inspects `video.buffered` ranges and automatically advances `video.currentTime` across micro-gaps (`nextGapStart + 0.02s`).
 
 ### 2.4. Compositor & Telemetry Overhead
-Neutralizes YouTube's GPU-heavy Ambient Mode (`#cinematic-container`), promotes `<video class="html5-main-video">` to an isolated hardware compositor layer, and short-circuits main-thread telemetry beacons (`/youtubei/v1/log_event`, `/api/stats/qoe`, `/ptracking`) while preserving `/api/stats/watchtime`.
+Neutralizes YouTube's GPU-heavy Ambient Mode (`#cinematic-container`), promotes `<video class="html5-main-video">` to an isolated hardware compositor layer, and short-circuits main-thread diagnostic beacons (`/youtubei/v1/log_event`, `/api/stats/qoe`) while preserving `/api/stats/watchtime`, `/ptracking`, and `/api/stats/atr`.
 
 ---
 

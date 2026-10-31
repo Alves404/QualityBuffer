@@ -15,7 +15,9 @@ By combining **SABR (Server-Driven Adaptive Bitrate) & Policy Byte-Cap Unlocking
 ## Direct Download & Documentation
 
 * **Download Latest Release (v2.1.0 Ready-to-Use ZIP):** [My-Quality-4k-v2.1.0.zip](https://github.com/Alves404/My-Quality-4k/releases/download/v2.1.0/My-Quality-4k-v2.1.0.zip)
+* **Chrome Web Store Submission Package (ZIP):** [My-Quality-4k-ChromeWebStore-v2.1.0.zip](https://github.com/Alves404/My-Quality-4k/releases/download/v2.1.0/My-Quality-4k-ChromeWebStore-v2.1.0.zip)
 * **All GitHub Releases:** [github.com/Alves404/My-Quality-4k/releases](https://github.com/Alves404/My-Quality-4k/releases)
+* **Privacy Policy (Chrome Web Store Compliance):** [`PRIVACY_POLICY.md`](PRIVACY_POLICY.md)
 * **Documentation Website:** [`docs/index.html`](docs/index.html)
 * **Engineering Technical Report:** [`docs/TECHNICAL_REPORT.md`](docs/TECHNICAL_REPORT.md)
 
@@ -85,13 +87,20 @@ Many computers equipped with 4-core processors (e.g., Intel Core i3) and entry-l
 
 ```text
 My-Quality-4k/
-├── manifest.json                 # Chrome Extension Manifest V3 configuration (v2.1.0)
-├── package.json                  # Verification and backend execution scripts
+├── manifest.json                 # Chrome Extension Manifest V3 configuration (v2.1.0, CWS compliant)
+├── package.json                  # Verification, CWS packager, and backend execution scripts
+├── PRIVACY_POLICY.md             # Official Zero-Data-Collection Privacy Policy for Chrome Web Store
 ├── LICENSE                       # GNU GPLv3 (Copyleft Open Source) License
 ├── README.md                     # Main English documentation
 ├── CONTRIBUTING.md               # Open Source contributor guidelines
 ├── CODE_OF_CONDUCT.md            # Contributor Covenant Code of Conduct
 ├── CHANGELOG.md                  # Version history and release notes
+├── chrome-web-store/             # Dedicated Chrome Web Store publication folder & ready-to-upload ZIP
+│   ├── My-Quality-4k-CWS/        # Clean unpacked production build for Chrome Web Store
+│   ├── My-Quality-4k-ChromeWebStore-v2.1.0.zip
+│   └── STORE_LISTING_GUIDE.md    # Ready-to-paste CWS Privacy & Permission justifications
+├── scripts/
+│   └── build-cws.js              # Automated Chrome Web Store validator & ZIP packager
 ├── assets/
 │   ├── icons/                    # Pure Black & Gemini Light Blue Play Triangle icons (16, 32, 48, 128px)
 │   └── images/                   # README visual assets
