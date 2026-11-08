@@ -33,6 +33,10 @@
 
   <nav class="tab-nav">
     <button type="button" class="tab-btn active" data-tab="tab-dashboard" data-i18n="tabControls">Controls</button>
+    <button type="button" class="tab-btn" data-tab="tab-downloader">
+      <span data-i18n="tabDownloader">Downloader</span>
+      <span class="tab-count-badge" id="downloader-count-badge" style="display: none;">0</span>
+    </button>
     <button type="button" class="tab-btn" data-tab="tab-about" data-i18n="tabAbout">About &amp; Credits</button>
   </nav>
 
@@ -219,19 +223,54 @@
       </div>
     </section>
 
-    <!-- TAB 2: ABOUT & CREDITS -->
+    <!-- TAB 2: WEB VIDEO & V12 HLS DOWNLOADER -->
+    <section id="tab-downloader" class="tab-panel">
+      <div class="downloader-toolbar">
+        <div class="downloader-host-info">
+          <span class="metric-label" data-i18n="dlActiveTabLabel">Active Tab</span>
+          <strong class="downloader-host-name" id="downloader-tab-host">Current Page</strong>
+        </div>
+        <button type="button" id="btn-refresh-media" class="icon-btn" title="Refresh detected streams">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="23 4 23 10 17 10"></polyline>
+            <polyline points="1 20 1 14 7 14"></polyline>
+            <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
+          </svg>
+        </button>
+      </div>
+
+      <div id="downloader-empty-state" class="empty-state">
+        <div class="empty-icon-circle">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+            <polyline points="7 10 12 15 17 10"></polyline>
+            <line x1="12" y1="15" x2="12" y2="3"></line>
+          </svg>
+        </div>
+        <h2 class="empty-title" data-i18n="dlEmptyTitle">No video streams detected</h2>
+        <p class="empty-desc" data-i18n="dlEmptyDesc">Play a video on the active page to capture HLS (M3U8 / AES-128) or direct MP4/WebM streams automatically.</p>
+      </div>
+
+      <div id="downloader-media-list" class="media-list" style="display: none;"></div>
+
+      <div class="downloader-hint" data-i18n="dlHint">
+        V12 Engine: 12-worker concurrent HLS (M3U8 / AES-128) &amp; direct MP4/WebM downloader
+      </div>
+    </section>
+
+    <!-- TAB 3: ABOUT & CREDITS -->
     <section id="tab-about" class="tab-panel">
       <div class="about-card">
-        <h2 data-i18n="aboutArchTitle">Open Source Architecture v2.1.0</h2>
+        <h2 data-i18n="aboutArchTitle">Open Source Architecture v2.2.0</h2>
         <p data-i18n="aboutArchBody">
-          My Quality 4k unlocks YouTube SABR 35 MB (16s) internal buffer cap to 512 MB, pre-buffering 1, 2, or 3 full minutes of 4K (2160p) video while enforcing hardware VP9 SDR decoding and zero-reload live updates.
+          My Quality 4k unlocks YouTube SABR 35 MB (16s) internal buffer cap to 512 MB for 1, 2, or 3 full minutes of 4K (2160p) pre-buffering, enforces hardware VP9 SDR decoding, and integrates the V12 12-worker HLS (M3U8 / AES-128) &amp; MP4 web video downloader.
         </p>
       </div>
 
       <div class="about-card highlight-box">
         <h2 data-i18n="aboutAiTitle">AI-Assisted Development Notice (Gemini 4 Argon)</h2>
         <p data-i18n="aboutAiBody">
-          Prior to the main credits, it is transparently recorded that the SABR 512 MB unlocker, hardware codec hooks, MSE buffer stabilization, zero-overhead multi-language engine, and project architecture were developed with the direct AI-assisted engineering of Gemini 4 Argon (Google Antigravity).
+          Prior to the main credits, it is transparently recorded that the SABR 512 MB unlocker, V12 async CDN/key warm-up engine, hardware codec hooks, MSE buffer stabilization, and project architecture were developed with the direct AI-assisted engineering of Gemini 4 Argon (Google Antigravity).
         </p>
       </div>
 
@@ -246,10 +285,10 @@
             <span data-i18n="creditRepo">Official Open Source Repository:</span>
             <a class="credit-link" href="https://github.com/Alves404/My-Quality-4k" target="_blank" rel="noopener noreferrer">github.com/Alves404/My-Quality-4k</a>
           </li>
-          <li data-i18n="creditAi">AI-Assisted Development: Gemini 4 Argon (Google Antigravity) — Co-architecture of the 512 MB SABR engine, hardware codec filters, and MSE stabilization.</li>
+          <li data-i18n="creditAi">AI-Assisted Development: Gemini 4 Argon (Google Antigravity) — Co-architecture of the 512 MB SABR engine, V12 HLS downloader, and MSE stabilization.</li>
           <li data-i18n="creditI18n">Supported Languages (Zero-Overhead): English (EN - Default), Portugues (PT), and Espanol (ES) with automatic browser detection.</li>
           <li data-i18n="creditLicense">Open Source License: GNU General Public License v3.0 (GPL-3.0 Copyleft) — 100% free, open, and auditable source code.</li>
-          <li data-i18n="creditVersion">Version: 2.1.0 (Manifest V3 — 512 MB SABR Pre-Buffer &amp; Hardware VP9 SDR Decoding Engine).</li>
+          <li data-i18n="creditVersion">Version: 2.2.0 (Manifest V3 — 512 MB SABR Pre-Buffer, Hardware VP9 SDR &amp; V12 HLS/MP4 Downloader).</li>
         </ul>
       </div>
     </section>
@@ -257,9 +296,10 @@
 
   <footer class="app-footer">
     <span id="status-indicator">Status: 4K Deep Pre-Buffer Active</span>
-    <span class="mono-text">v2.1.0 | GPL-3.0</span>
+    <span class="mono-text">v2.2.0 | GPL-3.0</span>
   </footer>
 
+  <script src="../core/utils.js"></script>
   <script src="popup.js"></script>
 </body>
 </html>
