@@ -688,6 +688,27 @@
               pc.streamSelectionConfig.maxBitrate = '999999999';
             }
           }
+
+          // V12 Async CDN Origin Warm-up: pre-warm high-resolution video/audio CDN nodes at millisecond zero
+          if (state.config.parallelPrefetch) {
+            const sd = parsed.streamingData || (parsed.playerResponse && parsed.playerResponse.streamingData);
+            if (sd && Array.isArray(sd.adaptiveFormats)) {
+              for (let i = 0; i < sd.adaptiveFormats.length; i += 1) {
+                const fmt = sd.adaptiveFormats[i];
+                if (fmt && typeof fmt.url === 'string') {
+                  const isHighResVideo = (typeof fmt.height === 'number' && fmt.height >= 1080) || fmt.itag === 313 || fmt.itag === 315;
+                  const isPrimaryAudio = fmt.itag === 251 || fmt.itag === 140;
+                  if (isHighResVideo || isPrimaryAudio) {
+                    try {
+                      ensureCdnPreconnect(new URL(fmt.url).origin);
+                    } catch (err) {
+                      // Ignore malformed URLs
+                    }
+                  }
+                }
+              }
+            }
+          }
         }
       } catch (e) {
         // Ignore
@@ -751,8 +772,8 @@
   }
 
   /**
-   * Injects a <link rel="preconnect"> tag for googlevideo.com CDN hosts to eliminate
-   * TCP/TLS/QUIC handshake latency on upcoming video chunks.
+   * Injects <link rel="dns-prefetch"> and <link rel="preconnect"> tags for media CDN hosts
+   * (V12 Async Warm-up pattern) to eliminate DNS/TCP/TLS/QUIC handshake latency on 4K chunks.
    * @param {string} origin
    */
   function ensureCdnPreconnect(origin) {
@@ -761,6 +782,11 @@
     }
     state.preconnectedOrigins.add(origin);
     try {
+      const dnsLink = document.createElement('link');
+      dnsLink.rel = 'dns-prefetch';
+      dnsLink.href = origin;
+      document.head.appendChild(dnsLink);
+
       const link = document.createElement('link');
       link.rel = 'preconnect';
       link.href = origin;
@@ -769,6 +795,24 @@
       state.stats.prefetchedChunks += 1;
     } catch (e) {
       // Ignore DOM errors
+    }
+  }
+
+  /**
+   * Pre-warms media CDN origins discovered via fetch or XMLHttpRequest (V12 hook pattern).
+   * @param {string} urlStr
+   */
+  function inspectAndWarmMediaUrl(urlStr) {
+    if (!state.config.enabled || !state.config.parallelPrefetch || !urlStr || typeof urlStr !== 'string') {
+      return;
+    }
+    if (urlStr.includes('googlevideo.com/videoplayback') || urlStr.includes('.m3u8')) {
+      try {
+        const parsedUrl = new URL(urlStr, window.location.origin);
+        ensureCdnPreconnect(parsedUrl.origin);
+      } catch (e) {
+        // Ignore URL parse error
+      }
     }
   }
 
@@ -796,8 +840,9 @@
   }
 
   /**
-   * PILAR 3.3 & PILAR 4.2: Hooks window.fetch and navigator.sendBeacon for:
-   * - Automatic CDN origin pre-warming
+   * PILAR 3.3 & PILAR 4.2: Hooks window.fetch, XMLHttpRequest.prototype.open (V12 pattern),
+   * and navigator.sendBeacon for:
+   * - Automatic CDN origin pre-warming across both Fetch and XHR pipelines
    * - Blocking CPU-draining main-thread telemetry serialization during 4K playback
    *   with valid JSON {} responses
    */
@@ -810,6 +855,19 @@
           return true;
         }
         return originalSendBeacon(url, data);
+      };
+    }
+
+    if (typeof window.XMLHttpRequest !== 'undefined' && window.XMLHttpRequest.prototype) {
+      const originalXhrOpen = window.XMLHttpRequest.prototype.open;
+      window.XMLHttpRequest.prototype.open = function (method, url) {
+        try {
+          const urlStr = typeof url === 'string' ? url : url ? String(url) : '';
+          inspectAndWarmMediaUrl(urlStr);
+        } catch (e) {
+          // Never interrupt XHR open
+        }
+        return originalXhrOpen.apply(this, arguments);
       };
     }
 
@@ -830,14 +888,7 @@
         );
       }
 
-      if (state.config.enabled && state.config.parallelPrefetch && urlStr.includes('googlevideo.com/videoplayback')) {
-        try {
-          const parsedUrl = new URL(urlStr, window.location.origin);
-          ensureCdnPreconnect(parsedUrl.origin);
-        } catch (e) {
-          // Ignore URL parse error
-        }
-      }
+      inspectAndWarmMediaUrl(urlStr);
 
       return originalFetch(input, init);
     };

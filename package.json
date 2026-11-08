@@ -1,10 +1,11 @@
 {
   "name": "my-quality-4k",
-  "version": "2.1.0",
-  "description": "Open Source browser extension that optimizes 4K YouTube video playback, MSE buffer stability, hardware codec selection, and HLS/MP4 web video downloading.",
+  "version": "2.2.0",
+  "description": "Open Source browser extension that optimizes 4K YouTube video playback, MSE buffer stability, hardware codec selection, and V12 HLS/MP4 web video downloading.",
   "scripts": {
+    "test": "node tests/test-core.js",
     "build:cws": "node scripts/build-cws.js",
-    "verify": "node -c src/background/service-worker.js && node -c src/content/page-hook.js && node -c src/content/content-controller.js && node -c src/popup/popup.js && node -c scripts/build-cws.js"
+    "verify": "node -c src/background/service-worker.js && node -c src/core/utils.js && node -c src/core/hls-downloader.js && node -c src/content/page-hook.js && node -c src/content/content-controller.js && node -c src/popup/popup.js && node -c scripts/build-cws.js"
   },
   "repository": {
     "type": "git",
@@ -18,8 +19,9 @@
     "manifest-v3",
     "mse",
     "buffer-optimization",
+    "hls-downloader",
+    "m3u8",
     "vp9",
-    "av1",
     "hardware-acceleration",
     "open-source"
   ],
