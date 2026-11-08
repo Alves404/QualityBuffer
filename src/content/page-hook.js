@@ -50,8 +50,7 @@
     block60fps: false,
     stabilizeBuffer: true,
     disableAmbientMode: true,
-    smartDropGuard: true,
-    telemetrySync: false
+    smartDropGuard: true
   };
 
   const QUALITY_RANK = [

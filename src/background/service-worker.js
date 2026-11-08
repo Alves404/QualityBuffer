@@ -23,9 +23,7 @@ const DEFAULT_CONFIG = {
   block60fps: false,
   stabilizeBuffer: true,
   disableAmbientMode: true,
-  smartDropGuard: true,
-  telemetrySync: false,
-  telemetryEndpoint: 'http://localhost:3456/api/telemetry'
+  smartDropGuard: true
 };
 
 /**
@@ -181,38 +179,6 @@ function recordNetworkLog(entry) {
     }
   } else {
     networkSummary.failedChunks += 1;
-  }
-
-  // Forward to local Telemetry Backend if enabled by user
-  if (activeConfig.telemetrySync && activeConfig.telemetryEndpoint) {
-    sendTelemetryToLocalBackend(entry);
-  }
-}
-
-/**
- * Sends telemetry record to the local Node.js / Ruby Telemetry Server
- * @param {object} logEntry
- */
-function sendTelemetryToLocalBackend(logEntry) {
-  try {
-    fetch(activeConfig.telemetryEndpoint, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        source: 'My-Quality-4k-Extension',
-        version: '2.1.0',
-        timestamp: Date.now(),
-        networkChunk: logEntry,
-        playerMetrics: latestPlayerTelemetry,
-        summary: networkSummary
-      })
-    }).catch(function () {
-      // Silent fail if local backend server is not running
-    });
-  } catch (e) {
-    // Ignore
   }
 }
 

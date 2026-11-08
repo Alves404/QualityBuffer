@@ -25,9 +25,7 @@
     block60fps: false,
     stabilizeBuffer: true,
     disableAmbientMode: true,
-    smartDropGuard: true,
-    telemetrySync: false,
-    telemetryEndpoint: 'http://localhost:3456/api/telemetry'
+    smartDropGuard: true
   };
 
   let latestPlayerMetrics = null;

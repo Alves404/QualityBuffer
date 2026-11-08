@@ -1,14 +1,10 @@
 {
   "name": "my-quality-4k",
   "version": "2.1.0",
-  "description": "Open Source browser extension and telemetry suite that optimizes 4K YouTube video playback, MSE buffer stability, and hardware codec selection on low-to-mid-range PCs.",
-  "main": "backend/node-server/server.js",
+  "description": "Open Source browser extension that optimizes 4K YouTube video playback, MSE buffer stability, hardware codec selection, and HLS/MP4 web video downloading.",
   "scripts": {
-    "start": "node backend/node-server/server.js",
-    "telemetry:server": "node backend/node-server/server.js",
-    "telemetry:analyze": "ruby backend/ruby-analyzer/telemetry_analyzer.rb",
     "build:cws": "node scripts/build-cws.js",
-    "verify": "node -c src/background/service-worker.js && node -c src/content/page-hook.js && node -c src/content/content-controller.js && node -c src/popup/popup.js && node -c backend/node-server/server.js && node -c scripts/build-cws.js"
+    "verify": "node -c src/background/service-worker.js && node -c src/content/page-hook.js && node -c src/content/content-controller.js && node -c src/popup/popup.js && node -c scripts/build-cws.js"
   },
   "repository": {
     "type": "git",

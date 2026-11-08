@@ -260,9 +260,7 @@
     block60fps: false,
     stabilizeBuffer: true,
     disableAmbientMode: true,
-    smartDropGuard: true,
-    telemetrySync: false,
-    telemetryEndpoint: 'http://localhost:3456/api/telemetry'
+    smartDropGuard: true
   };
 
   const QUALITY_LABELS = {
@@ -305,7 +303,6 @@
   const elToggleStabilizeBuffer = document.getElementById('toggle-stabilize-buffer');
   const elToggleDisableAmbient = document.getElementById('toggle-disable-ambient');
   const elToggleDropGuard = document.getElementById('toggle-drop-guard');
-  const elToggleTelemetrySync = document.getElementById('toggle-telemetry-sync');
 
   const elMetricResolution = document.getElementById('metric-resolution');
   const elMetricCodec = document.getElementById('metric-codec');
@@ -328,8 +325,7 @@
     elToggleBlock60fps,
     elToggleStabilizeBuffer,
     elToggleDisableAmbient,
-    elToggleDropGuard,
-    elToggleTelemetrySync
+    elToggleDropGuard
   ];
 
   /**
@@ -445,9 +441,7 @@
       block60fps: elToggleBlock60fps ? elToggleBlock60fps.checked : false,
       stabilizeBuffer: elToggleStabilizeBuffer ? elToggleStabilizeBuffer.checked : true,
       disableAmbientMode: elToggleDisableAmbient ? elToggleDisableAmbient.checked : true,
-      smartDropGuard: elToggleDropGuard ? elToggleDropGuard.checked : true,
-      telemetrySync: elToggleTelemetrySync ? elToggleTelemetrySync.checked : false,
-      telemetryEndpoint: DEFAULT_CONFIG.telemetryEndpoint
+      smartDropGuard: elToggleDropGuard ? elToggleDropGuard.checked : true
     };
   }
 
@@ -473,8 +467,7 @@
       'block60fps',
       'stabilizeBuffer',
       'disableAmbientMode',
-      'smartDropGuard',
-      'telemetrySync'
+      'smartDropGuard'
     ];
     for (let i = 0; i < keys.length; i += 1) {
       const k = keys[i];
@@ -550,7 +543,6 @@
     elToggleStabilizeBuffer.checked = Boolean(cfg.stabilizeBuffer);
     elToggleDisableAmbient.checked = Boolean(cfg.disableAmbientMode);
     elToggleDropGuard.checked = Boolean(cfg.smartDropGuard);
-    elToggleTelemetrySync.checked = Boolean(cfg.telemetrySync);
 
     applyLanguage(currentLang);
   }
@@ -729,8 +721,7 @@
     elToggleBlock60fps,
     elToggleStabilizeBuffer,
     elToggleDisableAmbient,
-    elToggleDropGuard,
-    elToggleTelemetrySync
+    elToggleDropGuard
   ].forEach(function (inputEl) {
     if (inputEl) {
       inputEl.addEventListener('change', updateApplyStatusIndicator);
