@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>My Quality 4k v2.1.0 - Official Documentation &amp; Release Download</title>
+  <title>My Quality 4k v2.2.0 - Official Documentation &amp; Release Download</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -341,7 +341,7 @@
       <div class="nav-links">
         <a href="#architecture">Architecture</a>
         <a href="#installation">Installation</a>
-        <a href="#telemetry">Developer Telemetry</a>
+        <a href="#downloader">V12 Downloader</a>
         <a href="#credits">Credits &amp; License</a>
         <a href="https://github.com/Alves404/My-Quality-4k/releases/latest">Releases</a>
       </div>
@@ -351,14 +351,14 @@
   <main class="container">
     <div class="hero-shell">
       <section class="hero">
-        <span class="version-pill">RELEASE v2.1.0 | MANIFEST V3 | GNU GPLv3</span>
-        <h1>Unlock Multi-Minute <span>4K YouTube Pre-Buffering</span> on Any PC</h1>
+        <span class="version-pill">RELEASE v2.2.0 | MANIFEST V3 | GNU GPLv3</span>
+        <h1>Unlock Multi-Minute <span>4K YouTube Pre-Buffering</span> &amp; V12 HLS/MP4 Downloading</h1>
         <p>
-          My Quality 4k removes YouTube's hardcoded 35 MB (16-second) 4K SABR buffer cap to pre-load 1, 2, or 3 upcoming minutes of 2160p video while enforcing hardware-accelerated VP9 SDR decoding and zero-reload live configuration updates.
+          My Quality 4k removes YouTube's hardcoded 35 MB (16-second) 4K SABR buffer cap to pre-load 1, 2, or 3 upcoming minutes of 2160p video while enforcing hardware-accelerated VP9 SDR decoding and integrating a 12-worker HLS (M3U8 / AES-128) &amp; MP4 web video downloader.
         </p>
         <div class="cta-row">
-          <a class="btn-primary" href="https://github.com/Alves404/My-Quality-4k/releases/download/v2.1.0/My-Quality-4k-v2.1.0.zip">
-            Download My-Quality-4k-v2.1.0.zip
+          <a class="btn-primary" href="https://github.com/Alves404/My-Quality-4k/releases/download/v2.2.0/My-Quality-4k-v2.2.0.zip">
+            Download My-Quality-4k-v2.2.0.zip
           </a>
           <a class="btn-outline" href="https://github.com/Alves404/My-Quality-4k">
             View Source on GitHub
@@ -367,7 +367,7 @@
       </section>
     </div>
 
-    <h2 id="architecture" class="section-title">1. Core Engineering Architecture (v2.1.0)</h2>
+    <h2 id="architecture" class="section-title">1. Core Engineering Architecture (v2.2.0)</h2>
     <div class="grid-2">
       <div class="card">
         <h3>512 MB SABR &amp; Policy Unlocker</h3>
@@ -398,34 +398,32 @@
     <h2 id="installation" class="section-title">2. Installation &amp; Usage</h2>
     <div class="card">
       <ol class="steps-list">
-        <li>Download <a href="https://github.com/Alves404/My-Quality-4k/releases/download/v2.1.0/My-Quality-4k-v2.1.0.zip"><strong>My-Quality-4k-v2.1.0.zip</strong></a> from GitHub Releases and extract the archive to a permanent folder.</li>
+        <li>Download <a href="https://github.com/Alves404/My-Quality-4k/releases/download/v2.2.0/My-Quality-4k-v2.2.0.zip"><strong>My-Quality-4k-v2.2.0.zip</strong></a> from GitHub Releases and extract the archive to a permanent folder.</li>
         <li>Open Google Chrome, Brave, or Edge and navigate to <code>chrome://extensions/</code>.</li>
         <li>Enable <strong>Developer mode</strong> in the top-right corner.</li>
         <li>Click <strong>Load unpacked</strong> in the top-left corner and select the extracted folder containing <code>manifest.json</code>.</li>
-        <li>Open any 4K YouTube video, click the <strong>Video Player</strong> extension icon, choose your settings, and click <strong>Aplicar Agora</strong> (no page reload required).</li>
+        <li>Open any 4K YouTube video or web video page, click the <strong>Video Player</strong> extension icon, and switch between <strong>Controls</strong> and <strong>Downloader</strong>.</li>
       </ol>
     </div>
 
-    <h2 id="telemetry" class="section-title">3. Local Telemetry Services (Node.js &amp; Ruby) — Optional for Developers</h2>
+    <h2 id="downloader" class="section-title">3. V12 Async Warm-up &amp; 12-Worker HLS/MP4 Downloader</h2>
     <div class="card">
       <p style="margin-bottom: 10px;">
-        <strong>Developer-Only Optional Feature (Zero End-User Impact):</strong> The browser extension operates <strong>100% standalone</strong>. All 4K pre-buffering (60s/120s/180s), 512 MB SABR unlocking, hardware codec filtering, and MSE stabilization work natively in Chrome without running any backend service. The Node.js and Ruby scripts below are <strong>strictly optional for developers</strong> who want to persist raw network logs to disk or compute statistical P50/P95 CDN routing reports; not running them has <strong>zero impact on the end-user experience</strong>.
+        <strong>Standalone &amp; Zero-Telemetry Architecture:</strong> The extension operates <strong>100% locally in your browser</strong> with zero telemetry servers. The integrated <strong>Downloader</strong> tab captures standard HLS (<code>.m3u8</code> with <code>AES-128</code> encryption) and direct <code>.mp4</code>/<code>.webm</code> streams on web pages, automatically selecting the highest-bandwidth stream, pre-warming AES keys in WebCrypto, and downloading with 12 concurrent workers while yielding the event loop so active 4K playback never drops frames.
       </p>
-      <pre><code># 6.1. Verify Script Syntax Integrity
+      <pre><code># Run Core Unit Tests &amp; Syntax Verification
+npm test
 npm run verify
 
-# 6.2. Start the Node.js Telemetry Ingestion Server (http://localhost:3456)
-npm run telemetry:server
-
-# 6.3. Run the Ruby Statistical Route &amp; Cache Analyzer
-npm run telemetry:analyze</code></pre>
+# Build Chrome Web Store Publication Package
+npm run build:cws</code></pre>
     </div>
 
     <h2 id="credits" class="section-title">4. AI-Assisted Development Notice &amp; Credits</h2>
     <div class="notice-box">
       <h3>AI-Assisted Development Transparency Notice (Gemini 4 Argon)</h3>
       <p>
-        Prior to the main authorship credits, it is transparently recorded that the Open Source architecture of this project, the SABR 512 MB policy unlocker, the MSE buffer stabilization heuristics, the hardware codec interception pipeline, the zero-overhead multi-language engine, the Node.js and Ruby telemetry services, and the technical documentation were developed with the direct assistance of <strong>Gemini 4 Argon (Google Antigravity)</strong>, collaborating in pair programming with the project author.
+        Prior to the main authorship credits, it is transparently recorded that the Open Source architecture of this project, the SABR 512 MB policy unlocker, the V12 Async Warm-up &amp; 12-worker HLS/MP4 downloader engine, the MSE buffer stabilization heuristics, the hardware codec interception pipeline, the zero-overhead multi-language engine, and the technical documentation were developed with the direct assistance of <strong>Gemini 4 Argon (Google Antigravity)</strong>, collaborating in pair programming with the project author.
       </p>
     </div>
 
@@ -434,16 +432,16 @@ npm run telemetry:analyze</code></pre>
       <ul class="steps-list">
         <li><strong>Creator, Lead Author &amp; Maintainer:</strong> Joao Vitor Magalhaes Alves — <a href="https://github.com/Alves404" target="_blank" rel="noopener noreferrer">github.com/Alves404 (<code>@Alves404</code>)</a></li>
         <li><strong>Official Open Source Repository:</strong> <a href="https://github.com/Alves404/My-Quality-4k" target="_blank" rel="noopener noreferrer">https://github.com/Alves404/My-Quality-4k</a></li>
-        <li><strong>AI-Assisted Development:</strong> Gemini 4 Argon (Google Antigravity) — Co-architecture of the 512 MB SABR engine, hardware codec filters, and MSE stabilization</li>
+        <li><strong>AI-Assisted Development:</strong> Gemini 4 Argon (Google Antigravity) — Co-architecture of the 512 MB SABR engine, V12 HLS/MP4 downloader, hardware codec filters, and MSE stabilization</li>
         <li><strong>Supported Languages (Zero-Overhead):</strong> English (<code>EN</code> - Default), Portugues (<code>PT</code>), Espanol (<code>ES</code>) with automatic browser detection</li>
         <li><strong>License:</strong> GNU General Public License v3.0 (<code>GPL-3.0</code> Copyleft Open Source)</li>
-        <li><strong>Version:</strong> <code>2.1.0</code> (Manifest V3 — 512 MB SABR Pre-Buffer &amp; Hardware VP9 SDR Decoding Engine)</li>
+        <li><strong>Version:</strong> <code>2.2.0</code> (Manifest V3 — 512 MB SABR Pre-Buffer, Hardware VP9 SDR &amp; V12 HLS/MP4 Downloader)</li>
       </ul>
     </div>
   </main>
 
   <footer>
-    My Quality 4k v2.1.0 | Distributed under the GNU GPLv3 Open Source License
+    My Quality 4k v2.2.0 | Distributed under the GNU GPLv3 Open Source License
   </footer>
 </body>
 </html>

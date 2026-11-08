@@ -71,9 +71,16 @@ function buildChromeWebStorePackage() {
     `[CWS-Builder] Manifest valid: ${manifest.name} v${manifest.version} (description: ${manifest.description.length}/132 chars)`
   );
 
-  // Clean previous unpacked publication build
+  // Clean previous unpacked publication build and old ZIP archives
   if (fs.existsSync(CWS_UNPACKED_DIR)) {
     fs.rmSync(CWS_UNPACKED_DIR, { recursive: true, force: true });
+  }
+  if (fs.existsSync(CWS_ROOT)) {
+    for (const file of fs.readdirSync(CWS_ROOT)) {
+      if (file.endsWith('.zip')) {
+        fs.unlinkSync(path.join(CWS_ROOT, file));
+      }
+    }
   }
   fs.mkdirSync(CWS_UNPACKED_DIR, { recursive: true });
 
@@ -95,13 +102,6 @@ function buildChromeWebStorePackage() {
   const cwsZipPath = path.join(CWS_ROOT, cwsZipName);
   const stdZipName = `My-Quality-4k-v${manifest.version}.zip`;
   const stdZipPath = path.join(CWS_ROOT, stdZipName);
-
-  if (fs.existsSync(cwsZipPath)) {
-    fs.unlinkSync(cwsZipPath);
-  }
-  if (fs.existsSync(stdZipPath)) {
-    fs.unlinkSync(stdZipPath);
-  }
 
   if (process.platform === 'win32') {
     execSync(

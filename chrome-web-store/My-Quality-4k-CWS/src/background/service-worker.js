@@ -1,11 +1,13 @@
 /**
- * My Quality 4k - Background Service Worker (Manifest V3)
+ * My Quality 4k v2.2 - Background Service Worker (Manifest V3)
  *
- * Monitors googlevideo.com videoplayback network chunks to compute real-time
- * bandwidth throughput (Mbps), CDN node latency, itag stream format analysis,
- * and optional synchronization with the local Telemetry & Route Analysis Server.
+ * Responsibilities:
+ * 1. Passive googlevideo.com chunk monitor for real-time 4K bandwidth throughput (Mbps)
+ *    and CDN node latency (ms) in the Popup dashboard.
+ * 2. Web Video & HLS (.m3u8 / .mp4 / .webm) network detector and per-tab media store
+ *    with V12 anti-pollution filtering and direct file download support.
  *
- * Assisted engineering by Argon (Google Antigravity).
+ * Assisted engineering by Gemini 4 Argon (Google Antigravity).
  * License: GPL-3.0
  */
 
@@ -23,9 +25,7 @@ const DEFAULT_CONFIG = {
   block60fps: false,
   stabilizeBuffer: true,
   disableAmbientMode: true,
-  smartDropGuard: true,
-  telemetrySync: false,
-  telemetryEndpoint: 'http://localhost:3456/api/telemetry'
+  smartDropGuard: true
 };
 
 /**
@@ -55,6 +55,7 @@ const ITAG_MAP = {
 const MAX_LOG_ENTRIES = 60;
 const inFlightRequests = new Map();
 const networkLogs = [];
+const tabMediaStore = new Map();
 
 let activeConfig = Object.assign({}, DEFAULT_CONFIG);
 let latestPlayerTelemetry = null;
@@ -86,9 +87,10 @@ function loadConfiguration() {
 }
 
 /**
- * Updates Chrome extension toolbar badge to reflect current state
+ * Updates Chrome extension toolbar badge globally or for a specific tab
+ * @param {number} [tabId]
  */
-function updateToolbarBadge() {
+function updateToolbarBadge(tabId) {
   if (!chrome.action) {
     return;
   }
@@ -99,9 +101,144 @@ function updateToolbarBadge() {
     return;
   }
 
-  // Keep toolbar icon clean without "4K" overlay so the Video Player logo is fully visible
+  if (typeof tabId === 'number' && tabId >= 0) {
+    const mediaMap = tabMediaStore.get(tabId);
+    const count = mediaMap ? mediaMap.size : 0;
+    chrome.action.setBadgeText({
+      text: count > 0 ? String(count) : '',
+      tabId: tabId
+    });
+    if (count > 0) {
+      chrome.action.setBadgeBackgroundColor({
+        color: '#a8c7fa',
+        tabId: tabId
+      });
+    }
+    return;
+  }
+
   chrome.action.setBadgeText({ text: '' });
 }
+
+// ============================================================================
+// Web Video & HLS Stream Detection (Non-YouTube Pages)
+// ============================================================================
+
+/**
+ * Classifies a media URL or Content-Type into HLS (.m3u8), MP4, or WebM.
+ * Filters out individual TS/M4S fragments, secondary chunklists (V12 filter),
+ * and YouTube/GoogleVideo URLs for full Chrome Web Store compliance.
+ * @param {string} url
+ * @param {string} [contentType=""]
+ */
+function classifyMedia(url, contentType = '') {
+  if (!url || typeof url !== 'string') {
+    return null;
+  }
+
+  const lowerUrl = url.toLowerCase();
+  const lowerType = (contentType || '').toLowerCase();
+
+  // Exclude YouTube/GoogleVideo internal streams and individual segment fragments (V12 filter)
+  if (
+    lowerUrl.includes('youtube.com') ||
+    lowerUrl.includes('youtu.be') ||
+    lowerUrl.includes('googlevideo.com') ||
+    lowerUrl.includes('.ts') ||
+    lowerUrl.includes('.m4s') ||
+    lowerUrl.includes('seg-') ||
+    lowerUrl.includes('fragment') ||
+    lowerUrl.includes('chunklist') ||
+    lowerUrl.includes('audio')
+  ) {
+    return null;
+  }
+
+  if (lowerUrl.includes('.m3u8') || lowerType.includes('mpegurl')) {
+    return {
+      type: 'hls',
+      label: 'HLS Stream (.m3u8)',
+      ext: 'mp4'
+    };
+  }
+
+  if (lowerUrl.includes('.mp4') || lowerType.includes('video/mp4')) {
+    return {
+      type: 'mp4',
+      label: 'Direct Video (MP4)',
+      ext: 'mp4'
+    };
+  }
+
+  if (lowerUrl.includes('.webm') || lowerType.includes('video/webm')) {
+    return {
+      type: 'webm',
+      label: 'Direct Video (WebM)',
+      ext: 'webm'
+    };
+  }
+
+  if (lowerType.startsWith('video/')) {
+    return {
+      type: 'video',
+      label: 'Direct Video',
+      ext: 'mp4'
+    };
+  }
+
+  return null;
+}
+
+/**
+ * Records a detected media stream for a given tabId and updates the tab badge.
+ * @param {number} tabId
+ * @param {string} rawUrl
+ * @param {string} [source="network"]
+ * @param {object} [extraInfo={}]
+ */
+function recordMedia(tabId, rawUrl, source = 'network', extraInfo = {}) {
+  if (typeof tabId !== 'number' || tabId < 0 || !rawUrl) {
+    return;
+  }
+
+  const classification = classifyMedia(rawUrl, extraInfo.contentType);
+  if (!classification) {
+    return;
+  }
+
+  if (!tabMediaStore.has(tabId)) {
+    tabMediaStore.set(tabId, new Map());
+  }
+
+  const mediaMap = tabMediaStore.get(tabId);
+  const urlKey = rawUrl.split('?')[0];
+
+  if (mediaMap.has(urlKey)) {
+    const existing = mediaMap.get(urlKey);
+    if (extraInfo.title && (!existing.title || existing.title === 'Detected Video')) {
+      existing.title = extraInfo.title;
+    }
+    return;
+  }
+
+  const mediaItem = {
+    id: 'media_' + Date.now() + '_' + Math.random().toString(36).substring(2, 8),
+    url: rawUrl,
+    type: classification.type,
+    label: classification.label,
+    ext: classification.ext,
+    source: source,
+    title: extraInfo.title || 'Detected Video',
+    timestamp: Date.now()
+  };
+
+  mediaMap.set(urlKey, mediaItem);
+  updateToolbarBadge(tabId);
+}
+
+// ============================================================================
+// YouTube 4K CDN Throughput & Latency Monitor
+// ============================================================================
 
 /**
  * Parses URL query parameters from a googlevideo.com videoplayback request
@@ -182,43 +319,11 @@ function recordNetworkLog(entry) {
   } else {
     networkSummary.failedChunks += 1;
   }
-
-  // Forward to local Telemetry Backend if enabled by user
-  if (activeConfig.telemetrySync && activeConfig.telemetryEndpoint) {
-    sendTelemetryToLocalBackend(entry);
-  }
 }
 
-/**
- * Sends telemetry record to the local Node.js / Ruby Telemetry Server
- * @param {object} logEntry
- */
-function sendTelemetryToLocalBackend(logEntry) {
-  try {
-    fetch(activeConfig.telemetryEndpoint, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        source: 'My-Quality-4k-Extension',
-        version: '2.1.0',
-        timestamp: Date.now(),
-        networkChunk: logEntry,
-        playerMetrics: latestPlayerTelemetry,
-        summary: networkSummary
-      })
-    }).catch(function () {
-      // Silent fail if local backend server is not running
-    });
-  } catch (e) {
-    // Ignore
-  }
-}
-
-// Hook webRequest lifecycle for googlevideo.com media segments
+// Hook webRequest lifecycle for both googlevideo.com metrics and Web Video/HLS detection
 if (chrome.webRequest) {
-  const filter = { urls: ['*://*.googlevideo.com/videoplayback*'] };
+  const ytFilter = { urls: ['*://*.googlevideo.com/videoplayback*'] };
 
   chrome.webRequest.onBeforeRequest.addListener(function (details) {
     const parsed = parseGoogleVideoUrl(details.url);
@@ -233,12 +338,11 @@ if (chrome.webRequest) {
       parsed
     });
 
-    // Clean up stale entries if map grows too large
     if (inFlightRequests.size > 200) {
       const oldestKey = inFlightRequests.keys().next().value;
       inFlightRequests.delete(oldestKey);
     }
-  }, filter);
+  }, ytFilter);
 
   chrome.webRequest.onCompleted.addListener(
     function (details) {
@@ -288,7 +392,7 @@ if (chrome.webRequest) {
         readaheadBufferMs: tracked.parsed.readaheadBufferMs
       });
     },
-    filter,
+    ytFilter,
     ['responseHeaders']
   );
 
@@ -314,7 +418,54 @@ if (chrome.webRequest) {
       throughputMbps: 0,
       readaheadBufferMs: tracked.parsed.readaheadBufferMs
     });
-  }, filter);
+  }, ytFilter);
+
+  // Web Video & HLS (.m3u8 / .mp4 / .webm) detector across web pages
+  chrome.webRequest.onBeforeRequest.addListener(
+    function (details) {
+      if (details.tabId < 0 || !details.url) {
+        return;
+      }
+
+      // Reset tab media inventory on top-level page navigation without needing broad "tabs" permission
+      if (details.type === 'main_frame' && details.frameId === 0) {
+        tabMediaStore.delete(details.tabId);
+        updateToolbarBadge(details.tabId);
+        return;
+      }
+
+      const lower = details.url.toLowerCase();
+      if (lower.includes('.m3u8') || lower.includes('.mp4') || lower.includes('.webm')) {
+        recordMedia(details.tabId, details.url, 'network');
+      }
+    },
+    { urls: ['<all_urls>'] }
+  );
+
+  chrome.webRequest.onHeadersReceived.addListener(
+    function (details) {
+      if (details.tabId >= 0 && Array.isArray(details.responseHeaders)) {
+        for (let i = 0; i < details.responseHeaders.length; i += 1) {
+          const h = details.responseHeaders[i];
+          if (h && h.name && h.name.toLowerCase() === 'content-type' && h.value) {
+            const ct = h.value.toLowerCase();
+            if (ct.includes('video/') || ct.includes('mpegurl')) {
+              recordMedia(details.tabId, details.url, 'network_headers', { contentType: ct });
+            }
+            break;
+          }
+        }
+      }
+    },
+    { urls: ['<all_urls>'] },
+    ['responseHeaders']
+  );
+}
+
+if (chrome.tabs && chrome.tabs.onRemoved) {
+  chrome.tabs.onRemoved.addListener(function (tabId) {
+    tabMediaStore.delete(tabId);
+  });
 }
 
 // Listen for configuration changes
@@ -331,6 +482,8 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
     return false;
   }
 
+  const senderTabId = sender && sender.tab ? sender.tab.id : message.tabId;
+
   if (message.type === 'MQ4K_PLAYER_TELEMETRY') {
     latestPlayerTelemetry = message.payload;
     sendResponse({ ok: true });
@@ -338,10 +491,15 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
   }
 
   if (message.type === 'MQ4K_GET_DASHBOARD_STATE') {
+    const targetTabId = typeof message.tabId === 'number' ? message.tabId : senderTabId;
+    const mediaMap = typeof targetTabId === 'number' ? tabMediaStore.get(targetTabId) : null;
+    const mediaCount = mediaMap ? mediaMap.size : 0;
+
     sendResponse({
       ok: true,
       config: activeConfig,
       playerTelemetry: latestPlayerTelemetry,
+      mediaCount: mediaCount,
       networkSummary: Object.assign({}, networkSummary, {
         totalMB: Number((networkSummary.totalBytes / (1024 * 1024)).toFixed(2))
       })
@@ -349,15 +507,53 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
     return true;
   }
 
-  if (message.type === 'MQ4K_CLEAR_NETWORK_LOGS') {
-    networkLogs.length = 0;
-    networkSummary.totalChunks = 0;
-    networkSummary.totalBytes = 0;
-    networkSummary.failedChunks = 0;
-    networkSummary.avgThroughputMbps = 0;
-    networkSummary.peakThroughputMbps = 0;
-    networkSummary.avgLatencyMs = 0;
-    sendResponse({ ok: true });
+  if (message.action === 'MEDIA_DETECTED_FROM_PAGE') {
+    if (typeof senderTabId === 'number' && senderTabId >= 0 && message.url) {
+      recordMedia(senderTabId, message.url, 'dom', {
+        title: message.title || (sender && sender.tab && sender.tab.title)
+      });
+    }
+    sendResponse({ success: true });
+    return true;
+  }
+
+  if (message.action === 'RESET_TAB_MEDIA') {
+    if (typeof senderTabId === 'number' && senderTabId >= 0) {
+      tabMediaStore.delete(senderTabId);
+      updateToolbarBadge(senderTabId);
+    }
+    sendResponse({ success: true });
+    return true;
+  }
+
+  if (message.action === 'GET_TAB_MEDIA') {
+    const targetTabId = message.tabId;
+    const mediaMap = tabMediaStore.get(targetTabId);
+    const list = mediaMap ? Array.from(mediaMap.values()) : [];
+    sendResponse({ list: list });
+    return true;
+  }
+
+  if (message.action === 'DOWNLOAD_DIRECT_FILE') {
+    if (!chrome.downloads || typeof chrome.downloads.download !== 'function') {
+      sendResponse({ success: false, error: 'Downloads API unavailable.' });
+      return true;
+    }
+
+    chrome.downloads.download(
+      {
+        url: message.url,
+        filename: message.filename || 'video.mp4',
+        saveAs: true
+      },
+      function (downloadId) {
+        if (chrome.runtime.lastError) {
+          sendResponse({ success: false, error: chrome.runtime.lastError.message });
+        } else {
+          sendResponse({ success: true, downloadId: downloadId });
+        }
+      }
+    );
     return true;
   }
 
