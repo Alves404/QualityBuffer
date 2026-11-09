@@ -1,12 +1,12 @@
 /**
- * My Quality 4k - Chrome Native UI (Material Design 3 / Chrome WebUI)
+ * My Quality 4k - Chrome Native UI (Material Design 3 / Google Pixel M3 Expressive)
  * Conceived & architected by Joao Vitor Magalhaes Alves (@Alves404).
- * Assisted implementation by Gemini 4 Argon (Google Antigravity).
+ * Assisted implementation by Gemini (Google Antigravity).
  * License: GPL-3.0
  */
 
 :root {
-  /* Chrome Light Mode */
+  /* Chrome Light Mode (Material Design 3 / Pixel) */
   --md-sys-color-surface: #F8FAFD;
   --md-sys-color-surface-container-low: #F3F6FC;
   --md-sys-color-surface-container: #F0F4F9;
@@ -22,10 +22,19 @@
   --md-state-hover: rgba(31, 31, 31, 0.08);
   --md-state-focus-press: rgba(31, 31, 31, 0.12);
 
-  /* Física e Motion M3 */
+  /* Google Pixel / M3 Expressive Motion Curves */
   --md-motion-standard: cubic-bezier(0.2, 0.0, 0, 1.0);
+  --md-motion-emphasized: cubic-bezier(0.2, 0.0, 0, 1.0);
   --md-motion-emphasized-decelerate: cubic-bezier(0.05, 0.7, 0.1, 1.0);
   --md-motion-emphasized-accelerate: cubic-bezier(0.3, 0.0, 0.8, 0.15);
+  --md-motion-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+
+  /* Google Pixel Generous Rounded Corners (Shape Tokens) */
+  --md-shape-corner-small: 8px;
+  --md-shape-corner-medium: 12px;
+  --md-shape-corner-large: 16px;
+  --md-shape-corner-extra-large: 20px;
+  --md-shape-corner-full: 9999px;
 
   /* Semantic Status & Typography */
   --md-status-applied: #146C2E;
@@ -33,13 +42,13 @@
   --md-status-pending: #B3261E;
   --md-status-pending-container: #F9DEDC;
   --md-status-warning: #B06000;
-  --font-sans: "Segoe UI", Roboto, system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-sans: "Google Sans", "Segoe UI", Roboto, system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
   --font-mono: "Cascadia Mono", "Consolas", "Roboto Mono", monospace;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    /* Chrome Dark Mode */
+    /* Chrome Dark Mode (Material Design 3 / Pixel) */
     --md-sys-color-surface: #1E1F20;
     --md-sys-color-surface-container-low: #232527;
     --md-sys-color-surface-container: #282A2C;
@@ -67,6 +76,7 @@
   box-sizing: border-box;
   margin: 0;
   padding: 0;
+  -webkit-tap-highlight-color: transparent;
 }
 
 html,
@@ -113,13 +123,18 @@ body {
 .brand-badge {
   width: 32px;
   height: 32px;
-  border-radius: 8px;
+  border-radius: var(--md-shape-corner-medium);
   background-color: var(--md-sys-color-primary-container);
   color: var(--md-sys-color-on-primary-container);
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
+  transition: transform 0.25s var(--md-motion-spring);
+}
+
+.brand-badge:hover {
+  transform: scale(1.05);
 }
 
 .brand-player-icon {
@@ -153,21 +168,25 @@ body {
 
 .lang-select {
   height: 28px;
-  padding: 0 8px;
+  padding: 0 10px;
   background-color: var(--md-sys-color-surface-container-high);
   color: var(--md-sys-color-on-surface);
   border: 1px solid var(--md-sys-color-outline-variant);
-  border-radius: 8px;
+  border-radius: var(--md-shape-corner-large);
   font-family: var(--font-sans);
   font-size: 11.5px;
   font-weight: 600;
   cursor: pointer;
   outline: none;
-  transition: background-color 0.2s var(--md-motion-standard), border-color 0.2s var(--md-motion-standard);
+  transition: background-color 0.25s var(--md-motion-standard), border-color 0.25s var(--md-motion-standard), transform 0.15s var(--md-motion-standard);
 }
 
 .lang-select:hover {
   background-color: var(--md-state-hover);
+}
+
+.lang-select:active {
+  transform: scale(0.96);
 }
 
 .lang-select:focus-visible {
@@ -175,7 +194,7 @@ body {
 }
 
 /* ==========================================================================
-   Chrome WebUI M3 Navigation Tabs (2 Tabs: Controls + About & Credits)
+   Google Pixel Navigation Tabs (M3 Pill Indicator & Fluid Transitions)
    ========================================================================== */
 
 .tab-nav {
@@ -190,7 +209,7 @@ body {
 .tab-btn {
   position: relative;
   width: 100%;
-  height: 40px;
+  height: 42px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -205,8 +224,8 @@ body {
   text-align: center;
   white-space: nowrap;
   cursor: pointer;
-  border-radius: 8px 8px 0 0;
-  transition: color 0.2s var(--md-motion-standard), background-color 0.2s var(--md-motion-standard);
+  border-radius: var(--md-shape-corner-large) var(--md-shape-corner-large) 0 0;
+  transition: color 0.25s var(--md-motion-standard), background-color 0.25s var(--md-motion-standard), transform 0.15s var(--md-motion-standard);
 }
 
 .tab-btn:hover {
@@ -216,13 +235,14 @@ body {
 
 .tab-btn:active {
   background-color: var(--md-state-focus-press);
+  transform: scale(0.98);
 }
 
 .tab-btn.active {
   color: var(--md-sys-color-primary);
 }
 
-.tab-btn.active::after {
+.tab-btn::after {
   content: "";
   position: absolute;
   bottom: 0;
@@ -230,11 +250,18 @@ body {
   right: 20%;
   height: 3px;
   border-radius: 3px 3px 0 0;
+  background-color: transparent;
+  transform: scaleX(0);
+  transition: transform 0.3s var(--md-motion-emphasized-decelerate), background-color 0.25s var(--md-motion-standard);
+}
+
+.tab-btn.active::after {
   background-color: var(--md-sys-color-primary);
+  transform: scaleX(1);
 }
 
 /* ==========================================================================
-   Main Content Surface & Tonal Containers
+   Main Content Surface & Pixel M3 Tonal Containers
    ========================================================================== */
 
 .tab-container {
@@ -255,9 +282,21 @@ body {
   flex-direction: column;
   gap: 10px;
   width: 100%;
+  animation: m3TabFadeSlide 0.28s var(--md-motion-emphasized-decelerate) forwards;
 }
 
-/* Metrics Grid (2-column M3 Tonal Surface Cards) */
+@keyframes m3TabFadeSlide {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Metrics Grid (2-column M3 Pixel Rounded Tonal Cards) */
 .metrics-grid {
   width: 100%;
   display: grid;
@@ -270,13 +309,17 @@ body {
   min-width: 0;
   min-height: 74px;
   background-color: var(--md-sys-color-surface-container);
-  border-radius: 12px;
-  padding: 10px 12px;
+  border-radius: var(--md-shape-corner-large);
+  padding: 11px 13px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   gap: 4px;
-  transition: background-color 0.2s var(--md-motion-standard);
+  transition: background-color 0.25s var(--md-motion-standard), transform 0.2s var(--md-motion-standard);
+}
+
+.metric-card:hover {
+  background-color: var(--md-sys-color-surface-container-high);
 }
 
 .metric-label {
@@ -310,7 +353,7 @@ body {
   width: 100%;
   height: 6px;
   background-color: var(--md-sys-color-surface-container-high);
-  border-radius: 999px;
+  border-radius: var(--md-shape-corner-full);
   overflow: hidden;
   margin-top: 4px;
 }
@@ -319,8 +362,8 @@ body {
   height: 100%;
   width: 0%;
   background-color: var(--md-sys-color-primary);
-  border-radius: 999px;
-  transition: width 0.3s var(--md-motion-emphasized-decelerate), background-color 0.2s var(--md-motion-standard);
+  border-radius: var(--md-shape-corner-full);
+  transition: width 0.35s var(--md-motion-emphasized-decelerate), background-color 0.25s var(--md-motion-standard);
 }
 
 .buffer-bar-fill.buffer-low {
@@ -334,11 +377,12 @@ body {
 .control-group {
   width: 100%;
   background-color: var(--md-sys-color-surface-container);
-  border-radius: 12px;
+  border-radius: var(--md-shape-corner-extra-large);
   padding: 12px 14px;
   display: flex;
   flex-direction: column;
   gap: 8px;
+  transition: background-color 0.25s var(--md-motion-standard);
 }
 
 .control-header {
@@ -375,26 +419,30 @@ body {
   position: relative;
   display: inline-flex;
   align-items: center;
-  width: 32px;
+  width: 34px;
   height: 18px;
   padding: 0;
-  border-radius: 999px;
+  border-radius: var(--md-shape-corner-full);
   border: 1px solid var(--md-status-applied);
   background-color: var(--md-status-applied-container);
   cursor: pointer;
   flex-shrink: 0;
-  transition: background-color 0.2s var(--md-motion-standard), border-color 0.2s var(--md-motion-standard);
+  transition: background-color 0.25s var(--md-motion-standard), border-color 0.25s var(--md-motion-standard), transform 0.15s var(--md-motion-standard);
+}
+
+.apply-status-switch:active {
+  transform: scale(0.92);
 }
 
 .apply-status-dot {
   position: absolute;
   top: 2px;
-  left: 15px;
+  left: 17px;
   width: 12px;
   height: 12px;
   border-radius: 50%;
   background-color: var(--md-status-applied);
-  transition: left 0.2s var(--md-motion-emphasized-decelerate), background-color 0.2s var(--md-motion-standard);
+  transition: left 0.3s var(--md-motion-spring), background-color 0.25s var(--md-motion-standard);
 }
 
 .apply-status-switch.is-pending {
@@ -409,18 +457,18 @@ body {
 
 .select-input {
   width: 100%;
-  height: 36px;
+  height: 38px;
   padding: 0 12px;
   background-color: var(--md-sys-color-surface-container-high);
   color: var(--md-sys-color-on-surface);
   border: 1px solid var(--md-sys-color-outline-variant);
-  border-radius: 8px;
+  border-radius: var(--md-shape-corner-medium);
   font-family: var(--font-sans);
   font-size: 12.5px;
   font-weight: 500;
   outline: none;
   cursor: pointer;
-  transition: border-color 0.2s var(--md-motion-standard), background-color 0.2s var(--md-motion-standard);
+  transition: border-color 0.25s var(--md-motion-standard), background-color 0.25s var(--md-motion-standard), transform 0.15s var(--md-motion-standard);
 }
 
 .select-input:hover {
@@ -438,39 +486,40 @@ body {
   white-space: nowrap;
   flex-shrink: 0;
   min-height: 28px;
-  padding: 4px 12px;
+  padding: 4px 14px;
   line-height: 1.2;
   background-color: var(--md-sys-color-primary-container);
   color: var(--md-sys-color-on-primary-container);
   border: none;
-  border-radius: 999px;
+  border-radius: var(--md-shape-corner-full);
   font-family: var(--font-sans);
   font-size: 11.5px;
   font-weight: 600;
   cursor: pointer;
-  transition: filter 0.2s var(--md-motion-standard), transform 0.15s var(--md-motion-standard);
+  transition: filter 0.2s var(--md-motion-standard), transform 0.15s var(--md-motion-spring), background-color 0.2s var(--md-motion-standard);
 }
 
 .btn-secondary:hover {
-  filter: brightness(0.96);
+  filter: brightness(0.95);
 }
 
 .btn-secondary:active {
-  transform: scale(0.98);
+  transform: scale(0.94);
 }
 
 /* ==========================================================================
-   Integrated Video Download Section (Inside Controls Tab)
+   Integrated Video Download Section (Pixel Rounded Surface)
    ========================================================================== */
 
 .downloader-section {
   width: 100%;
   background-color: var(--md-sys-color-surface-container);
-  border-radius: 12px;
+  border-radius: var(--md-shape-corner-extra-large);
   padding: 12px 14px;
   display: flex;
   flex-direction: column;
   gap: 8px;
+  transition: background-color 0.25s var(--md-motion-standard);
 }
 
 .downloader-toolbar {
@@ -502,7 +551,7 @@ body {
 .icon-btn {
   width: 28px;
   height: 28px;
-  border-radius: 999px;
+  border-radius: var(--md-shape-corner-full);
   background-color: transparent;
   border: none;
   color: var(--md-sys-color-on-surface-variant);
@@ -511,7 +560,7 @@ body {
   justify-content: center;
   cursor: pointer;
   flex-shrink: 0;
-  transition: background-color 0.2s var(--md-motion-standard), color 0.2s var(--md-motion-standard);
+  transition: background-color 0.2s var(--md-motion-standard), color 0.2s var(--md-motion-standard), transform 0.18s var(--md-motion-spring);
 }
 
 .icon-btn:hover {
@@ -521,6 +570,7 @@ body {
 
 .icon-btn:active {
   background-color: var(--md-state-focus-press);
+  transform: scale(0.88);
 }
 
 .empty-state {
@@ -528,8 +578,9 @@ body {
   flex-direction: column;
   gap: 3px;
   background-color: var(--md-sys-color-surface-container-low);
-  border-radius: 8px;
-  padding: 10px 12px;
+  border-radius: var(--md-shape-corner-large);
+  padding: 11px 13px;
+  transition: background-color 0.25s var(--md-motion-standard);
 }
 
 .empty-title {
@@ -552,11 +603,24 @@ body {
 
 .media-card {
   background-color: var(--md-sys-color-surface-container-high);
-  border-radius: 10px;
-  padding: 10px 12px;
+  border-radius: var(--md-shape-corner-large);
+  padding: 11px 13px;
   display: flex;
   flex-direction: column;
   gap: 8px;
+  transition: background-color 0.25s var(--md-motion-standard), transform 0.2s var(--md-motion-standard);
+  animation: m3ItemPop 0.25s var(--md-motion-emphasized-decelerate) forwards;
+}
+
+@keyframes m3ItemPop {
+  from {
+    opacity: 0;
+    transform: scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
 }
 
 .media-header {
@@ -582,8 +646,8 @@ body {
   font-family: var(--font-mono);
   font-size: 10.5px;
   font-weight: 600;
-  padding: 2px 8px;
-  border-radius: 999px;
+  padding: 2px 10px;
+  border-radius: var(--md-shape-corner-full);
   background-color: var(--md-sys-color-primary-container);
   color: var(--md-sys-color-on-primary-container);
   white-space: nowrap;
@@ -595,8 +659,8 @@ body {
   background-color: var(--md-sys-color-primary);
   color: var(--md-sys-color-on-primary);
   border: none;
-  border-radius: 999px;
-  padding: 7px 14px;
+  border-radius: var(--md-shape-corner-full);
+  padding: 8px 16px;
   font-family: var(--font-sans);
   font-size: 12px;
   font-weight: 600;
@@ -605,7 +669,7 @@ body {
   align-items: center;
   justify-content: center;
   gap: 6px;
-  transition: filter 0.2s var(--md-motion-standard), transform 0.15s var(--md-motion-standard);
+  transition: filter 0.2s var(--md-motion-standard), transform 0.15s var(--md-motion-spring);
 }
 
 .btn-download:hover:not(:disabled) {
@@ -613,7 +677,7 @@ body {
 }
 
 .btn-download:active:not(:disabled) {
-  transform: scale(0.99);
+  transform: scale(0.96);
 }
 
 .btn-download:disabled {
@@ -629,7 +693,7 @@ body {
   width: 100%;
   height: 6px;
   background-color: var(--md-sys-color-surface-container);
-  border-radius: 999px;
+  border-radius: var(--md-shape-corner-full);
   overflow: hidden;
   margin-bottom: 5px;
 }
@@ -638,8 +702,8 @@ body {
   height: 100%;
   width: 0%;
   background-color: var(--md-sys-color-primary);
-  border-radius: 999px;
-  transition: width 0.2s var(--md-motion-emphasized-decelerate);
+  border-radius: var(--md-shape-corner-full);
+  transition: width 0.25s var(--md-motion-emphasized-decelerate);
 }
 
 .progress-meta {
@@ -660,36 +724,37 @@ body {
 .status-error {
   color: var(--md-status-pending);
   background-color: var(--md-status-pending-container);
-  padding: 6px 10px;
-  border-radius: 8px;
+  padding: 8px 12px;
+  border-radius: var(--md-shape-corner-medium);
   font-size: 11px;
 }
 
 /* ==========================================================================
-   Collapsible Features Accordion (M3 Tonal Container)
+   Collapsible Features Accordion (Google Pixel Style Animated M3 Container)
    ========================================================================== */
 
 .features-dropdown {
   width: 100%;
   background-color: var(--md-sys-color-surface-container);
-  border-radius: 12px;
+  border-radius: var(--md-shape-corner-extra-large);
   overflow: hidden;
+  transition: background-color 0.25s var(--md-motion-standard);
 }
 
 .dropdown-toggle-btn {
   width: 100%;
-  min-height: 42px;
+  min-height: 44px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 10px 14px;
+  padding: 10px 16px;
   background-color: transparent;
   border: none;
   color: var(--md-sys-color-on-surface);
   font-family: var(--font-sans);
   cursor: pointer;
   text-align: left;
-  transition: background-color 0.2s var(--md-motion-standard);
+  transition: background-color 0.25s var(--md-motion-standard), transform 0.15s var(--md-motion-standard);
 }
 
 .dropdown-toggle-btn:hover {
@@ -698,6 +763,7 @@ body {
 
 .dropdown-toggle-btn:active {
   background-color: var(--md-state-focus-press);
+  transform: scale(0.99);
 }
 
 .dropdown-header-left {
@@ -718,15 +784,15 @@ body {
   font-size: 11px;
   font-family: var(--font-mono);
   font-weight: 600;
-  padding: 2px 8px;
-  border-radius: 999px;
+  padding: 2px 10px;
+  border-radius: var(--md-shape-corner-full);
   background-color: var(--md-sys-color-primary-container);
   color: var(--md-sys-color-on-primary-container);
 }
 
 .dropdown-chevron {
   color: var(--md-sys-color-on-surface-variant);
-  transition: transform 0.25s var(--md-motion-emphasized-decelerate);
+  transition: transform 0.35s var(--md-motion-spring);
   flex-shrink: 0;
 }
 
@@ -737,13 +803,25 @@ body {
 .dropdown-content {
   display: none;
   width: 100%;
-  padding: 8px 10px 10px;
+  padding: 8px 10px 12px;
   border-top: 1px solid var(--md-sys-color-outline-variant);
   background-color: var(--md-sys-color-surface-container-low);
 }
 
 .features-dropdown.open .dropdown-content {
   display: block;
+  animation: m3AccordionSlide 0.26s var(--md-motion-emphasized-decelerate) forwards;
+}
+
+@keyframes m3AccordionSlide {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .settings-list {
@@ -760,13 +838,17 @@ body {
   justify-content: space-between;
   gap: 12px;
   background-color: var(--md-sys-color-surface-container);
-  border-radius: 10px;
-  padding: 10px 12px;
-  transition: background-color 0.2s var(--md-motion-standard);
+  border-radius: var(--md-shape-corner-large);
+  padding: 10px 14px;
+  transition: background-color 0.25s var(--md-motion-standard), transform 0.18s var(--md-motion-standard);
 }
 
 .setting-item:hover {
   background-color: var(--md-sys-color-surface-container-high);
+}
+
+.setting-item:active {
+  transform: scale(0.99);
 }
 
 .setting-text {
@@ -790,15 +872,15 @@ body {
 }
 
 /* ==========================================================================
-   Chrome M3 Switch Controls
+   Google Pixel M3 Animated Switch Controls (Squish & Spring Effect)
    ========================================================================== */
 
 .master-switch,
 .toggle-control {
   position: relative;
   display: inline-block;
-  width: 40px;
-  height: 22px;
+  width: 44px;
+  height: 24px;
   flex-shrink: 0;
 }
 
@@ -816,21 +898,26 @@ body {
   inset: 0;
   background-color: var(--md-sys-color-surface-container-high);
   border: 1.5px solid var(--md-sys-color-outline);
-  border-radius: 999px;
-  transition: background-color 0.2s var(--md-motion-standard), border-color 0.2s var(--md-motion-standard);
+  border-radius: var(--md-shape-corner-full);
+  transition: background-color 0.25s var(--md-motion-standard), border-color 0.25s var(--md-motion-standard);
 }
 
 .switch-slider::before,
 .toggle-track::before {
   position: absolute;
   content: "";
-  height: 14px;
-  width: 14px;
+  height: 16px;
+  width: 16px;
   left: 3px;
   bottom: 2.5px;
   background-color: var(--md-sys-color-outline);
   border-radius: 50%;
-  transition: transform 0.2s var(--md-motion-emphasized-decelerate), background-color 0.2s var(--md-motion-standard);
+  transition: transform 0.3s var(--md-motion-spring), width 0.15s var(--md-motion-standard), background-color 0.25s var(--md-motion-standard);
+}
+
+.master-switch:active .switch-slider::before,
+.toggle-control:active .toggle-track::before {
+  width: 20px;
 }
 
 .master-switch input:checked + .switch-slider,
@@ -841,18 +928,19 @@ body {
 
 .master-switch input:checked + .switch-slider::before,
 .toggle-control input:checked + .toggle-track::before {
-  transform: translateX(17px);
+  transform: translateX(20px);
   background-color: var(--md-sys-color-on-primary);
 }
 
 /* ==========================================================================
-   About & Credits Tab (M3 Tonal Cards)
+   About & Credits Tab (Pixel M3 Rounded Cards)
    ========================================================================== */
 
 .about-card {
   background-color: var(--md-sys-color-surface-container);
-  border-radius: 12px;
-  padding: 12px 14px;
+  border-radius: var(--md-shape-corner-extra-large);
+  padding: 14px 16px;
+  transition: background-color 0.25s var(--md-motion-standard);
 }
 
 .about-card h2 {
@@ -898,6 +986,7 @@ body {
   font-size: 11.5px;
   font-weight: 600;
   text-decoration: none;
+  transition: text-decoration 0.2s var(--md-motion-standard);
 }
 
 .credit-link:hover {
