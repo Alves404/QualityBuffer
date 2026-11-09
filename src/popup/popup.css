@@ -440,6 +440,7 @@ body {
   font-size: 11.5px;
   font-weight: 600;
   cursor: pointer;
+  overflow: visible;
   transition: filter 0.2s var(--md-motion-standard), transform 0.15s var(--md-motion-spring), background-color 0.25s var(--md-motion-standard), border-color 0.25s var(--md-motion-standard), color 0.25s var(--md-motion-standard);
 }
 
@@ -451,35 +452,52 @@ body {
   transform: scale(0.94);
 }
 
-.btn-scallop-halo {
+/* Border SVG hugging the pill contour */
+.btn-pill-border {
+  position: absolute;
+  inset: -3px;
+  width: calc(100% + 6px);
+  height: calc(100% + 6px);
+  pointer-events: none;
+  overflow: visible;
   display: none;
-  width: 15px;
-  height: 15px;
-  margin-right: 5px;
-  color: currentColor;
-  flex-shrink: 0;
 }
 
-/* Red Pulsing / Continuous Rotating Scalloped Border (Google Pixel Scallop Clock) */
-.btn-secondary.is-pending {
-  background-color: var(--md-status-pending-container);
-  color: var(--md-status-pending);
-  border-color: var(--md-status-pending);
-  box-shadow: 0 0 10px rgba(179, 38, 30, 0.25);
+.pill-border-track {
+  fill: none;
+  stroke: rgba(255, 180, 171, 0.35);
+  stroke-width: 1.8px;
 }
 
-.btn-secondary.is-pending .btn-scallop-halo {
-  display: inline-block;
-  animation: pixelScallopSpin 4s linear infinite;
+.pill-border-wave {
+  fill: none;
+  stroke: #FFFFFF;
+  stroke-width: 2.2px;
+  stroke-linecap: round;
+  stroke-dasharray: 6 8;
+  filter: drop-shadow(0 0 3px rgba(255, 137, 125, 0.8));
+  animation: pixelPillBorderMarch 1.4s linear infinite;
 }
 
-@keyframes pixelScallopSpin {
+@keyframes pixelPillBorderMarch {
   from {
-    transform: rotate(0deg);
+    stroke-dashoffset: 0;
   }
   to {
-    transform: rotate(360deg);
+    stroke-dashoffset: -28;
   }
+}
+
+/* Red button with moving border hugging the pill (unapplied changes pending) */
+.btn-secondary.is-pending {
+  background-color: #B3261E;
+  color: #FFFFFF;
+  border-color: transparent;
+  box-shadow: 0 0 12px rgba(179, 38, 30, 0.45);
+}
+
+.btn-secondary.is-pending .btn-pill-border {
+  display: block;
 }
 
 .select-input {
