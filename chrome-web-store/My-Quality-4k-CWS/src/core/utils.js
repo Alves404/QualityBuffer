@@ -112,6 +112,68 @@ const DownloaderUtils = {
     return new Promise(function (resolve) {
       setTimeout(resolve, ms);
     });
+  },
+
+  /**
+   * Cleans ephemeral chunk and byte-range parameters from media URLs (e.g. googlevideo.com)
+   * so the URL requests the complete stream from byte 0 to EOF.
+   * @param {string} rawUrl
+   * @returns {string}
+   */
+  cleanStreamUrl(rawUrl) {
+    if (!rawUrl || typeof rawUrl !== 'string') {
+      return '';
+    }
+    try {
+      const parsed = new URL(rawUrl);
+      parsed.searchParams.delete('range');
+      parsed.searchParams.delete('rn');
+      parsed.searchParams.delete('rbuf');
+      parsed.searchParams.delete('sq');
+      return parsed.toString();
+    } catch (e) {
+      return rawUrl
+        .replace(/[?&]range=[^&]+/g, '')
+        .replace(/[?&]rn=[^&]+/g, '')
+        .replace(/[?&]rbuf=[^&]+/g, '')
+        .replace(/[?&]sq=[^&]+/g, '');
+    }
+  },
+
+  /**
+   * Returns metadata and user-friendly labels for YouTube itags and formats.
+   * @param {string|number} itag
+   * @param {string} [mime=""]
+   * @returns {{ quality: string, label: string, ext: string, isMuxed: boolean } | null}
+   */
+  classifyYouTubeItag(itag, mime = '') {
+    const tagStr = String(itag || '');
+    const ITAG_MAP = {
+      '18': { quality: '360p', label: 'YouTube MP4 (360p - Áudio + Vídeo)', ext: 'mp4', isMuxed: true },
+      '22': { quality: '720p HD', label: 'YouTube MP4 (720p HD - Áudio + Vídeo)', ext: 'mp4', isMuxed: true },
+      '137': { quality: '1080p', label: 'YouTube 1080p Full HD (MP4 - Vídeo)', ext: 'mp4', isMuxed: false },
+      '136': { quality: '720p', label: 'YouTube 720p HD (MP4 - Vídeo)', ext: 'mp4', isMuxed: false },
+      '135': { quality: '480p', label: 'YouTube 480p (MP4 - Vídeo)', ext: 'mp4', isMuxed: false },
+      '248': { quality: '1080p', label: 'YouTube 1080p Full HD (WebM - Vídeo)', ext: 'webm', isMuxed: false },
+      '271': { quality: '1440p 2K', label: 'YouTube 1440p 2K (WebM - Vídeo)', ext: 'webm', isMuxed: false },
+      '313': { quality: '2160p 4K', label: 'YouTube 2160p 4K (WebM - Vídeo)', ext: 'webm', isMuxed: false },
+      '315': { quality: '2160p 4K 60fps', label: 'YouTube 2160p 4K 60fps (WebM - Vídeo)', ext: 'webm', isMuxed: false },
+      '140': { quality: 'Audio', label: 'YouTube Áudio (M4A / AAC 128kbps)', ext: 'm4a', isMuxed: false },
+      '251': { quality: 'Audio', label: 'YouTube Áudio (WebM / Opus 160kbps)', ext: 'webm', isMuxed: false }
+    };
+    if (ITAG_MAP[tagStr]) {
+      return ITAG_MAP[tagStr];
+    }
+    const lowerMime = (mime || '').toLowerCase();
+    if (lowerMime.startsWith('audio/')) {
+      const ext = lowerMime.includes('webm') ? 'webm' : 'm4a';
+      return { quality: 'Audio', label: `YouTube Áudio (${ext.toUpperCase()})`, ext: ext, isMuxed: false };
+    }
+    if (lowerMime.startsWith('video/')) {
+      const ext = lowerMime.includes('webm') ? 'webm' : 'mp4';
+      return { quality: 'Video', label: `YouTube Vídeo (${ext.toUpperCase()})`, ext: ext, isMuxed: false };
+    }
+    return null;
   }
 };
 

@@ -158,6 +158,78 @@
 
   window.addEventListener('MQ4K_PLAYER_METRICS', handlePlayerMetrics);
 
+  // Listen for YouTube streams discovered by page-hook in MAIN execution world
+  window.addEventListener('MQ4K_YOUTUBE_MEDIA_FOUND', function (event) {
+    if (!isExtensionContextValid() || !event || !event.detail) {
+      return;
+    }
+    const detail = event.detail;
+    const streams = Array.isArray(detail.streams) ? detail.streams : [];
+    for (let i = 0; i < streams.length; i += 1) {
+      const item = streams[i];
+      if (item && item.url) {
+        try {
+          chrome.runtime.sendMessage(
+            {
+              action: 'MEDIA_DETECTED_FROM_PAGE',
+              url: item.url,
+              title: item.title || detail.title || document.title,
+              label: item.label,
+              type: item.type,
+              ext: item.ext,
+              quality: item.quality
+            },
+            function () {
+              try {
+                if (chrome && chrome.runtime) {
+                  void chrome.runtime.lastError;
+                }
+              } catch (err) {}
+            }
+          );
+        } catch (e) {}
+      }
+    }
+  });
+
+  window.addEventListener('MQ4K_YOUTUBE_ACTIVE_STREAM', function (event) {
+    if (!isExtensionContextValid() || !event || !event.detail) {
+      return;
+    }
+    const item = event.detail;
+    if (item && item.url) {
+      try {
+        const itagInfo = typeof DownloaderUtils !== 'undefined'
+          ? DownloaderUtils.classifyYouTubeItag(item.itag, item.mime)
+          : null;
+
+        const resolvedLabel = itagInfo ? itagInfo.label : 'YouTube Stream';
+        const resolvedExt = itagInfo ? itagInfo.ext : 'mp4';
+        const resolvedType = itagInfo ? itagInfo.ext : 'mp4';
+        const resolvedQuality = itagInfo ? itagInfo.quality : '';
+
+        chrome.runtime.sendMessage(
+          {
+            action: 'MEDIA_DETECTED_FROM_PAGE',
+            url: item.url,
+            title: `${item.title || 'YouTube_Video'} [${resolvedQuality || item.itag}]`,
+            label: resolvedLabel,
+            type: resolvedType,
+            ext: resolvedExt,
+            quality: resolvedQuality
+          },
+          function () {
+            try {
+              if (chrome && chrome.runtime) {
+                void chrome.runtime.lastError;
+              }
+            } catch (err) {}
+          }
+        );
+      } catch (e) {}
+    }
+  });
+
   // =========================================================================
   // Web Video & V12 HLS Downloader Detection (Non-YouTube Pages)
   // =========================================================================
@@ -184,15 +256,12 @@
 
   /**
    * Notifies the Background Service Worker about a newly discovered media URL.
-   * Applies V12 anti-pollution filters (ignores .ts, .m4s, seg-, chunklist, audio, blob:).
+   * Applies V12 anti-pollution filters (ignores .ts, .m4s, seg-, chunklist, blob:).
    * @param {string} url
    * @param {HTMLVideoElement | null} [videoEl=null]
    */
   function notifyMediaFound(url, videoEl = null) {
     if (!isExtensionContextValid() || !url || typeof url !== 'string') {
-      return;
-    }
-    if (isYouTubeDomain(window.location.hostname) || isYouTubeDomain(url)) {
       return;
     }
     if (url.startsWith('blob:') && !url.includes('.m3u8')) {
@@ -205,8 +274,7 @@
       lower.includes('.m4s') ||
       lower.includes('seg-') ||
       lower.includes('fragment') ||
-      lower.includes('chunklist') ||
-      lower.includes('audio')
+      lower.includes('chunklist')
     ) {
       return;
     }
@@ -246,7 +314,7 @@
    * @param {HTMLVideoElement} video
    */
   function inspectVideoElement(video) {
-    if (!video || isYouTubeDomain(window.location.hostname)) {
+    if (!video) {
       return;
     }
 

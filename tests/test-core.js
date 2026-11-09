@@ -129,5 +129,36 @@ seg_1.ts
     global.fetch = originalFetch;
   }
 
+  // Test 7: cleanStreamUrl removes range and chunking parameters
+  {
+    const dirtyUrl = 'https://rr1---sn-4g5ednks.googlevideo.com/videoplayback?expire=123&itag=22&range=0-1048576&rn=1&rbuf=5000&sq=10';
+    const cleaned = Utils.cleanStreamUrl(dirtyUrl);
+    assert.ok(!cleaned.includes('range='), 'Should remove range parameter');
+    assert.ok(!cleaned.includes('rn='), 'Should remove rn parameter');
+    assert.ok(!cleaned.includes('rbuf='), 'Should remove rbuf parameter');
+    assert.ok(!cleaned.includes('sq='), 'Should remove sq parameter');
+    assert.ok(cleaned.includes('itag=22'), 'Should keep itag');
+    assert.ok(cleaned.includes('expire=123'), 'Should keep expire token');
+    console.log('✓ Test 7: cleanStreamUrl parameter stripping passed.');
+  }
+
+  // Test 8: classifyYouTubeItag metadata resolution
+  {
+    const muxed720 = Utils.classifyYouTubeItag(22);
+    assert.strictEqual(muxed720.quality, '720p HD');
+    assert.strictEqual(muxed720.isMuxed, true);
+    assert.strictEqual(muxed720.ext, 'mp4');
+
+    const adaptive4k = Utils.classifyYouTubeItag(313);
+    assert.strictEqual(adaptive4k.quality, '2160p 4K');
+    assert.strictEqual(adaptive4k.isMuxed, false);
+    assert.strictEqual(adaptive4k.ext, 'webm');
+
+    const audioM4a = Utils.classifyYouTubeItag(140);
+    assert.strictEqual(audioM4a.quality, 'Audio');
+    assert.strictEqual(audioM4a.ext, 'm4a');
+    console.log('✓ Test 8: classifyYouTubeItag metadata mapping passed.');
+  }
+
   console.log('\nALL CORE UNIT TESTS PASSED SUCCESSFULLY!\n');
 })();

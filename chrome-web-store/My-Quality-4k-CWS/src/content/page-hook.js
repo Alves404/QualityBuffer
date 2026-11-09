@@ -798,18 +798,64 @@
     }
   }
 
+  let lastReportedVideoId = null;
+  const reportedStreamsCache = new Set();
+
   /**
-   * Pre-warms media CDN origins discovered via fetch or XMLHttpRequest (V12 hook pattern).
+   * Pre-warms media CDN origins discovered via fetch or XMLHttpRequest (V12 hook pattern)
+   * and dispatches active playback streams for 1-click video/audio downloading.
    * @param {string} urlStr
    */
   function inspectAndWarmMediaUrl(urlStr) {
-    if (!state.config.enabled || !state.config.parallelPrefetch || !urlStr || typeof urlStr !== 'string') {
+    if (!urlStr || typeof urlStr !== 'string') {
       return;
     }
     if (urlStr.includes('googlevideo.com/videoplayback') || urlStr.includes('.m3u8')) {
       try {
         const parsedUrl = new URL(urlStr, window.location.origin);
-        ensureCdnPreconnect(parsedUrl.origin);
+        if (state.config.enabled && state.config.parallelPrefetch) {
+          ensureCdnPreconnect(parsedUrl.origin);
+        }
+
+        // Active playback stream sniffer (captures deciphered playback requests)
+        if (urlStr.includes('googlevideo.com/videoplayback')) {
+          const itag = parsedUrl.searchParams.get('itag');
+          const cleanUrl = urlStr
+            .replace(/[?&]range=[^&]+/g, '')
+            .replace(/[?&]rn=[^&]+/g, '')
+            .replace(/[?&]rbuf=[^&]+/g, '')
+            .replace(/[?&]sq=[^&]+/g, '');
+
+          const cacheKey = `active_${state.lastVideoId || 'vid'}_${itag}`;
+          if (itag && !reportedStreamsCache.has(cacheKey)) {
+            reportedStreamsCache.add(cacheKey);
+            const mime = parsedUrl.searchParams.get('mime') || '';
+            const player = document.getElementById('movie_player');
+            let rawTitle = document.title || 'YouTube_Video';
+            if (player && typeof player.getVideoData === 'function') {
+              try {
+                const vd = player.getVideoData();
+                if (vd && vd.title) {
+                  rawTitle = vd.title;
+                }
+              } catch (e) {
+                // Ignore
+              }
+            }
+            rawTitle = rawTitle.replace(/\s*[-–|•]\s*YouTube.*$/i, '').trim();
+
+            window.dispatchEvent(
+              new CustomEvent('MQ4K_YOUTUBE_ACTIVE_STREAM', {
+                detail: {
+                  url: cleanUrl,
+                  itag: itag,
+                  mime: mime,
+                  title: rawTitle
+                }
+              })
+            );
+          }
+        }
       } catch (e) {
         // Ignore URL parse error
       }
@@ -1189,6 +1235,8 @@
 
     if (currentVideoId && currentVideoId !== state.lastVideoId) {
       state.lastVideoId = currentVideoId;
+      lastReportedVideoId = currentVideoId;
+      reportedStreamsCache.clear();
       state.qualityAppliedForVideo = null;
       state.dropGuardTriggered = false;
       state.bufferGoalReached = false;
@@ -1285,6 +1333,150 @@
     };
 
     window.dispatchEvent(new CustomEvent('MQ4K_PLAYER_METRICS', { detail: payload }));
+    extractYouTubeDownloadableStreams();
+  }
+
+  /**
+   * Scans YouTube player response and streamingData for progressive muxed MP4s
+   * (audio + video), high-res adaptive streams (1080p, 1440p, 2160p 4K), and audio tracks.
+   */
+  function extractYouTubeDownloadableStreams() {
+    const player = document.getElementById('movie_player');
+    let pr = null;
+    if (player && typeof player.getPlayerResponse === 'function') {
+      try {
+        pr = player.getPlayerResponse();
+      } catch (e) {
+        // Ignore
+      }
+    }
+    if (!pr && window.ytInitialPlayerResponse) {
+      pr = window.ytInitialPlayerResponse;
+    }
+    if (!pr || !pr.streamingData) {
+      return;
+    }
+
+    const videoDetails = pr.videoDetails || {};
+    let rawTitle = videoDetails.title || document.title || 'YouTube_Video';
+    rawTitle = rawTitle.replace(/\s*[-–|•]\s*YouTube.*$/i, '').trim();
+
+    const videoId = videoDetails.videoId || state.lastVideoId || '';
+    if (videoId && videoId !== lastReportedVideoId) {
+      lastReportedVideoId = videoId;
+      reportedStreamsCache.clear();
+    }
+
+    const sd = pr.streamingData;
+    const detected = [];
+
+    function cleanUrl(u) {
+      if (!u || typeof u !== 'string') return '';
+      return u
+        .replace(/[?&]range=[^&]+/g, '')
+        .replace(/[?&]rn=[^&]+/g, '')
+        .replace(/[?&]rbuf=[^&]+/g, '')
+        .replace(/[?&]sq=[^&]+/g, '');
+    }
+
+    // 1. Progressive muxed MP4 formats (Audio + Video in a single file)
+    if (Array.isArray(sd.formats)) {
+      for (let i = 0; i < sd.formats.length; i += 1) {
+        const fmt = sd.formats[i];
+        if (fmt && fmt.url) {
+          const streamUrl = cleanUrl(fmt.url);
+          const q = fmt.qualityLabel || (fmt.height ? `${fmt.height}p` : '720p');
+          const cacheKey = `${videoId}_${fmt.itag || q}`;
+          if (!reportedStreamsCache.has(cacheKey)) {
+            reportedStreamsCache.add(cacheKey);
+            detected.push({
+              url: streamUrl,
+              title: `${rawTitle} [${q}]`,
+              label: `YouTube MP4 (${q} - Áudio + Vídeo)`,
+              quality: q,
+              type: 'mp4',
+              ext: 'mp4',
+              isMuxed: true
+            });
+          }
+        }
+      }
+    }
+
+    // 2. High-resolution adaptive formats (1080p, 1440p, 2160p 4K, Audio)
+    if (Array.isArray(sd.adaptiveFormats)) {
+      for (let i = 0; i < sd.adaptiveFormats.length; i += 1) {
+        const fmt = sd.adaptiveFormats[i];
+        if (fmt && fmt.url) {
+          const streamUrl = cleanUrl(fmt.url);
+          const mime = (fmt.mimeType || '').toLowerCase();
+          const isVideo = mime.startsWith('video/');
+          const isAudio = mime.startsWith('audio/');
+          const isWebm = mime.includes('webm');
+          const ext = isWebm ? 'webm' : (isVideo ? 'mp4' : 'm4a');
+
+          if (isVideo && (fmt.height >= 720 || fmt.itag === 313 || fmt.itag === 315 || fmt.itag === 271 || fmt.itag === 137)) {
+            const q = fmt.qualityLabel || (fmt.height ? `${fmt.height}p` : 'HD');
+            const cacheKey = `${videoId}_${fmt.itag || q}`;
+            if (!reportedStreamsCache.has(cacheKey)) {
+              reportedStreamsCache.add(cacheKey);
+              detected.push({
+                url: streamUrl,
+                title: `${rawTitle} [${q}]`,
+                label: `YouTube ${q} (${ext.toUpperCase()} - Vídeo)`,
+                quality: q,
+                type: ext,
+                ext: ext,
+                isMuxed: false
+              });
+            }
+          } else if (isAudio && (fmt.itag === 140 || fmt.itag === 251)) {
+            const cacheKey = `${videoId}_audio_${fmt.itag}`;
+            if (!reportedStreamsCache.has(cacheKey)) {
+              reportedStreamsCache.add(cacheKey);
+              const audioLabel = fmt.itag === 140 ? 'M4A / AAC (128k)' : 'Opus / WebM (160k)';
+              detected.push({
+                url: streamUrl,
+                title: `${rawTitle} [Audio]`,
+                label: `YouTube Áudio (${audioLabel})`,
+                quality: 'Audio',
+                type: ext,
+                ext: ext,
+                isMuxed: false
+              });
+            }
+          }
+        }
+      }
+    }
+
+    // 3. HLS Livestream
+    if (sd.hlsManifestUrl) {
+      const cacheKey = `${videoId}_live_hls`;
+      if (!reportedStreamsCache.has(cacheKey)) {
+        reportedStreamsCache.add(cacheKey);
+        detected.push({
+          url: sd.hlsManifestUrl,
+          title: `${rawTitle} [Live]`,
+          label: 'YouTube Live Stream (HLS .m3u8)',
+          quality: 'Live',
+          type: 'hls',
+          ext: 'mp4'
+        });
+      }
+    }
+
+    if (detected.length > 0) {
+      window.dispatchEvent(
+        new CustomEvent('MQ4K_YOUTUBE_MEDIA_FOUND', {
+          detail: {
+            videoId: videoId,
+            title: rawTitle,
+            streams: detected
+          }
+        })
+      );
+    }
   }
 
   // Listen for configuration updates from the ISOLATED world content-controller
@@ -1380,6 +1572,8 @@
 
   // Hook YouTube SPA navigation events
   window.addEventListener('yt-navigate-start', function () {
+    reportedStreamsCache.clear();
+    lastReportedVideoId = null;
     seedYouTubeQualityStorage(state.config.targetQuality);
   });
 

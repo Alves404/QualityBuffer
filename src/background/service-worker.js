@@ -13,6 +13,12 @@
 
 'use strict';
 
+try {
+  importScripts('../core/utils.js');
+} catch (e) {
+  // Ignore if unavailable in worker scope
+}
+
 const DEFAULT_CONFIG = {
   enabled: true,
   targetQuality: 'hd2160',
@@ -125,9 +131,8 @@ function updateToolbarBadge(tabId) {
 // ============================================================================
 
 /**
- * Classifies a media URL or Content-Type into HLS (.m3u8), MP4, or WebM.
- * Filters out individual TS/M4S fragments, secondary chunklists (V12 filter),
- * and YouTube/GoogleVideo URLs for full Chrome Web Store compliance.
+ * Classifies a media URL or Content-Type into HLS (.m3u8), MP4, WebM, or YouTube stream.
+ * Filters out individual TS/M4S fragments and secondary chunklists (V12 filter).
  * @param {string} url
  * @param {string} [contentType=""]
  */
@@ -139,17 +144,42 @@ function classifyMedia(url, contentType = '') {
   const lowerUrl = url.toLowerCase();
   const lowerType = (contentType || '').toLowerCase();
 
-  // Exclude YouTube/GoogleVideo internal streams and individual segment fragments (V12 filter)
+  // Active stream classification for YouTube/GoogleVideo media
+  if (lowerUrl.includes('googlevideo.com/videoplayback')) {
+    try {
+      const u = new URL(url);
+      const itag = u.searchParams.get('itag');
+      const mime = u.searchParams.get('mime') || contentType;
+      const itagInfo = typeof DownloaderUtils !== 'undefined' && DownloaderUtils.classifyYouTubeItag
+        ? DownloaderUtils.classifyYouTubeItag(itag, mime)
+        : null;
+
+      if (itagInfo) {
+        return {
+          type: itagInfo.ext,
+          label: itagInfo.label,
+          ext: itagInfo.ext,
+          quality: itagInfo.quality,
+          isMuxed: itagInfo.isMuxed
+        };
+      }
+    } catch (e) {
+      // Ignore URL parsing errors
+    }
+    return {
+      type: 'mp4',
+      label: 'Direct Stream (MP4)',
+      ext: 'mp4'
+    };
+  }
+
+  // Anti-pollution filters: exclude individual segments and manifest sub-chunks
   if (
-    lowerUrl.includes('youtube.com') ||
-    lowerUrl.includes('youtu.be') ||
-    lowerUrl.includes('googlevideo.com') ||
     lowerUrl.includes('.ts') ||
     lowerUrl.includes('.m4s') ||
     lowerUrl.includes('seg-') ||
     lowerUrl.includes('fragment') ||
-    lowerUrl.includes('chunklist') ||
-    lowerUrl.includes('audio')
+    lowerUrl.includes('chunklist')
   ) {
     return null;
   }
@@ -202,7 +232,7 @@ function recordMedia(tabId, rawUrl, source = 'network', extraInfo = {}) {
   }
 
   const classification = classifyMedia(rawUrl, extraInfo.contentType);
-  if (!classification) {
+  if (!classification && !extraInfo.type) {
     return;
   }
 
@@ -211,7 +241,20 @@ function recordMedia(tabId, rawUrl, source = 'network', extraInfo = {}) {
   }
 
   const mediaMap = tabMediaStore.get(tabId);
-  const urlKey = rawUrl.split('?')[0];
+  const cleanUrl = typeof DownloaderUtils !== 'undefined' && DownloaderUtils.cleanStreamUrl
+    ? DownloaderUtils.cleanStreamUrl(rawUrl)
+    : rawUrl.replace(/[?&]range=[^&]+/g, '').replace(/[?&]rn=[^&]+/g, '').replace(/[?&]rbuf=[^&]+/g, '');
+
+  let urlKey = cleanUrl.split('?')[0];
+  if (cleanUrl.includes('googlevideo.com')) {
+    try {
+      const u = new URL(cleanUrl);
+      const itag = u.searchParams.get('itag') || '';
+      urlKey = u.pathname + '_itag_' + itag;
+    } catch (e) {
+      urlKey = cleanUrl;
+    }
+  }
 
   if (mediaMap.has(urlKey)) {
     const existing = mediaMap.get(urlKey);
@@ -221,12 +264,18 @@ function recordMedia(tabId, rawUrl, source = 'network', extraInfo = {}) {
     return;
   }
 
+  const resolvedType = extraInfo.type || (classification ? classification.type : 'mp4');
+  const resolvedLabel = extraInfo.label || (classification ? classification.label : 'Detected Video');
+  const resolvedExt = extraInfo.ext || (classification ? classification.ext : 'mp4');
+  const resolvedQuality = extraInfo.quality || (classification ? classification.quality : '');
+
   const mediaItem = {
     id: 'media_' + Date.now() + '_' + Math.random().toString(36).substring(2, 8),
-    url: rawUrl,
-    type: classification.type,
-    label: classification.label,
-    ext: classification.ext,
+    url: cleanUrl,
+    type: resolvedType,
+    label: resolvedLabel,
+    ext: resolvedExt,
+    quality: resolvedQuality,
     source: source,
     title: extraInfo.title || 'Detected Video',
     timestamp: Date.now()
@@ -435,7 +484,12 @@ if (chrome.webRequest) {
       }
 
       const lower = details.url.toLowerCase();
-      if (lower.includes('.m3u8') || lower.includes('.mp4') || lower.includes('.webm')) {
+      if (
+        lower.includes('.m3u8') ||
+        lower.includes('.mp4') ||
+        lower.includes('.webm') ||
+        lower.includes('googlevideo.com/videoplayback')
+      ) {
         recordMedia(details.tabId, details.url, 'network');
       }
     },
@@ -509,8 +563,12 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
 
   if (message.action === 'MEDIA_DETECTED_FROM_PAGE') {
     if (typeof senderTabId === 'number' && senderTabId >= 0 && message.url) {
-      recordMedia(senderTabId, message.url, 'dom', {
-        title: message.title || (sender && sender.tab && sender.tab.title)
+      recordMedia(senderTabId, message.url, 'page', {
+        title: message.title || (sender && sender.tab && sender.tab.title),
+        label: message.label,
+        type: message.type,
+        ext: message.ext,
+        quality: message.quality
       });
     }
     sendResponse({ success: true });

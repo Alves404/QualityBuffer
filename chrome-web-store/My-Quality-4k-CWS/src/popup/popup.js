@@ -340,10 +340,6 @@
   const elMetricCodec = document.getElementById('metric-codec');
   const elMetricBuffer = document.getElementById('metric-buffer');
   const elBufferBarFill = document.getElementById('buffer-bar-fill');
-  const elMetricThroughput = document.getElementById('metric-throughput');
-  const elMetricLatency = document.getElementById('metric-latency');
-  const elMetricDrops = document.getElementById('metric-drops');
-  const elMetricGaps = document.getElementById('metric-gaps');
 
   const elDownloaderCountBadge = document.getElementById('downloader-count-badge');
   const elDownloaderTabHost = document.getElementById('downloader-tab-host');
@@ -653,14 +649,7 @@
       const pct = Math.min(100, Math.max(4, Math.round((bufSec / targetSec) * 100)));
       elBufferBarFill.style.width = `${pct}%`;
       elBufferBarFill.classList.toggle('buffer-low', bufSec < 12);
-
-      elMetricDrops.textContent = `${Number(player.dropRatePercent || 0).toFixed(1)}% ${t('metricDropsSuffix')}`;
-      const gaps = player.microGapsRecovered || 0;
-      elMetricGaps.textContent = `${t('metricGapsPrefix')} ${gaps}`;
     }
-
-    elMetricThroughput.textContent = `${Number(netSummary.avgThroughputMbps || 0).toFixed(1)} Mbps`;
-    elMetricLatency.textContent = `${t('metricLatencyPrefix')} ${netSummary.avgLatencyMs || 0} ms`;
   }
 
   // =========================================================================
