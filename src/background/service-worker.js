@@ -235,15 +235,16 @@ function recordMedia(tabId, rawUrl, source = 'network', extraInfo = {}) {
     ? DownloaderUtils.cleanStreamUrl(rawUrl)
     : rawUrl.replace(/[?&]range=[^&]+/g, '').replace(/[?&]rn=[^&]+/g, '').replace(/[?&]rbuf=[^&]+/g, '');
 
+  const resolvedType = extraInfo.type || (classification ? classification.type : 'mp4');
+  const resolvedLabel = extraInfo.label || (classification ? classification.label : 'Detected Video');
+  const resolvedExt = extraInfo.ext || (classification ? classification.ext : 'mp4');
+  const resolvedQuality = extraInfo.quality || (classification ? classification.quality : '');
+  const isMuxed = Boolean(classification && classification.isMuxed);
+  const isAudioStream = resolvedQuality === 'Audio' || resolvedExt === 'm4a';
+
   let urlKey = cleanUrl.split('?')[0];
   if (cleanUrl.includes('googlevideo.com')) {
-    try {
-      const u = new URL(cleanUrl);
-      const itag = u.searchParams.get('itag') || '';
-      urlKey = u.pathname + '_itag_' + itag;
-    } catch (e) {
-      urlKey = cleanUrl;
-    }
+    urlKey = 'googlevideo_active_stream';
   }
 
   if (mediaMap.has(urlKey)) {
@@ -251,21 +252,33 @@ function recordMedia(tabId, rawUrl, source = 'network', extraInfo = {}) {
     if (extraInfo.title && (!existing.title || existing.title === 'Detected Video')) {
       existing.title = extraInfo.title;
     }
+    if (isAudioStream) {
+      if (!existing.audioUrl || resolvedExt === 'm4a') {
+        existing.audioUrl = cleanUrl;
+      }
+    } else if (existing.quality === 'Audio' || isMuxed) {
+      if (existing.quality === 'Audio' && !existing.audioUrl) {
+        existing.audioUrl = existing.url;
+      }
+      existing.url = cleanUrl;
+      existing.type = 'mp4';
+      existing.ext = 'mp4';
+      existing.label = resolvedLabel;
+      existing.quality = resolvedQuality;
+      existing.isMuxed = isMuxed;
+    }
     return;
   }
-
-  const resolvedType = extraInfo.type || (classification ? classification.type : 'mp4');
-  const resolvedLabel = extraInfo.label || (classification ? classification.label : 'Detected Video');
-  const resolvedExt = extraInfo.ext || (classification ? classification.ext : 'mp4');
-  const resolvedQuality = extraInfo.quality || (classification ? classification.quality : '');
 
   const mediaItem = {
     id: 'media_' + Date.now() + '_' + Math.random().toString(36).substring(2, 8),
     url: cleanUrl,
-    type: resolvedType,
+    audioUrl: isAudioStream ? cleanUrl : null,
+    type: resolvedType === 'hls' ? 'hls' : 'mp4',
     label: resolvedLabel,
-    ext: resolvedExt,
+    ext: resolvedType === 'hls' ? 'mp4' : 'mp4',
     quality: resolvedQuality,
+    isMuxed: isMuxed,
     source: source,
     title: extraInfo.title || 'Detected Video',
     timestamp: Date.now()

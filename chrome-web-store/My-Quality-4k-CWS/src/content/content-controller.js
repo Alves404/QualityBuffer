@@ -207,11 +207,16 @@
         const resolvedType = itagInfo ? itagInfo.ext : 'mp4';
         const resolvedQuality = itagInfo ? itagInfo.quality : '';
 
+        const cleanYtTitle = String(item.title || document.title || 'YouTube Video')
+          .replace(/^\(\d+\)\s*/, '')
+          .replace(/\s*[-–|•]\s*YouTube$/i, '')
+          .trim();
+
         chrome.runtime.sendMessage(
           {
             action: 'MEDIA_DETECTED_FROM_PAGE',
             url: item.url,
-            title: `${item.title || 'YouTube_Video'} [${resolvedQuality || item.itag}]`,
+            title: cleanYtTitle,
             label: resolvedLabel,
             type: resolvedType,
             ext: resolvedExt,
@@ -249,7 +254,7 @@
     if (!title && document.title) {
       title = document.title;
     }
-    title = title.replace(/\s*[-–|•]\s*.*$/, '').trim();
+    title = title.replace(/^\(\d+\)\s*/, '').replace(/\s*[-–|•]\s*.*$/, '').trim();
     return title || 'Video_Stream';
   }
 

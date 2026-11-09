@@ -692,7 +692,8 @@
   }
 
   /**
-   * Renders detected video/HLS stream cards without raw URLs
+   * Renders detected video/HLS stream cards without raw URLs, deduplicating
+   * multiple streams (e.g. WEBM + MP4/M4A) of the same video into a single card.
    * @param {Array<object>} items
    */
   function renderMediaList(items) {
@@ -704,28 +705,75 @@
     elDownloaderMediaList.style.display = 'flex';
     elDownloaderMediaList.innerHTML = '';
 
-    items.forEach(function (item, index) {
+    const deduplicatedMap = new Map();
+    items.forEach(function (rawItem, idx) {
+      let cleanTitle = rawItem.title;
+      if (!cleanTitle || cleanTitle === 'Detected Video' || cleanTitle === 'Vídeo detectado') {
+        cleanTitle =
+          activeTabInfo && activeTabInfo.title
+            ? activeTabInfo.title
+            : `Video ${idx + 1}`;
+      }
+      cleanTitle = String(cleanTitle)
+        .replace(/^\(\d+\)\s*/, '')
+        .replace(/\s*\[[^\]]*\]\s*$/, '')
+        .replace(/\s*[-–|•]\s*.*$/, '')
+        .trim() || `Video ${idx + 1}`;
+
+      const key = cleanTitle.toLowerCase();
+      const isAudioOnly =
+        rawItem.quality === 'Audio' ||
+        rawItem.ext === 'm4a' ||
+        (rawItem.label && rawItem.label.toLowerCase().includes('áudio'));
+
+      if (!deduplicatedMap.has(key)) {
+        deduplicatedMap.set(
+          key,
+          Object.assign({}, rawItem, {
+            displayTitle: cleanTitle,
+            ext: rawItem.type === 'hls' ? 'mp4' : 'mp4',
+            audioUrl: rawItem.audioUrl || (isAudioOnly ? rawItem.url : null)
+          })
+        );
+      } else {
+        const existing = deduplicatedMap.get(key);
+        if (isAudioOnly) {
+          if (!existing.audioUrl || rawItem.ext === 'm4a') {
+            existing.audioUrl = rawItem.url;
+          }
+        } else {
+          if (existing.quality === 'Audio' && !existing.audioUrl) {
+            existing.audioUrl = existing.url;
+          }
+          existing.url = rawItem.url;
+          existing.type = rawItem.type === 'hls' ? 'hls' : 'mp4';
+          existing.ext = 'mp4';
+          if (rawItem.quality && rawItem.quality !== 'Audio' && rawItem.quality !== 'Video') {
+            existing.quality = rawItem.quality;
+          }
+        }
+      }
+    });
+
+    const uniqueItems = Array.from(deduplicatedMap.values());
+
+    uniqueItems.forEach(function (item) {
       const card = document.createElement('div');
       card.className = 'media-card';
       card.id = `card-${item.id}`;
 
       const isHls = item.type === 'hls';
       const badgeClass = isHls ? 'hls' : 'mp4';
-      const extLabel = item.ext ? item.ext.toUpperCase() : 'VIDEO';
+      const extLabel = isHls ? 'HLS M3U8' : 'MP4';
+      const hasValidQuality =
+        item.quality && item.quality !== 'Audio' && item.quality !== 'Video';
       const badgeText = isHls
         ? 'HLS M3U8'
-        : item.quality
+        : hasValidQuality
           ? `${extLabel} • ${item.quality}`
           : extLabel;
 
-      let displayTitle = item.title;
-      if (!displayTitle || displayTitle === 'Detected Video' || displayTitle === 'Vídeo detectado') {
-        displayTitle =
-          activeTabInfo && activeTabInfo.title
-            ? activeTabInfo.title.replace(/\s*[-–|•]\s*.*$/, '').trim()
-            : `Video ${index + 1}`;
-      }
-
+      const displayTitle = item.displayTitle;
       const currentFmt = cardSelectedFormats.get(item.id) || 'mp4';
 
       card.innerHTML = `
@@ -892,10 +940,12 @@
         '.' +
         fileExt;
 
+      const targetUrl = isMp3 && item.audioUrl ? item.audioUrl : item.url;
+
       chrome.runtime.sendMessage(
         {
           action: 'DOWNLOAD_DIRECT_FILE',
-          url: item.url,
+          url: targetUrl,
           filename: safeFilename,
           format: selectedFormat
         },
