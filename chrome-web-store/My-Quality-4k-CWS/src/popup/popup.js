@@ -1224,7 +1224,80 @@
     elApplyStatusSwitch.addEventListener('click', applyConfigurationNow);
   }
 
+  /**
+   * Generates 16 smooth phase steps of the 14-lobe cubic-Bezier Material You
+   * scalloped pill path so the sinusoidal undulations glide continuously around
+   * the pill perimeter via hardware-composited SVG SMIL animation.
+   */
+  function initPixelScallopPillAnimation() {
+    const animEl = document.getElementById('pill-scallop-anim');
+    if (!animEl) {
+      return;
+    }
+
+    const xL = 20;
+    const xR = 104;
+    const yC = 20;
+    const R = 14.5;
+    const Ltop = xR - xL;
+    const Larc = Math.PI * R;
+    const L = 2 * Ltop + 2 * Larc;
+    const N = 14;
+    const A = 2.8;
+    const M = N * 6;
+
+    function pointOnCapsule(s) {
+      let d = ((s % L) + L) % L;
+      if (d < Ltop) {
+        return { x: xL + d, y: yC - R, nx: 0, ny: -1 };
+      }
+      d -= Ltop;
+      if (d < Larc) {
+        const a = -Math.PI / 2 + (d / Larc) * Math.PI;
+        return { x: xR + R * Math.cos(a), y: yC + R * Math.sin(a), nx: Math.cos(a), ny: Math.sin(a) };
+      }
+      d -= Larc;
+      if (d < Ltop) {
+        return { x: xR - d, y: yC + R, nx: 0, ny: 1 };
+      }
+      d -= Larc;
+      const a = Math.PI / 2 + (d / Larc) * Math.PI;
+      return { x: xL + R * Math.cos(a), y: yC + R * Math.sin(a), nx: Math.cos(a), ny: Math.sin(a) };
+    }
+
+    function buildScallopPillPath(phase) {
+      const pts = [];
+      for (let i = 0; i < M; i += 1) {
+        const s = (i / M) * L;
+        const p = pointOnCapsule(s);
+        const w = A * Math.sin((2 * Math.PI * N * s) / L - phase);
+        pts.push({ x: p.x + w * p.nx, y: p.y + w * p.ny });
+      }
+      let pathStr = `M ${pts[0].x.toFixed(2)} ${pts[0].y.toFixed(2)}`;
+      for (let i = 0; i < M; i += 1) {
+        const p0 = pts[(i - 1 + M) % M];
+        const p1 = pts[i];
+        const p2 = pts[(i + 1) % M];
+        const p3 = pts[(i + 2) % M];
+        const cp1x = p1.x + (p2.x - p0.x) / 6;
+        const cp1y = p1.y + (p2.y - p0.y) / 6;
+        const cp2x = p2.x - (p3.x - p1.x) / 6;
+        const cp2y = p2.y - (p3.y - p1.y) / 6;
+        pathStr += ` C ${cp1x.toFixed(2)} ${cp1y.toFixed(2)}, ${cp2x.toFixed(2)} ${cp2y.toFixed(2)}, ${p2.x.toFixed(2)} ${p2.y.toFixed(2)}`;
+      }
+      return pathStr + ' Z';
+    }
+
+    const steps = 16;
+    const frames = [];
+    for (let k = 0; k <= steps; k += 1) {
+      frames.push(buildScallopPillPath((2 * Math.PI * k) / steps));
+    }
+    animEl.setAttribute('values', frames.join(';'));
+  }
+
   // Initialization
+  initPixelScallopPillAnimation();
   setupTabs();
   setupFeaturesDropdown();
   loadTabMedia();
