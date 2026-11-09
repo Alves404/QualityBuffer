@@ -120,7 +120,13 @@
       creditVersion: 'Versao: 2.2.0 (Manifest V3 — Motor SABR 512 MB, Hardware VP9 SDR & Downloader V12 HLS/MP4).',
       tooltipApplied: 'Verde: Alteracoes aplicadas',
       tooltipPending: 'Vermelho: Alteracoes nao aplicadas (clique em Aplicar Agora)',
-      codecDefault: 'VP9 SDR (Padrao)'
+      codecDefault: 'VP9 SDR (Padrao)',
+      metricPaused: 'Pausado',
+      metricIdle: 'Inativo',
+      formatVideo: 'Vídeo (MP4)',
+      formatAudio: 'Áudio (MP3)',
+      dlBtnAudio: 'Baixar MP3',
+      dlBtnDownloadingAudio: 'Acelerando MP3...'
     }),
     en: Object.freeze({
       tabControls: 'Controls',
@@ -181,7 +187,13 @@
       creditVersion: 'Version: 2.2.0 (Manifest V3 — 512 MB SABR Pre-Buffer, Hardware VP9 SDR & V12 HLS/MP4 Downloader).',
       tooltipApplied: 'Green: Changes applied',
       tooltipPending: 'Red: Unapplied changes (click Apply Now)',
-      codecDefault: 'VP9 SDR (Default)'
+      codecDefault: 'VP9 SDR (Default)',
+      metricPaused: 'Paused',
+      metricIdle: 'Idle',
+      formatVideo: 'Video (MP4)',
+      formatAudio: 'Audio (MP3)',
+      dlBtnAudio: 'Download MP3',
+      dlBtnDownloadingAudio: 'Accelerating MP3...'
     }),
     es: Object.freeze({
       tabControls: 'Controles',
@@ -242,7 +254,13 @@
       creditVersion: 'Version: 2.2.0 (Manifest V3 — Motor SABR 512 MB, Hardware VP9 SDR y Descargador V12 HLS/MP4).',
       tooltipApplied: 'Verde: Cambios aplicados',
       tooltipPending: 'Rojo: Cambios no aplicados (clic en Aplicar Ahora)',
-      codecDefault: 'VP9 SDR (Predeterminado)'
+      codecDefault: 'VP9 SDR (Predeterminado)',
+      metricPaused: 'Pausado',
+      metricIdle: 'Inactivo',
+      formatVideo: 'Video (MP4)',
+      formatAudio: 'Audio (MP3)',
+      dlBtnAudio: 'Descargar MP3',
+      dlBtnDownloadingAudio: 'Acelerando MP3...'
     })
   });
 
@@ -284,6 +302,7 @@
   let activeTabInfo = null;
   let lastMediaCount = -1;
   const activeDownloads = new Map();
+  const cardSelectedFormats = new Map();
 
   // DOM Elements
   const elSelectLang = document.getElementById('select-lang');
@@ -502,7 +521,8 @@
   }
 
   /**
-   * Updates the Green/Red switch-style indicator next to "Apply Now"
+   * Updates the button indicator: when changes are pending, Apply button turns red
+   * with the rotating Pixel clock scallop halo animation.
    */
   function updateApplyStatusIndicator() {
     const uiCfg = readConfigFromUI();
@@ -510,6 +530,16 @@
     updateDropdownActiveCountBadge();
 
     const isApplied = isConfigEqual(uiCfg, appliedConfig);
+
+    if (elBtnForceNow) {
+      if (isApplied) {
+        elBtnForceNow.classList.remove('is-pending');
+        elBtnForceNow.title = t('tooltipApplied');
+      } else {
+        elBtnForceNow.classList.add('is-pending');
+        elBtnForceNow.title = t('tooltipPending');
+      }
+    }
 
     if (elApplyStatusSwitch) {
       if (isApplied) {
@@ -583,7 +613,7 @@
   }
 
   /**
-   * Updates dashboard cards
+   * Updates dashboard telemetry cards with 100% efficient live/idle/paused state
    */
   function renderDashboardState(data) {
     if (!data) {
@@ -592,24 +622,55 @@
     lastDashboardData = data;
 
     const player = data.playerTelemetry;
-    const netSummary = data.networkSummary || {};
+    const targetSec = Number(
+      (player && player.targetBufferSec) ||
+      appliedConfig.targetBufferSec ||
+      120
+    );
 
-    if (player) {
-      const qLabel = QUALITY_LABELS[player.currentQuality] || player.currentQuality || 'Auto';
-      elMetricResolution.textContent =
+    if (!player || player.hasActiveVideo === false || player.resolution === 'N/A') {
+      if (elMetricResolution) {
+        elMetricResolution.textContent = t('metricIdle');
+      }
+      if (elMetricCodec) {
+        elMetricCodec.textContent = 'Codec: N/A';
+      }
+      if (elMetricBuffer) {
+        elMetricBuffer.textContent = `0.0s / ${targetSec}s (${t('metricIdle')})`;
+      }
+      if (elBufferBarFill) {
+        elBufferBarFill.style.width = '0%';
+        elBufferBarFill.classList.remove('buffer-low');
+      }
+      return;
+    }
+
+    const qLabel = QUALITY_LABELS[player.currentQuality] || player.currentQuality || 'Auto';
+    const isPaused = Boolean(player.isPaused);
+    const bufSec = Math.max(0, Number(player.bufferAheadSec || 0));
+
+    if (elMetricResolution) {
+      const resText =
         player.resolution && player.resolution !== 'N/A'
           ? `${qLabel} (${player.resolution})`
           : qLabel;
+      elMetricResolution.textContent = isPaused ? `${resText} [${t('metricPaused')}]` : resText;
+    }
 
+    if (elMetricCodec) {
       elMetricCodec.textContent = `Codec: ${formatCodecLabel(player.videoMimeType)}`;
+    }
 
-      const bufSec = Number(player.bufferAheadSec || 0);
-      const targetSec = Number(player.targetBufferSec || appliedConfig.targetBufferSec || 120);
-      elMetricBuffer.textContent = `${bufSec.toFixed(1)}s / ${targetSec}s`;
+    if (elMetricBuffer) {
+      elMetricBuffer.textContent = isPaused
+        ? `${bufSec.toFixed(1)}s / ${targetSec}s (${t('metricPaused')})`
+        : `${bufSec.toFixed(1)}s / ${targetSec}s`;
+    }
 
-      const pct = Math.min(100, Math.max(4, Math.round((bufSec / targetSec) * 100)));
+    if (elBufferBarFill) {
+      const pct = Math.min(100, Math.max(0, Math.round((bufSec / targetSec) * 100)));
       elBufferBarFill.style.width = `${pct}%`;
-      elBufferBarFill.classList.toggle('buffer-low', bufSec < 12);
+      elBufferBarFill.classList.toggle('buffer-low', !isPaused && bufSec < 10);
     }
   }
 
@@ -665,19 +726,27 @@
             : `Video ${index + 1}`;
       }
 
+      const currentFmt = cardSelectedFormats.get(item.id) || 'mp4';
+
       card.innerHTML = `
         <div class="media-header">
           <span class="media-title" title="${escapeHtml(displayTitle)}">${escapeHtml(displayTitle)}</span>
           <span class="badge-tag ${badgeClass}">${escapeHtml(badgeText)}</span>
         </div>
-        <button type="button" class="btn-download" id="btn-${item.id}">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-            <polyline points="7 10 12 15 17 10"></polyline>
-            <line x1="12" y1="15" x2="12" y2="3"></line>
-          </svg>
-          <span>${escapeHtml(t('dlBtnDownload'))}</span>
-        </button>
+        <div class="media-actions-row">
+          <div class="format-pill-group" role="group" aria-label="Format Selector">
+            <button type="button" class="format-pill-btn ${currentFmt === 'mp4' ? 'active' : ''}" data-format="mp4" data-item-id="${item.id}">MP4</button>
+            <button type="button" class="format-pill-btn ${currentFmt === 'mp3' ? 'active' : ''}" data-format="mp3" data-item-id="${item.id}">MP3</button>
+          </div>
+          <button type="button" class="btn-download" id="btn-${item.id}">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+              <polyline points="7 10 12 15 17 10"></polyline>
+              <line x1="12" y1="15" x2="12" y2="3"></line>
+            </svg>
+            <span id="btn-text-${item.id}">${escapeHtml(currentFmt === 'mp3' ? t('dlBtnAudio') : t('dlBtnDownload'))}</span>
+          </button>
+        </div>
         <div class="progress-container" id="prog-wrap-${item.id}">
           <div class="progress-bar-bg">
             <div class="progress-bar-fill" id="prog-fill-${item.id}"></div>
@@ -690,10 +759,26 @@
         <div class="status-error" id="err-${item.id}" style="display: none;"></div>
       `;
 
+      const pillButtons = card.querySelectorAll('.format-pill-btn');
+      pillButtons.forEach(function (pill) {
+        pill.addEventListener('click', function () {
+          const selectedFmt = pill.getAttribute('data-format') || 'mp4';
+          cardSelectedFormats.set(item.id, selectedFmt);
+          pillButtons.forEach(function (p) {
+            p.classList.toggle('active', p === pill);
+          });
+          const btnTextSpan = card.querySelector(`#btn-text-${item.id}`);
+          if (btnTextSpan) {
+            btnTextSpan.textContent = selectedFmt === 'mp3' ? t('dlBtnAudio') : t('dlBtnDownload');
+          }
+        });
+      });
+
       const btn = card.querySelector(`#btn-${item.id}`);
       if (btn) {
         btn.addEventListener('click', function () {
-          handleDownloadClick(item, displayTitle);
+          const selectedFmt = cardSelectedFormats.get(item.id) || 'mp4';
+          handleDownloadClick(item, displayTitle, selectedFmt);
         });
       }
 
@@ -715,15 +800,17 @@
   }
 
   /**
-   * Initiates a V12 12-worker HLS download or direct MP4/WebM download
+   * Initiates a V12 12-worker HLS download or direct MP4/MP3 download
    * @param {object} item
    * @param {string} displayTitle
+   * @param {string} [selectedFormat="mp4"]
    */
-  function handleDownloadClick(item, displayTitle) {
+  function handleDownloadClick(item, displayTitle, selectedFormat = 'mp4') {
     if (!activeTabInfo || typeof activeTabInfo.id !== 'number') {
       return;
     }
 
+    const isMp3 = selectedFormat === 'mp3';
     const btn = document.getElementById(`btn-${item.id}`);
     const progWrap = document.getElementById(`prog-wrap-${item.id}`);
     const progFill = document.getElementById(`prog-fill-${item.id}`);
@@ -740,7 +827,7 @@
         btn.disabled = true;
         const span = btn.querySelector('span');
         if (span) {
-          span.textContent = t('dlBtnDownloading');
+          span.textContent = isMp3 ? t('dlBtnDownloadingAudio') : t('dlBtnDownloading');
         }
       }
       if (progWrap) {
@@ -753,7 +840,7 @@
         progPct.textContent = '2%';
       }
       if (progText) {
-        progText.textContent = t('dlBtnDownloading');
+        progText.textContent = isMp3 ? t('dlBtnDownloadingAudio') : t('dlBtnDownloading');
       }
 
       activeDownloads.set(item.url, item.id);
@@ -763,7 +850,8 @@
         {
           action: 'START_HLS_DOWNLOAD',
           url: item.url,
-          title: displayTitle
+          title: displayTitle,
+          format: selectedFormat
         },
         function (response) {
           if (chrome.runtime.lastError) {
@@ -772,7 +860,7 @@
               btn.disabled = false;
               const span = btn.querySelector('span');
               if (span) {
-                span.textContent = t('dlBtnDownload');
+                span.textContent = isMp3 ? t('dlBtnAudio') : t('dlBtnDownload');
               }
             }
           } else if (response && !response.success) {
@@ -781,7 +869,7 @@
               btn.disabled = false;
               const span = btn.querySelector('span');
               if (span) {
-                span.textContent = t('dlBtnDownload');
+                span.textContent = isMp3 ? t('dlBtnAudio') : t('dlBtnDownload');
               }
             }
           }
@@ -796,18 +884,20 @@
         }
       }
 
+      const fileExt = isMp3 ? 'mp3' : (item.ext || 'mp4');
       const safeFilename =
         (typeof DownloaderUtils !== 'undefined'
-          ? DownloaderUtils.sanitizeFilename(displayTitle)
-          : 'video') +
+          ? DownloaderUtils.sanitizeFilename(displayTitle, isMp3 ? 'Audio' : 'Video')
+          : (isMp3 ? 'audio' : 'video')) +
         '.' +
-        (item.ext || 'mp4');
+        fileExt;
 
       chrome.runtime.sendMessage(
         {
           action: 'DOWNLOAD_DIRECT_FILE',
           url: item.url,
-          filename: safeFilename
+          filename: safeFilename,
+          format: selectedFormat
         },
         function (response) {
           if (response && response.success) {

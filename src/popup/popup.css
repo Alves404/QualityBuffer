@@ -7,6 +7,7 @@
 
 :root {
   /* Chrome Light Mode (Material Design 3 / Pixel) */
+  color-scheme: light dark;
   --md-sys-color-surface: #F8FAFD;
   --md-sys-color-surface-container-low: #F3F6FC;
   --md-sys-color-surface-container: #F0F4F9;
@@ -49,6 +50,7 @@
 @media (prefers-color-scheme: dark) {
   :root {
     /* Chrome Dark Mode (Material Design 3 / Pixel) */
+    color-scheme: dark;
     --md-sys-color-surface: #1E1F20;
     --md-sys-color-surface-container-low: #232527;
     --md-sys-color-surface-container: #282A2C;
@@ -96,6 +98,8 @@ body {
 body {
   display: flex;
   flex-direction: column;
+  border-radius: var(--md-shape-corner-extra-large);
+  overflow: hidden;
 }
 
 /* ==========================================================================
@@ -124,23 +128,26 @@ body {
   width: 32px;
   height: 32px;
   border-radius: var(--md-shape-corner-medium);
-  background-color: var(--md-sys-color-primary-container);
-  color: var(--md-sys-color-on-primary-container);
+  background-color: var(--md-sys-color-primary);
+  color: var(--md-sys-color-on-primary);
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
+  font-family: var(--font-sans);
+  font-weight: 800;
+  font-size: 13.5px;
+  letter-spacing: -0.04em;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
   transition: transform 0.25s var(--md-motion-spring);
 }
 
-.brand-badge:hover {
-  transform: scale(1.05);
+.brand-badge-text {
+  line-height: 1;
 }
 
-.brand-player-icon {
-  display: block;
-  width: 16px;
-  height: 16px;
+.brand-badge:hover {
+  transform: scale(1.06);
 }
 
 .brand-info {
@@ -415,44 +422,64 @@ body {
   flex-shrink: 0;
 }
 
-.apply-status-switch {
+.btn-secondary {
   position: relative;
   display: inline-flex;
   align-items: center;
-  width: 34px;
-  height: 18px;
-  padding: 0;
-  border-radius: var(--md-shape-corner-full);
-  border: 1px solid var(--md-status-applied);
-  background-color: var(--md-status-applied-container);
-  cursor: pointer;
+  justify-content: center;
+  white-space: nowrap;
   flex-shrink: 0;
-  transition: background-color 0.25s var(--md-motion-standard), border-color 0.25s var(--md-motion-standard), transform 0.15s var(--md-motion-standard);
+  min-height: 28px;
+  padding: 4px 14px;
+  line-height: 1.2;
+  background-color: var(--md-sys-color-primary-container);
+  color: var(--md-sys-color-on-primary-container);
+  border: 1.5px solid transparent;
+  border-radius: var(--md-shape-corner-full);
+  font-family: var(--font-sans);
+  font-size: 11.5px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: filter 0.2s var(--md-motion-standard), transform 0.15s var(--md-motion-spring), background-color 0.25s var(--md-motion-standard), border-color 0.25s var(--md-motion-standard), color 0.25s var(--md-motion-standard);
 }
 
-.apply-status-switch:active {
-  transform: scale(0.92);
+.btn-secondary:hover {
+  filter: brightness(0.95);
 }
 
-.apply-status-dot {
-  position: absolute;
-  top: 2px;
-  left: 17px;
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
-  background-color: var(--md-status-applied);
-  transition: left 0.3s var(--md-motion-spring), background-color 0.25s var(--md-motion-standard);
+.btn-secondary:active {
+  transform: scale(0.94);
 }
 
-.apply-status-switch.is-pending {
-  border-color: var(--md-status-pending);
+.btn-scallop-halo {
+  display: none;
+  width: 15px;
+  height: 15px;
+  margin-right: 5px;
+  color: currentColor;
+  flex-shrink: 0;
+}
+
+/* Red Pulsing / Continuous Rotating Scalloped Border (Google Pixel Scallop Clock) */
+.btn-secondary.is-pending {
   background-color: var(--md-status-pending-container);
+  color: var(--md-status-pending);
+  border-color: var(--md-status-pending);
+  box-shadow: 0 0 10px rgba(179, 38, 30, 0.25);
 }
 
-.apply-status-switch.is-pending .apply-status-dot {
-  left: 3px;
-  background-color: var(--md-status-pending);
+.btn-secondary.is-pending .btn-scallop-halo {
+  display: inline-block;
+  animation: pixelScallopSpin 4s linear infinite;
+}
+
+@keyframes pixelScallopSpin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .select-input {
@@ -479,32 +506,11 @@ body {
   border-color: var(--md-sys-color-primary);
 }
 
-.btn-secondary {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  white-space: nowrap;
-  flex-shrink: 0;
-  min-height: 28px;
-  padding: 4px 14px;
-  line-height: 1.2;
-  background-color: var(--md-sys-color-primary-container);
-  color: var(--md-sys-color-on-primary-container);
-  border: none;
-  border-radius: var(--md-shape-corner-full);
-  font-family: var(--font-sans);
-  font-size: 11.5px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: filter 0.2s var(--md-motion-standard), transform 0.15s var(--md-motion-spring), background-color 0.2s var(--md-motion-standard);
-}
-
-.btn-secondary:hover {
-  filter: brightness(0.95);
-}
-
-.btn-secondary:active {
-  transform: scale(0.94);
+/* Explicit styling for select options to guarantee readable dark mode contrast on Windows */
+select option {
+  background-color: var(--md-sys-color-surface-container-high);
+  color: var(--md-sys-color-on-surface);
+  padding: 8px 12px;
 }
 
 /* ==========================================================================
@@ -654,13 +660,56 @@ body {
   flex-shrink: 0;
 }
 
-.btn-download {
+.media-actions-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
   width: 100%;
+}
+
+.format-pill-group {
+  display: inline-flex;
+  background-color: var(--md-sys-color-surface-container);
+  border-radius: var(--md-shape-corner-full);
+  padding: 2px;
+  flex-shrink: 0;
+  border: 1px solid var(--md-sys-color-outline-variant);
+}
+
+.format-pill-btn {
+  border: none;
+  background: transparent;
+  color: var(--md-sys-color-on-surface-variant);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 700;
+  padding: 4px 8px;
+  border-radius: var(--md-shape-corner-full);
+  cursor: pointer;
+  transition: background-color 0.2s var(--md-motion-standard), color 0.2s var(--md-motion-standard), transform 0.15s var(--md-motion-standard);
+}
+
+.format-pill-btn:hover {
+  color: var(--md-sys-color-on-surface);
+}
+
+.format-pill-btn:active {
+  transform: scale(0.94);
+}
+
+.format-pill-btn.active {
+  background-color: var(--md-sys-color-primary);
+  color: var(--md-sys-color-on-primary);
+}
+
+.btn-download {
+  flex: 1;
+  min-width: 0;
   background-color: var(--md-sys-color-primary);
   color: var(--md-sys-color-on-primary);
   border: none;
   border-radius: var(--md-shape-corner-full);
-  padding: 8px 16px;
+  padding: 8px 14px;
   font-family: var(--font-sans);
   font-size: 12px;
   font-weight: 600;

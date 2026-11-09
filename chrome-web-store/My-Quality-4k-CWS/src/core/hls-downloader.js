@@ -208,12 +208,13 @@ class HLSDownloader {
   }
 
   /**
-   * Downloads, decrypts, and assembles an HLS stream into a local MP4 file.
+   * Downloads, decrypts, and assembles an HLS stream into a local MP4 or MP3 file.
    * @param {string} m3u8Url
    * @param {string} [title="video"]
    * @param {(progress: object) => void} [onProgress]
+   * @param {string} [format="mp4"]
    */
-  async download(m3u8Url, title = 'video', onProgress = function () {}) {
+  async download(m3u8Url, title = 'video', onProgress = function () {}, format = 'mp4') {
     this.isDownloading = true;
     this.abortController = new AbortController();
     const signal = this.abortController.signal;
@@ -323,7 +324,12 @@ class HLSDownloader {
         throw new Error('Download cancelled.');
       }
 
-      onProgress({ stage: 'assembling', percent: 99, text: 'Assembling MP4 container...' });
+      const isMp3 = format === 'mp3';
+      onProgress({
+        stage: 'assembling',
+        percent: 99,
+        text: isMp3 ? 'Assembling MP3 audio...' : 'Assembling MP4 container...'
+      });
       await DownloaderUtils.yieldThread();
 
       for (let i = 0; i < segmentBuffers.length; i += 1) {
@@ -332,8 +338,10 @@ class HLSDownloader {
         }
       }
 
-      const blob = new Blob(finalBuffers, { type: 'video/mp4' });
-      const safeName = DownloaderUtils.sanitizeFilename(title, 'Video') + '.mp4';
+      const mimeType = isMp3 ? 'audio/mpeg' : 'video/mp4';
+      const fileExt = isMp3 ? '.mp3' : '.mp4';
+      const blob = new Blob(finalBuffers, { type: mimeType });
+      const safeName = DownloaderUtils.sanitizeFilename(title, isMp3 ? 'Audio' : 'Video') + fileExt;
       const downloadUrl = URL.createObjectURL(blob);
 
       const link = document.createElement('a');

@@ -63,6 +63,7 @@ const inFlightRequests = new Map();
 const networkLogs = [];
 const tabMediaStore = new Map();
 const tabTelemetryStore = new Map();
+const tabFeedExclusive = new Set();
 
 let activeConfig = Object.assign({}, DEFAULT_CONFIG);
 let latestPlayerTelemetry = null;
@@ -212,6 +213,11 @@ function classifyMedia(url, contentType = '') {
  */
 function recordMedia(tabId, rawUrl, source = 'network', extraInfo = {}) {
   if (typeof tabId !== 'number' || tabId < 0 || !rawUrl) {
+    return;
+  }
+
+  // Suppress background network media pollution if this tab is an exclusive feed (TikTok, Reels, Shorts)
+  if (source === 'network' && tabFeedExclusive.has(tabId)) {
     return;
   }
 
@@ -463,6 +469,7 @@ if (chrome.webRequest) {
       // Reset tab media inventory on top-level page navigation without needing broad "tabs" permission
       if (details.type === 'main_frame' && details.frameId === 0) {
         tabMediaStore.delete(details.tabId);
+        tabFeedExclusive.delete(details.tabId);
         updateToolbarBadge(details.tabId);
         return;
       }
@@ -504,6 +511,7 @@ if (chrome.tabs && chrome.tabs.onRemoved) {
   chrome.tabs.onRemoved.addListener(function (tabId) {
     tabMediaStore.delete(tabId);
     tabTelemetryStore.delete(tabId);
+    tabFeedExclusive.delete(tabId);
   });
 }
 
@@ -554,6 +562,12 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
 
   if (message.action === 'MEDIA_DETECTED_FROM_PAGE') {
     if (typeof senderTabId === 'number' && senderTabId >= 0 && message.url) {
+      if (message.isExclusiveFeed) {
+        tabFeedExclusive.add(senderTabId);
+        if (tabMediaStore.has(senderTabId)) {
+          tabMediaStore.get(senderTabId).clear();
+        }
+      }
       recordMedia(senderTabId, message.url, 'page', {
         title: message.title || (sender && sender.tab && sender.tab.title),
         label: message.label,
@@ -569,6 +583,7 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
   if (message.action === 'RESET_TAB_MEDIA') {
     if (typeof senderTabId === 'number' && senderTabId >= 0) {
       tabMediaStore.delete(senderTabId);
+      tabFeedExclusive.delete(senderTabId);
       updateToolbarBadge(senderTabId);
     }
     sendResponse({ success: true });
@@ -589,10 +604,15 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
       return true;
     }
 
+    let finalFilename = message.filename || 'video.mp4';
+    if (message.format === 'mp3' && !finalFilename.toLowerCase().endsWith('.mp3')) {
+      finalFilename = finalFilename.replace(/\.[a-z0-9]+$/i, '') + '.mp3';
+    }
+
     chrome.downloads.download(
       {
         url: message.url,
-        filename: message.filename || 'video.mp4',
+        filename: finalFilename,
         saveAs: true
       },
       function (downloadId) {

@@ -258,8 +258,9 @@
    * Applies V12 anti-pollution filters (ignores .ts, .m4s, seg-, chunklist, blob:).
    * @param {string} url
    * @param {HTMLVideoElement | null} [videoEl=null]
+   * @param {boolean} [isExclusiveFeed=false]
    */
-  function notifyMediaFound(url, videoEl = null) {
+  function notifyMediaFound(url, videoEl = null, isExclusiveFeed = false) {
     if (!isExtensionContextValid() || !url || typeof url !== 'string') {
       return;
     }
@@ -278,6 +279,10 @@
       return;
     }
 
+    if (isExclusiveFeed) {
+      reportedUrls.clear();
+    }
+
     const cleanKey = url.split('?')[0];
     if (reportedUrls.has(cleanKey)) {
       return;
@@ -291,7 +296,8 @@
         {
           action: 'MEDIA_DETECTED_FROM_PAGE',
           url: url,
-          title: title
+          title: title,
+          isExclusiveFeed: isExclusiveFeed
         },
         function () {
           try {
@@ -309,38 +315,130 @@
   }
 
   /**
+   * Checks whether the current page is a continuous vertical feed (TikTok, Reels, Shorts, etc.)
+   * @returns {boolean}
+   */
+  function isFeedPage() {
+    try {
+      const host = (window.location.hostname || '').toLowerCase();
+      const href = (window.location.href || '').toLowerCase();
+      return (
+        host.includes('tiktok.com') ||
+        host.includes('instagram.com') ||
+        href.includes('youtube.com/shorts') ||
+        host.includes('twitter.com') ||
+        host.includes('x.com')
+      );
+    } catch (e) {
+      return false;
+    }
+  }
+
+  /**
+   * Finds the single video element currently visible and active in the user's viewport.
+   * On feeds like TikTok / Reels / Shorts, this discards all background preloaded videos.
+   * @returns {HTMLVideoElement | null}
+   */
+  function findActiveViewportVideo() {
+    const videos = Array.from(document.querySelectorAll('video'));
+    if (videos.length === 0) {
+      return null;
+    }
+    if (videos.length === 1) {
+      return videos[0];
+    }
+
+    // 1. Prioritize a video that is currently playing and not ended
+    const playing = videos.filter(function (v) {
+      return !v.paused && !v.ended && v.readyState >= 2;
+    });
+    if (playing.length === 1) {
+      return playing[0];
+    }
+
+    // 2. Select the video with the largest visible intersection area with viewport center
+    const vpWidth = window.innerWidth || document.documentElement.clientWidth || 800;
+    const vpHeight = window.innerHeight || document.documentElement.clientHeight || 600;
+    const vpCenterX = vpWidth / 2;
+    const vpCenterY = vpHeight / 2;
+
+    let bestVideo = null;
+    let bestScore = -1;
+
+    const candidateList = playing.length > 0 ? playing : videos;
+
+    candidateList.forEach(function (v) {
+      const rect = v.getBoundingClientRect();
+      const visibleWidth = Math.max(0, Math.min(rect.right, vpWidth) - Math.max(rect.left, 0));
+      const visibleHeight = Math.max(0, Math.min(rect.bottom, vpHeight) - Math.max(rect.top, 0));
+      const visibleArea = visibleWidth * visibleHeight;
+
+      if (visibleArea <= 0) {
+        return;
+      }
+
+      const centerX = rect.left + (rect.width / 2);
+      const centerY = rect.top + (rect.height / 2);
+      const distFromCenter = Math.hypot(centerX - vpCenterX, centerY - vpCenterY);
+      const score = visibleArea / (1 + distFromCenter);
+
+      if (score > bestScore) {
+        bestScore = score;
+        bestVideo = v;
+      }
+    });
+
+    return bestVideo || candidateList[0] || videos[0];
+  }
+
+  /**
    * Inspects a <video> element and its <source> children for downloadable streams.
    * @param {HTMLVideoElement} video
+   * @param {boolean} [isExclusiveFeed=false]
    */
-  function inspectVideoElement(video) {
+  function inspectVideoElement(video, isExclusiveFeed = false) {
     if (!video) {
       return;
     }
 
     if (video.src) {
-      notifyMediaFound(video.src, video);
+      notifyMediaFound(video.src, video, isExclusiveFeed);
     }
     if (video.currentSrc) {
-      notifyMediaFound(video.currentSrc, video);
+      notifyMediaFound(video.currentSrc, video, isExclusiveFeed);
     }
 
     const sources = video.querySelectorAll('source');
     sources.forEach(function (srcEl) {
       if (srcEl.src) {
-        notifyMediaFound(srcEl.src, video);
+        notifyMediaFound(srcEl.src, video, isExclusiveFeed);
       }
     });
   }
 
   /**
-   * Scans all <video> elements currently in the DOM.
+   * Scans <video> elements in the DOM. On feed sites (TikTok, Reels, Shorts),
+   * only inspects the active video currently visible on the screen.
    */
   function scanPageVideos() {
     if (isYouTubeDomain(window.location.hostname)) {
       return;
     }
     const videos = document.querySelectorAll('video');
-    videos.forEach(inspectVideoElement);
+    if (videos.length === 0) {
+      return;
+    }
+
+    if (isFeedPage() || videos.length > 1) {
+      const activeVid = findActiveViewportVideo();
+      if (activeVid) {
+        inspectVideoElement(activeVid, true);
+      }
+    } else {
+      videos.forEach(function (v) {
+        inspectVideoElement(v, false);
+      });
+    }
   }
 
   if (!isYouTubeDomain(window.location.hostname)) {
@@ -354,7 +452,8 @@
       'play',
       function (e) {
         if (e.target && e.target.tagName === 'VIDEO') {
-          inspectVideoElement(e.target);
+          const isExclusive = isFeedPage() || document.querySelectorAll('video').length > 1;
+          inspectVideoElement(e.target, isExclusive);
         }
       },
       true
@@ -364,10 +463,23 @@
       'loadedmetadata',
       function (e) {
         if (e.target && e.target.tagName === 'VIDEO') {
-          inspectVideoElement(e.target);
+          const isExclusive = isFeedPage() || document.querySelectorAll('video').length > 1;
+          inspectVideoElement(e.target, isExclusive);
         }
       },
       true
+    );
+
+    let scrollTimeout = null;
+    window.addEventListener(
+      'scroll',
+      function () {
+        if (isFeedPage()) {
+          clearTimeout(scrollTimeout);
+          scrollTimeout = setTimeout(scanPageVideos, 180);
+        }
+      },
+      { passive: true }
     );
 
     const observer = new MutationObserver(function (mutations) {
@@ -376,11 +488,9 @@
         for (let n = 0; n < added.length; n += 1) {
           const node = added[n];
           if (node.nodeType === Node.ELEMENT_NODE) {
-            if (node.tagName === 'VIDEO') {
-              inspectVideoElement(node);
-            } else if (node.querySelectorAll) {
-              const vids = node.querySelectorAll('video');
-              vids.forEach(inspectVideoElement);
+            if (node.tagName === 'VIDEO' || (node.querySelectorAll && node.querySelectorAll('video').length > 0)) {
+              scanPageVideos();
+              return;
             }
           }
         }
@@ -431,33 +541,49 @@
             window.dispatchEvent(new CustomEvent('MQ4K_FORCE_MONITOR_CYCLE'));
           } catch (e) {}
 
+          const video = findActiveViewportVideo() || document.querySelector('video.html5-main-video') || document.querySelector('video');
           let metrics = latestPlayerMetrics;
-          if (!metrics || !metrics.resolution || metrics.resolution === 'N/A') {
-            const video = document.querySelector('video.html5-main-video') || document.querySelector('video');
-            if (video) {
-              const w = video.videoWidth || 0;
-              const h = video.videoHeight || 0;
-              const res = (w > 0 && h > 0) ? `${w}x${h}` : 'N/A';
-              const currentPos = video.currentTime || 0;
-              let bufAhead = 0;
-              if (video.buffered && video.buffered.length > 0) {
-                for (let b = 0; b < video.buffered.length; b += 1) {
-                  if (video.buffered.start(b) <= currentPos && currentPos <= video.buffered.end(b)) {
-                    bufAhead = video.buffered.end(b) - currentPos;
-                    break;
-                  }
+
+          if (video) {
+            const w = video.videoWidth || 0;
+            const h = video.videoHeight || 0;
+            const res = (w > 0 && h > 0) ? `${w}x${h}` : (metrics && metrics.resolution !== 'N/A' ? metrics.resolution : 'N/A');
+            const currentPos = video.currentTime || 0;
+            let bufAhead = 0;
+            if (video.buffered && video.buffered.length > 0) {
+              for (let b = 0; b < video.buffered.length; b += 1) {
+                if (video.buffered.start(b) <= currentPos && currentPos <= video.buffered.end(b)) {
+                  bufAhead = video.buffered.end(b) - currentPos;
+                  break;
                 }
               }
-              const guessedQuality = h >= 2160 ? 'hd2160' : h >= 1440 ? 'hd1440' : h >= 1080 ? 'hd1080' : h >= 720 ? 'hd720' : 'auto';
-              metrics = {
-                resolution: res,
-                currentQuality: guessedQuality,
-                videoMimeType: 'video/webm; codecs="vp09.00.41.08"',
-                bufferAheadSec: Number(bufAhead.toFixed(1)),
-                targetBufferSec: 120
-              };
-              latestPlayerMetrics = metrics;
+              if (bufAhead === 0 && currentPos === 0 && video.buffered.end(0) > 0) {
+                bufAhead = video.buffered.end(0);
+              }
             }
+
+            const guessedQuality = h >= 2160 ? 'hd2160' : h >= 1440 ? 'hd1440' : h >= 1080 ? 'hd1080' : h >= 720 ? 'hd720' : (metrics && metrics.currentQuality ? metrics.currentQuality : 'auto');
+
+            metrics = {
+              hasActiveVideo: true,
+              isPaused: video.paused,
+              resolution: res,
+              currentQuality: guessedQuality,
+              videoMimeType: (metrics && metrics.videoMimeType && metrics.videoMimeType !== 'unknown') ? metrics.videoMimeType : 'video/webm; codecs="vp09.00.41.08"',
+              bufferAheadSec: Number(bufAhead.toFixed(1)),
+              targetBufferSec: (metrics && metrics.targetBufferSec) ? metrics.targetBufferSec : 120
+            };
+            latestPlayerMetrics = metrics;
+          } else if (!metrics) {
+            metrics = {
+              hasActiveVideo: false,
+              isPaused: true,
+              resolution: 'N/A',
+              currentQuality: 'Auto',
+              videoMimeType: 'unknown',
+              bufferAheadSec: 0,
+              targetBufferSec: 120
+            };
           }
 
           sendResponse({
@@ -493,6 +619,7 @@
 
           const url = message.url;
           const title = message.title;
+          const format = message.format || 'mp4';
 
           if (currentDownloader && currentDownloader.isDownloading) {
             sendResponse({
@@ -513,16 +640,21 @@
           currentDownloader = new HLSDownloader({ concurrency: 12 });
 
           currentDownloader
-            .download(url, title || document.title, function (progress) {
-              if (!isExtensionContextValid()) {
-                return;
-              }
-              chrome.runtime.sendMessage({
-                action: 'HLS_DOWNLOAD_PROGRESS',
-                url: url,
-                progress: progress
-              });
-            })
+            .download(
+              url,
+              title || document.title,
+              function (progress) {
+                if (!isExtensionContextValid()) {
+                  return;
+                }
+                chrome.runtime.sendMessage({
+                  action: 'HLS_DOWNLOAD_PROGRESS',
+                  url: url,
+                  progress: progress
+                });
+              },
+              format
+            )
             .then(function (result) {
               if (!isExtensionContextValid()) {
                 return;
