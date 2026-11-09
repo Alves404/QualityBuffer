@@ -1225,7 +1225,7 @@
   }
 
   /**
-   * Generates 16 smooth phase steps of the 14-lobe cubic-Bezier Material You
+   * Generates 16 smooth phase steps of the 12-lobe cubic-Bezier Material You
    * scalloped pill path so the sinusoidal undulations glide continuously around
    * the pill perimeter via hardware-composited SVG SMIL animation.
    */
@@ -1235,16 +1235,16 @@
       return;
     }
 
-    const xL = 20;
-    const xR = 104;
-    const yC = 20;
-    const R = 14.5;
+    const xL = 21;
+    const xR = 119;
+    const yC = 22;
+    const R = 17.0;
     const Ltop = xR - xL;
     const Larc = Math.PI * R;
     const L = 2 * Ltop + 2 * Larc;
-    const N = 14;
-    const A = 2.8;
-    const M = N * 6;
+    const N = 12;
+    const A = 1.85;
+    const M = N * 8;
 
     function pointOnCapsule(s) {
       let d = ((s % L) + L) % L;
@@ -1260,7 +1260,7 @@
       if (d < Ltop) {
         return { x: xR - d, y: yC + R, nx: 0, ny: 1 };
       }
-      d -= Larc;
+      d -= Ltop;
       const a = Math.PI / 2 + (d / Larc) * Math.PI;
       return { x: xL + R * Math.cos(a), y: yC + R * Math.sin(a), nx: Math.cos(a), ny: Math.sin(a) };
     }

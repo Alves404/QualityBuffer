@@ -69,7 +69,7 @@
     --md-status-applied: #6DD58C;
     --md-status-applied-container: rgba(109, 213, 140, 0.18);
     --md-status-pending: #F2B8B5;
-    --md-status-pending-container: rgba(242, 184, 181, 0.18);
+    --md-status-pending-container: #5A2725;
     --md-status-warning: #FFB951;
   }
 }
@@ -422,7 +422,7 @@ body {
   white-space: nowrap;
   flex-shrink: 0;
   min-height: 28px;
-  padding: 4px 14px;
+  padding: 5px 16px;
   line-height: 1.2;
   background-color: var(--md-sys-color-primary-container);
   color: var(--md-sys-color-on-primary-container);
@@ -449,12 +449,12 @@ body {
   z-index: 1;
 }
 
-/* Continuous 14-Scallop Pixel Pill Vector Shape (Material You) */
+/* Continuous 12-Scallop Pixel Pill Vector Shape (Material You Soft Tonal) */
 .btn-pill-border {
   position: absolute;
-  inset: -5px;
-  width: calc(100% + 10px);
-  height: calc(100% + 10px);
+  inset: -4px -8px;
+  width: calc(100% + 16px);
+  height: calc(100% + 8px);
   pointer-events: none;
   overflow: visible;
   display: none;
@@ -462,17 +462,18 @@ body {
 }
 
 .pill-scallop-shape {
-  fill: #B3261E;
-  stroke: #FFB4AB;
-  stroke-width: 1.8px;
+  fill: var(--md-status-pending-container);
+  stroke: var(--md-status-pending);
+  stroke-width: 1.25px;
+  stroke-opacity: 0.68;
   stroke-linejoin: round;
-  filter: drop-shadow(0 2px 6px rgba(179, 38, 30, 0.45));
+  filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.2));
 }
 
-/* Red Scalloped Pill in pending state (unapplied changes) */
+/* Soft Tonal Red Scalloped Pill in pending state (unapplied changes) */
 .btn-secondary.is-pending {
   background-color: transparent;
-  color: #FFFFFF;
+  color: var(--md-status-pending);
   border-color: transparent;
   box-shadow: none;
 }
