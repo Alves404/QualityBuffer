@@ -63,16 +63,10 @@
   const I18N_DICT = Object.freeze({
     pt: Object.freeze({
       tabControls: 'Controles',
-      tabDownloader: 'Downloader',
       tabAbout: 'Sobre & Creditos',
       metricResLabel: 'Resolucao / Stream',
       metricWaiting: 'Aguardando...',
       metricBufLabel: 'Buffer Real / Meta',
-      metricNetLabel: 'Taxa de Rede (CDN)',
-      metricLatencyPrefix: 'Latencia:',
-      metricGpuLabel: 'Estabilidade GPU/CPU',
-      metricDropsSuffix: 'perdas',
-      metricGapsPrefix: 'Gaps corrigidos:',
       labelTargetQuality: 'Qualidade Alvo do Player',
       btnApplyNow: 'Aplicar Agora',
       optQ2160: '2160p (4K Ultra HD) - Recomendado',
@@ -103,7 +97,7 @@
       featAmbientDesc: 'Remove o canvas de iluminacao desfocada do YouTube para liberar VRAM e GPU.',
       featDropTitle: 'Protecao contra Queda Severa de Quadros',
       featDropDesc: 'Reduz automaticamente de 4K para 2K caso a perda de quadros ultrapasse 18%.',
-      dlActiveTabLabel: 'Aba Ativa',
+      dlSectionTitle: 'Download de Video',
       dlEmptyTitle: 'Nenhum video detectado',
       dlEmptyDesc: 'Inicie a reproducao de um video nesta aba para capturar streams HLS (M3U8 / AES-128) ou MP4/WebM automaticamente.',
       dlBtnDownload: 'Baixar Video',
@@ -113,7 +107,6 @@
       dlBtnRetry: 'Tentar Novamente',
       dlBtnDownloadAgain: 'Baixar Novamente',
       dlErrRefresh: 'Atualize a pagina (F5) para ativar o assistente de download nesta aba.',
-      dlHint: 'Motor V12: Download concorrente 12x HLS (M3U8 / AES-128) e MP4/WebM direto',
       aboutArchTitle: 'Arquitetura & Engenharia Humana v2.2.0',
       aboutArchBody: 'Idealizado, projetado e arquitetado por Joao Vitor Magalhaes Alves (Google Student Ambassador 2026). O My Quality 4k desbloqueia o limite interno de 35 MB (16s) do SABR do YouTube para 512 MB, permitindo pre-carregar 1, 2 ou 3 minutos em 4K (2160p) com decodificacao de hardware VP9 SDR e integra o motor V12 de 12 conexoes para download de videos HLS (M3U8 / AES-128) e MP4.',
       aboutAiTitle: 'Nota de Desenvolvimento Assistido por IA (Gemini 4 Argon)',
@@ -125,25 +118,16 @@
       creditI18n: 'Idiomas Suportados (Zero-Overhead): English (EN - Padrao), Portugues (PT) e Espanol (ES) com deteccao automatica do navegador.',
       creditLicense: 'Licenca Open Source: GNU General Public License v3.0 (GPL-3.0 Copyleft) — Codigo 100% aberto, livre e auditavel.',
       creditVersion: 'Versao: 2.2.0 (Manifest V3 — Motor SABR 512 MB, Hardware VP9 SDR & Downloader V12 HLS/MP4).',
-      statusActive: 'Status: Deep Pre-Buffer 4K Ativo',
-      statusPaused: 'Status: Otimizacao Pausada',
-      statusPending: 'Status: Alteracoes Pendentes (Clique em Aplicar Agora)',
       tooltipApplied: 'Verde: Alteracoes aplicadas',
       tooltipPending: 'Vermelho: Alteracoes nao aplicadas (clique em Aplicar Agora)',
       codecDefault: 'VP9 SDR (Padrao)'
     }),
     en: Object.freeze({
       tabControls: 'Controls',
-      tabDownloader: 'Downloader',
       tabAbout: 'About & Credits',
       metricResLabel: 'Resolution / Stream',
       metricWaiting: 'Waiting...',
       metricBufLabel: 'Real Buffer / Target',
-      metricNetLabel: 'Network Rate (CDN)',
-      metricLatencyPrefix: 'Latency:',
-      metricGpuLabel: 'GPU/CPU Stability',
-      metricDropsSuffix: 'drops',
-      metricGapsPrefix: 'Gaps fixed:',
       labelTargetQuality: 'Target Player Quality',
       btnApplyNow: 'Apply Now',
       optQ2160: '2160p (4K Ultra HD) - Recommended',
@@ -174,7 +158,7 @@
       featAmbientDesc: 'Removes YouTube blurred lighting canvas to free VRAM and GPU fill-rate.',
       featDropTitle: 'Severe Frame Drop Protection',
       featDropDesc: 'Automatically steps down from 4K to 2K if frame drop rate exceeds 18%.',
-      dlActiveTabLabel: 'Active Tab',
+      dlSectionTitle: 'Video Download',
       dlEmptyTitle: 'No video streams detected',
       dlEmptyDesc: 'Play a video on the active page to capture HLS (M3U8 / AES-128) or direct MP4/WebM streams automatically.',
       dlBtnDownload: 'Download Video',
@@ -184,7 +168,6 @@
       dlBtnRetry: 'Retry Download',
       dlBtnDownloadAgain: 'Download Again',
       dlErrRefresh: 'Refresh the page (F5) to activate the download assistant on this tab.',
-      dlHint: 'V12 Engine: 12-worker concurrent HLS (M3U8 / AES-128) & direct MP4/WebM downloader',
       aboutArchTitle: 'Human Architecture & System Design v2.2.0',
       aboutArchBody: 'Conceived, engineered, and architected by Joao Vitor Magalhaes Alves (Google Student Ambassador 2026). My Quality 4k unlocks YouTube SABR 35 MB (16s) internal buffer cap to 512 MB for 1, 2, or 3 full minutes of 4K (2160p) pre-buffering, enforces hardware VP9 SDR decoding, and integrates the V12 12-worker HLS (M3U8 / AES-128) & MP4 web video downloader.',
       aboutAiTitle: 'AI-Assisted Development Notice (Gemini 4 Argon)',
@@ -196,25 +179,16 @@
       creditI18n: 'Supported Languages (Zero-Overhead): English (EN - Default), Portugues (PT), and Espanol (ES) with automatic browser detection.',
       creditLicense: 'Open Source License: GNU General Public License v3.0 (GPL-3.0 Copyleft) — 100% free, open, and auditable source code.',
       creditVersion: 'Version: 2.2.0 (Manifest V3 — 512 MB SABR Pre-Buffer, Hardware VP9 SDR & V12 HLS/MP4 Downloader).',
-      statusActive: 'Status: 4K Deep Pre-Buffer Active',
-      statusPaused: 'Status: Optimization Paused',
-      statusPending: 'Status: Pending Changes (Click Apply Now)',
       tooltipApplied: 'Green: Changes applied',
       tooltipPending: 'Red: Unapplied changes (click Apply Now)',
       codecDefault: 'VP9 SDR (Default)'
     }),
     es: Object.freeze({
       tabControls: 'Controles',
-      tabDownloader: 'Downloader',
       tabAbout: 'Acerca y Creditos',
       metricResLabel: 'Resolucion / Stream',
       metricWaiting: 'Esperando...',
       metricBufLabel: 'Buffer Real / Meta',
-      metricNetLabel: 'Tasa de Red (CDN)',
-      metricLatencyPrefix: 'Latencia:',
-      metricGpuLabel: 'Estabilidad GPU/CPU',
-      metricDropsSuffix: 'perdidas',
-      metricGapsPrefix: 'Gaps corregidos:',
       labelTargetQuality: 'Calidad Objetivo del Reproductor',
       btnApplyNow: 'Aplicar Ahora',
       optQ2160: '2160p (4K Ultra HD) - Recomendado',
@@ -245,7 +219,7 @@
       featAmbientDesc: 'Elimina el canvas de iluminacion difuminada de YouTube para liberar VRAM y GPU.',
       featDropTitle: 'Proteccion contra Caida Severa de Cuadros',
       featDropDesc: 'Reduce automaticamente de 4K a 2K si la perdida de cuadros supera el 18%.',
-      dlActiveTabLabel: 'Pestana Activa',
+      dlSectionTitle: 'Descarga de Video',
       dlEmptyTitle: 'Ningun video detectado',
       dlEmptyDesc: 'Inicie la reproduccion de un video en esta pestana para capturar streams HLS (M3U8 / AES-128) o MP4/WebM automaticamente.',
       dlBtnDownload: 'Descargar Video',
@@ -255,7 +229,6 @@
       dlBtnRetry: 'Reintentar',
       dlBtnDownloadAgain: 'Descargar de Nuevo',
       dlErrRefresh: 'Actualice la pagina (F5) para activar el asistente de descarga en esta pestana.',
-      dlHint: 'Motor V12: Descarga concurrente 12x HLS (M3U8 / AES-128) y MP4/WebM directo',
       aboutArchTitle: 'Arquitectura & Ingenieria Humana v2.2.0',
       aboutArchBody: 'Ideado, disenado y arquitectado por Joao Vitor Magalhaes Alves (Google Student Ambassador 2026). My Quality 4k desbloquea el limite interno de 35 MB (16s) de YouTube SABR a 512 MB, permitiendo pre-cargar 1, 2 o 3 minutos completos en 4K (2160p) con decodificacion de hardware VP9 SDR e integra el motor V12 de 12 conexiones para descarga de videos HLS (M3U8 / AES-128) y MP4.',
       aboutAiTitle: 'Nota de Desarrollo Asistido por IA (Gemini 4 Argon)',
@@ -267,9 +240,6 @@
       creditI18n: 'Idiomas Soportados (Zero-Overhead): English (EN - Predeterminado), Portugues (PT) y Espanol (ES) con deteccion automatica del navegador.',
       creditLicense: 'Licencia Open Source: GNU General Public License v3.0 (GPL-3.0 Copyleft) — Codigo 100% abierto, libre y auditable.',
       creditVersion: 'Version: 2.2.0 (Manifest V3 — Motor SABR 512 MB, Hardware VP9 SDR y Descargador V12 HLS/MP4).',
-      statusActive: 'Estado: Deep Pre-Buffer 4K Activo',
-      statusPaused: 'Estado: Optimizacion Pausada',
-      statusPending: 'Estado: Cambios Pendientes (Clic en Aplicar Ahora)',
       tooltipApplied: 'Verde: Cambios aplicados',
       tooltipPending: 'Rojo: Cambios no aplicados (clic en Aplicar Ahora)',
       codecDefault: 'VP9 SDR (Predeterminado)'
@@ -312,6 +282,7 @@
   let currentConfig = Object.assign({}, DEFAULT_CONFIG);
   let lastDashboardData = null;
   let activeTabInfo = null;
+  let lastMediaCount = -1;
   const activeDownloads = new Map();
 
   // DOM Elements
@@ -341,13 +312,11 @@
   const elMetricBuffer = document.getElementById('metric-buffer');
   const elBufferBarFill = document.getElementById('buffer-bar-fill');
 
-  const elDownloaderCountBadge = document.getElementById('downloader-count-badge');
   const elDownloaderTabHost = document.getElementById('downloader-tab-host');
   const elBtnRefreshMedia = document.getElementById('btn-refresh-media');
   const elDownloaderEmptyState = document.getElementById('downloader-empty-state');
   const elDownloaderMediaList = document.getElementById('downloader-media-list');
 
-  const elStatusIndicator = document.getElementById('status-indicator');
   const i18nElements = document.querySelectorAll('[data-i18n]');
 
   const featureToggleElements = [
@@ -439,7 +408,7 @@
         if (targetPanel) {
           targetPanel.classList.add('active');
         }
-        if (targetId === 'tab-downloader') {
+        if (targetId === 'tab-dashboard') {
           loadTabMedia();
         }
       });
@@ -553,14 +522,6 @@
         elApplyStatusSwitch.title = t('tooltipPending');
       }
     }
-
-    if (elStatusIndicator) {
-      if (!isApplied) {
-        elStatusIndicator.textContent = t('statusPending');
-      } else {
-        elStatusIndicator.textContent = appliedConfig.enabled ? t('statusActive') : t('statusPaused');
-      }
-    }
   }
 
   /**
@@ -653,30 +614,13 @@
   }
 
   // =========================================================================
-  // TAB 2: Web Video & V12 HLS Downloader Controller
+  // Web Video & V12 HLS Downloader Controller (Integrated in Controls)
   // =========================================================================
-
-  /**
-   * Updates the media count badge on the Downloader tab button
-   * @param {number} count
-   */
-  function updateDownloaderBadge(count) {
-    if (!elDownloaderCountBadge) {
-      return;
-    }
-    if (count > 0) {
-      elDownloaderCountBadge.textContent = String(count);
-      elDownloaderCountBadge.style.display = 'inline-block';
-    } else {
-      elDownloaderCountBadge.style.display = 'none';
-    }
-  }
 
   /**
    * Renders empty state when no downloadable videos are found on the active tab
    */
   function renderEmptyMedia() {
-    updateDownloaderBadge(0);
     if (elDownloaderEmptyState) {
       elDownloaderEmptyState.style.display = 'flex';
     }
@@ -687,7 +631,7 @@
   }
 
   /**
-   * Renders detected video/HLS stream cards
+   * Renders detected video/HLS stream cards without raw URLs
    * @param {Array<object>} items
    */
   function renderMediaList(items) {
@@ -695,7 +639,6 @@
       return;
     }
 
-    updateDownloaderBadge(items.length);
     elDownloaderEmptyState.style.display = 'none';
     elDownloaderMediaList.style.display = 'flex';
     elDownloaderMediaList.innerHTML = '';
@@ -707,7 +650,12 @@
 
       const isHls = item.type === 'hls';
       const badgeClass = isHls ? 'hls' : 'mp4';
-      const badgeText = isHls ? 'HLS M3U8' : item.ext ? item.ext.toUpperCase() : 'VIDEO';
+      const extLabel = item.ext ? item.ext.toUpperCase() : 'VIDEO';
+      const badgeText = isHls
+        ? 'HLS M3U8'
+        : item.quality
+          ? `${extLabel} • ${item.quality}`
+          : extLabel;
 
       let displayTitle = item.title;
       if (!displayTitle || displayTitle === 'Detected Video' || displayTitle === 'Vídeo detectado') {
@@ -720,9 +668,8 @@
       card.innerHTML = `
         <div class="media-header">
           <span class="media-title" title="${escapeHtml(displayTitle)}">${escapeHtml(displayTitle)}</span>
-          <span class="badge-tag ${badgeClass}">${badgeText}</span>
+          <span class="badge-tag ${badgeClass}">${escapeHtml(badgeText)}</span>
         </div>
-        <div class="media-url" title="${escapeHtml(item.url)}">${escapeHtml(item.url)}</div>
         <button type="button" class="btn-download" id="btn-${item.id}">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
@@ -926,10 +873,12 @@
         },
         function (response) {
           if (chrome.runtime.lastError || !response || !Array.isArray(response.list)) {
+            lastMediaCount = 0;
             renderEmptyMedia();
             return;
           }
 
+          lastMediaCount = response.list.length;
           if (response.list.length === 0) {
             renderEmptyMedia();
           } else {
@@ -1024,9 +973,6 @@
       const tabId = activeTabInfo && typeof activeTabInfo.id === 'number' ? activeTabInfo.id : undefined;
       chrome.runtime.sendMessage({ type: 'MQ4K_GET_DASHBOARD_STATE', tabId: tabId }, function (response) {
         if (!chrome.runtime.lastError && response && response.ok) {
-          if (typeof response.mediaCount === 'number') {
-            updateDownloaderBadge(response.mediaCount);
-          }
           renderDashboardState(response);
         }
       });
@@ -1056,8 +1002,12 @@
         if (chrome.runtime.lastError || !response || !response.ok) {
           return;
         }
-        if (typeof response.mediaCount === 'number') {
-          updateDownloaderBadge(response.mediaCount);
+        if (
+          typeof response.mediaCount === 'number' &&
+          response.mediaCount !== lastMediaCount &&
+          activeDownloads.size === 0
+        ) {
+          loadTabMedia();
         }
         if (response.playerTelemetry) {
           renderDashboardState(response);

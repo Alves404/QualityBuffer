@@ -33,10 +33,6 @@
 
   <nav class="tab-nav">
     <button type="button" class="tab-btn active" data-tab="tab-dashboard" data-i18n="tabControls">Controls</button>
-    <button type="button" class="tab-btn" data-tab="tab-downloader">
-      <span data-i18n="tabDownloader">Downloader</span>
-      <span class="tab-count-badge" id="downloader-count-badge" style="display: none;">0</span>
-    </button>
     <button type="button" class="tab-btn" data-tab="tab-about" data-i18n="tabAbout">About &amp; Credits</button>
   </nav>
 
@@ -89,6 +85,30 @@
           <option value="120" selected data-i18n="optBuf120">120 seconds (2 Minutes ahead - Recommended)</option>
           <option value="180" data-i18n="optBuf180">180 seconds (3 Minutes ahead - Maximum)</option>
         </select>
+      </div>
+
+      <!-- VIDEO DOWNLOAD CARD (INTEGRATED INSIDE CONTROLS) -->
+      <div class="downloader-section" id="downloader-section">
+        <div class="downloader-toolbar">
+          <div class="downloader-host-info">
+            <span class="metric-label" data-i18n="dlSectionTitle">Video Download</span>
+            <strong class="downloader-host-name" id="downloader-tab-host">Current Page</strong>
+          </div>
+          <button type="button" id="btn-refresh-media" class="icon-btn" title="Refresh detected streams" aria-label="Refresh detected streams">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="23 4 23 10 17 10"></polyline>
+              <polyline points="1 20 1 14 7 14"></polyline>
+              <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
+            </svg>
+          </button>
+        </div>
+
+        <div id="downloader-empty-state" class="empty-state">
+          <h2 class="empty-title" data-i18n="dlEmptyTitle">No video streams detected</h2>
+          <p class="empty-desc" data-i18n="dlEmptyDesc">Play a video on the active page to capture HLS (M3U8 / AES-128) or direct MP4/WebM streams automatically.</p>
+        </div>
+
+        <div id="downloader-media-list" class="media-list" style="display: none;"></div>
       </div>
 
       <!-- DROPDOWN MENU FOR ADVANCED BUFFER & CODEC FEATURES -->
@@ -213,42 +233,7 @@
       </div>
     </section>
 
-    <!-- TAB 2: WEB VIDEO & V12 HLS DOWNLOADER -->
-    <section id="tab-downloader" class="tab-panel">
-      <div class="downloader-toolbar">
-        <div class="downloader-host-info">
-          <span class="metric-label" data-i18n="dlActiveTabLabel">Active Tab</span>
-          <strong class="downloader-host-name" id="downloader-tab-host">Current Page</strong>
-        </div>
-        <button type="button" id="btn-refresh-media" class="icon-btn" title="Refresh detected streams">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <polyline points="23 4 23 10 17 10"></polyline>
-            <polyline points="1 20 1 14 7 14"></polyline>
-            <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
-          </svg>
-        </button>
-      </div>
-
-      <div id="downloader-empty-state" class="empty-state">
-        <div class="empty-icon-circle">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-            <polyline points="7 10 12 15 17 10"></polyline>
-            <line x1="12" y1="15" x2="12" y2="3"></line>
-          </svg>
-        </div>
-        <h2 class="empty-title" data-i18n="dlEmptyTitle">No video streams detected</h2>
-        <p class="empty-desc" data-i18n="dlEmptyDesc">Play a video on the active page to capture HLS (M3U8 / AES-128) or direct MP4/WebM streams automatically.</p>
-      </div>
-
-      <div id="downloader-media-list" class="media-list" style="display: none;"></div>
-
-      <div class="downloader-hint" data-i18n="dlHint">
-        V12 Engine: 12-worker concurrent HLS (M3U8 / AES-128) &amp; direct MP4/WebM downloader
-      </div>
-    </section>
-
-    <!-- TAB 3: ABOUT & CREDITS -->
+    <!-- TAB 2: ABOUT & CREDITS -->
     <section id="tab-about" class="tab-panel">
       <div class="about-card">
         <h2 data-i18n="aboutArchTitle">Human Architecture &amp; System Design v2.2.0</h2>
@@ -283,11 +268,6 @@
       </div>
     </section>
   </main>
-
-  <footer class="app-footer">
-    <span id="status-indicator">Status: 4K Deep Pre-Buffer Active</span>
-    <span class="mono-text">v2.2.0 | GPL-3.0</span>
-  </footer>
 
   <script src="../core/utils.js"></script>
   <script src="popup.js"></script>

@@ -98,25 +98,20 @@ function buildChromeWebStorePackage() {
     copyRecursiveSync(srcPath, destPath);
   }
 
-  const cwsZipName = `My-Quality-4k-ChromeWebStore-v${manifest.version}.zip`;
-  const cwsZipPath = path.join(CWS_ROOT, cwsZipName);
   const stdZipName = `My-Quality-4k-v${manifest.version}.zip`;
   const stdZipPath = path.join(CWS_ROOT, stdZipName);
 
   if (process.platform === 'win32') {
     execSync(
-      `powershell -NoProfile -Command "Compress-Archive -Path '${CWS_UNPACKED_DIR}\\*' -DestinationPath '${cwsZipPath}' -Force"`,
+      `powershell -NoProfile -Command "Compress-Archive -Path '${CWS_UNPACKED_DIR}\\*' -DestinationPath '${stdZipPath}' -Force"`,
       { stdio: 'inherit' }
     );
   } else {
-    execSync(`cd "${CWS_UNPACKED_DIR}" && zip -r "${cwsZipPath}" .`, { stdio: 'inherit' });
+    execSync(`cd "${CWS_UNPACKED_DIR}" && zip -r "${stdZipPath}" .`, { stdio: 'inherit' });
   }
 
-  fs.copyFileSync(cwsZipPath, stdZipPath);
-
   console.log(`[CWS-Builder] Unpacked publication folder ready: ${CWS_UNPACKED_DIR}`);
-  console.log(`[CWS-Builder] Chrome Web Store ZIP archive ready: ${cwsZipPath}`);
-  console.log(`[CWS-Builder] Standard Release ZIP archive ready: ${stdZipPath}`);
+  console.log(`[CWS-Builder] Release ZIP archive ready: ${stdZipPath}`);
 }
 
 buildChromeWebStorePackage();

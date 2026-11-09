@@ -102,25 +102,8 @@ function updateToolbarBadge(tabId) {
     return;
   }
 
-  if (!activeConfig.enabled) {
-    chrome.action.setBadgeText({ text: 'OFF' });
-    chrome.action.setBadgeBackgroundColor({ color: '#27272a' });
-    return;
-  }
-
   if (typeof tabId === 'number' && tabId >= 0) {
-    const mediaMap = tabMediaStore.get(tabId);
-    const count = mediaMap ? mediaMap.size : 0;
-    chrome.action.setBadgeText({
-      text: count > 0 ? String(count) : '',
-      tabId: tabId
-    });
-    if (count > 0) {
-      chrome.action.setBadgeBackgroundColor({
-        color: '#a8c7fa',
-        tabId: tabId
-      });
-    }
+    chrome.action.setBadgeText({ text: '', tabId: tabId });
     return;
   }
 
