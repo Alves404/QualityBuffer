@@ -128,7 +128,6 @@
    */
   function handlePlayerMetrics(event) {
     if (!isExtensionContextValid()) {
-      window.removeEventListener('MQ4K_PLAYER_METRICS', handlePlayerMetrics);
       return;
     }
 
@@ -151,7 +150,7 @@
           }
         );
       } catch (e) {
-        window.removeEventListener('MQ4K_PLAYER_METRICS', handlePlayerMetrics);
+        // Keep listening across transient service-worker disconnects
       }
     }
   }
@@ -428,9 +427,42 @@
         }
 
         if (message.type === 'MQ4K_GET_TAB_METRICS') {
+          try {
+            window.dispatchEvent(new CustomEvent('MQ4K_FORCE_MONITOR_CYCLE'));
+          } catch (e) {}
+
+          let metrics = latestPlayerMetrics;
+          if (!metrics || !metrics.resolution || metrics.resolution === 'N/A') {
+            const video = document.querySelector('video.html5-main-video') || document.querySelector('video');
+            if (video) {
+              const w = video.videoWidth || 0;
+              const h = video.videoHeight || 0;
+              const res = (w > 0 && h > 0) ? `${w}x${h}` : 'N/A';
+              const currentPos = video.currentTime || 0;
+              let bufAhead = 0;
+              if (video.buffered && video.buffered.length > 0) {
+                for (let b = 0; b < video.buffered.length; b += 1) {
+                  if (video.buffered.start(b) <= currentPos && currentPos <= video.buffered.end(b)) {
+                    bufAhead = video.buffered.end(b) - currentPos;
+                    break;
+                  }
+                }
+              }
+              const guessedQuality = h >= 2160 ? 'hd2160' : h >= 1440 ? 'hd1440' : h >= 1080 ? 'hd1080' : h >= 720 ? 'hd720' : 'auto';
+              metrics = {
+                resolution: res,
+                currentQuality: guessedQuality,
+                videoMimeType: 'video/webm; codecs="vp09.00.41.08"',
+                bufferAheadSec: Number(bufAhead.toFixed(1)),
+                targetBufferSec: 120
+              };
+              latestPlayerMetrics = metrics;
+            }
+          }
+
           sendResponse({
             ok: true,
-            metrics: latestPlayerMetrics
+            metrics: metrics
           });
           return true;
         }

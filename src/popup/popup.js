@@ -114,14 +114,14 @@
       dlBtnDownloadAgain: 'Baixar Novamente',
       dlErrRefresh: 'Atualize a pagina (F5) para ativar o assistente de download nesta aba.',
       dlHint: 'Motor V12: Download concorrente 12x HLS (M3U8 / AES-128) e MP4/WebM direto',
-      aboutArchTitle: 'Arquitetura Open Source v2.2.0',
-      aboutArchBody: 'My Quality 4k desbloqueia o limite interno de 35 MB (16s) do protocolo SABR do YouTube para 512 MB, permitindo pre-carregar 1, 2 ou 3 minutos em 4K (2160p) com decodificacao de hardware VP9 SDR e integra o motor V12 de 12 conexoes para download de videos HLS (M3U8 / AES-128) e MP4.',
+      aboutArchTitle: 'Arquitetura & Engenharia Humana v2.2.0',
+      aboutArchBody: 'Idealizado, projetado e arquitetado por Joao Vitor Magalhaes Alves (Google Student Ambassador 2026). O My Quality 4k desbloqueia o limite interno de 35 MB (16s) do SABR do YouTube para 512 MB, permitindo pre-carregar 1, 2 ou 3 minutos em 4K (2160p) com decodificacao de hardware VP9 SDR e integra o motor V12 de 12 conexoes para download de videos HLS (M3U8 / AES-128) e MP4.',
       aboutAiTitle: 'Nota de Desenvolvimento Assistido por IA (Gemini 4 Argon)',
-      aboutAiBody: 'Antes dos creditos principais, registra-se de forma transparente que o motor de desbloqueio SABR 512 MB, o pre-aquecimento assincrono V12 de CDN e chaves AES-128, a interceptacao de codecs de hardware e a arquitetura deste projeto contaram com o Desenvolvimento Assistido por IA Gemini 4 Argon (Google Antigravity).',
+      aboutAiBody: 'Este software foi concebido, arquitetado e direcionado por seu autor humano (Joao Vitor Magalhaes Alves). A implementacao tecnica dos modulos, otimizacoes de baixo nivel e documentacao contaram com o auxilio do assistente de programacao por IA Gemini 4 Argon (Google Antigravity), sob supervisao e diretrizes humanas.',
       aboutCreditsTitle: 'Creditos, Autoria e Licenca',
-      creditAuthor: 'Autor Idealizador e Mantenedor: Joao Vitor Magalhaes Alves',
+      creditAuthor: 'Autor Idealizador, Arquiteto de Software e Mantenedor: Joao Vitor Magalhaes Alves — Google Student Ambassador 2026',
       creditRepo: 'Repositorio Oficial no GitHub:',
-      creditAi: 'Desenvolvimento Assistido por IA: Gemini 4 Argon (Google Antigravity) — Co-arquitetura do motor SABR 512 MB, downloader V12 HLS e estabilizacao MSE.',
+      creditAi: 'Desenvolvimento Assistido por IA: Gemini 4 Argon (Google Antigravity) — Assistente de programacao para implementacao tecnica e otimizacoes sob direcao humana.',
       creditI18n: 'Idiomas Suportados (Zero-Overhead): English (EN - Padrao), Portugues (PT) e Espanol (ES) com deteccao automatica do navegador.',
       creditLicense: 'Licenca Open Source: GNU General Public License v3.0 (GPL-3.0 Copyleft) — Codigo 100% aberto, livre e auditavel.',
       creditVersion: 'Versao: 2.2.0 (Manifest V3 — Motor SABR 512 MB, Hardware VP9 SDR & Downloader V12 HLS/MP4).',
@@ -185,14 +185,14 @@
       dlBtnDownloadAgain: 'Download Again',
       dlErrRefresh: 'Refresh the page (F5) to activate the download assistant on this tab.',
       dlHint: 'V12 Engine: 12-worker concurrent HLS (M3U8 / AES-128) & direct MP4/WebM downloader',
-      aboutArchTitle: 'Open Source Architecture v2.2.0',
-      aboutArchBody: 'My Quality 4k unlocks YouTube SABR 35 MB (16s) internal buffer cap to 512 MB for 1, 2, or 3 full minutes of 4K (2160p) pre-buffering, enforces hardware VP9 SDR decoding, and integrates the V12 12-worker HLS (M3U8 / AES-128) & MP4 web video downloader.',
+      aboutArchTitle: 'Human Architecture & System Design v2.2.0',
+      aboutArchBody: 'Conceived, engineered, and architected by Joao Vitor Magalhaes Alves (Google Student Ambassador 2026). My Quality 4k unlocks YouTube SABR 35 MB (16s) internal buffer cap to 512 MB for 1, 2, or 3 full minutes of 4K (2160p) pre-buffering, enforces hardware VP9 SDR decoding, and integrates the V12 12-worker HLS (M3U8 / AES-128) & MP4 web video downloader.',
       aboutAiTitle: 'AI-Assisted Development Notice (Gemini 4 Argon)',
-      aboutAiBody: 'Prior to the main credits, it is transparently recorded that the SABR 512 MB unlocker, V12 async CDN/key warm-up engine, hardware codec hooks, MSE buffer stabilization, and project architecture were developed with the direct AI-assisted engineering of Gemini 4 Argon (Google Antigravity).',
+      aboutAiBody: 'This software was conceived, architected, and directed by its human author (Joao Vitor Magalhaes Alves). The technical implementation, optimizations, and documentation were assisted by Gemini 4 Argon (Google Antigravity) acting strictly as an AI programming assistant under direct human supervision.',
       aboutCreditsTitle: 'Credits, Authorship & License',
-      creditAuthor: 'Creator, Lead Author & Maintainer: Joao Vitor Magalhaes Alves',
+      creditAuthor: 'Creator, Software Architect & Maintainer: Joao Vitor Magalhaes Alves — Google Student Ambassador 2026',
       creditRepo: 'Official Open Source Repository:',
-      creditAi: 'AI-Assisted Development: Gemini 4 Argon (Google Antigravity) — Co-architecture of the 512 MB SABR engine, V12 HLS downloader, and MSE stabilization.',
+      creditAi: 'AI-Assisted Development: Gemini 4 Argon (Google Antigravity) — Coding assistant for implementation, optimizations, and documentation under human direction.',
       creditI18n: 'Supported Languages (Zero-Overhead): English (EN - Default), Portugues (PT), and Espanol (ES) with automatic browser detection.',
       creditLicense: 'Open Source License: GNU General Public License v3.0 (GPL-3.0 Copyleft) — 100% free, open, and auditable source code.',
       creditVersion: 'Version: 2.2.0 (Manifest V3 — 512 MB SABR Pre-Buffer, Hardware VP9 SDR & V12 HLS/MP4 Downloader).',
@@ -256,14 +256,14 @@
       dlBtnDownloadAgain: 'Descargar de Nuevo',
       dlErrRefresh: 'Actualice la pagina (F5) para activar el asistente de descarga en esta pestana.',
       dlHint: 'Motor V12: Descarga concurrente 12x HLS (M3U8 / AES-128) y MP4/WebM directo',
-      aboutArchTitle: 'Arquitectura Open Source v2.2.0',
-      aboutArchBody: 'My Quality 4k desbloquea el limite interno de 35 MB (16s) de YouTube SABR a 512 MB, permitiendo pre-cargar 1, 2 o 3 minutos completos en 4K (2160p) con decodificacion de hardware VP9 SDR e integra el motor V12 de 12 conexiones para descarga de videos HLS (M3U8 / AES-128) y MP4.',
+      aboutArchTitle: 'Arquitectura & Ingenieria Humana v2.2.0',
+      aboutArchBody: 'Ideado, disenado y arquitectado por Joao Vitor Magalhaes Alves (Google Student Ambassador 2026). My Quality 4k desbloquea el limite interno de 35 MB (16s) de YouTube SABR a 512 MB, permitiendo pre-cargar 1, 2 o 3 minutos completos en 4K (2160p) con decodificacion de hardware VP9 SDR e integra el motor V12 de 12 conexiones para descarga de videos HLS (M3U8 / AES-128) y MP4.',
       aboutAiTitle: 'Nota de Desarrollo Asistido por IA (Gemini 4 Argon)',
-      aboutAiBody: 'Antes de los creditos principales, se registra de forma transparente que el desbloqueador SABR 512 MB, el pre-calentamiento asincrono V12 de CDN y claves AES-128, la intercepcion de codecs y la arquitectura del proyecto contaron con el Desarrollo Asistido por IA Gemini 4 Argon (Google Antigravity).',
+      aboutAiBody: 'Este software fue concebido, arquitectado y dirigido por su autor humano (Joao Vitor Magalhaes Alves). La implementacion tecnica, optimizaciones y documentacion contaron con la asistencia de la herramienta de programacion por IA Gemini 4 Argon (Google Antigravity) bajo supervision y directrices humanas.',
       aboutCreditsTitle: 'Creditos, Autoria y Licencia',
-      creditAuthor: 'Autor Creador y Mantenedor: Joao Vitor Magalhaes Alves',
+      creditAuthor: 'Autor Creador, Arquitecto de Software y Mantenedor: Joao Vitor Magalhaes Alves — Google Student Ambassador 2026',
       creditRepo: 'Repositorio Oficial en GitHub:',
-      creditAi: 'Desarrollo Asistido por IA: Gemini 4 Argon (Google Antigravity) — Co-arquitectura del motor SABR 512 MB, descargador V12 HLS y estabilizacion MSE.',
+      creditAi: 'Desarrollo Asistido por IA: Gemini 4 Argon (Google Antigravity) — Asistente de programacion para implementacion tecnica y optimizaciones bajo direccion humana.',
       creditI18n: 'Idiomas Soportados (Zero-Overhead): English (EN - Predeterminado), Portugues (PT) y Espanol (ES) con deteccion automatica del navegador.',
       creditLicense: 'Licencia Open Source: GNU General Public License v3.0 (GPL-3.0 Copyleft) — Codigo 100% abierto, libre y auditable.',
       creditVersion: 'Version: 2.2.0 (Manifest V3 — Motor SABR 512 MB, Hardware VP9 SDR y Descargador V12 HLS/MP4).',
@@ -1020,16 +1020,49 @@
       return;
     }
 
-    const tabId = activeTabInfo && typeof activeTabInfo.id === 'number' ? activeTabInfo.id : undefined;
+    if (!chrome.tabs || !chrome.tabs.query) {
+      const tabId = activeTabInfo && typeof activeTabInfo.id === 'number' ? activeTabInfo.id : undefined;
+      chrome.runtime.sendMessage({ type: 'MQ4K_GET_DASHBOARD_STATE', tabId: tabId }, function (response) {
+        if (!chrome.runtime.lastError && response && response.ok) {
+          if (typeof response.mediaCount === 'number') {
+            updateDownloaderBadge(response.mediaCount);
+          }
+          renderDashboardState(response);
+        }
+      });
+      return;
+    }
 
-    chrome.runtime.sendMessage({ type: 'MQ4K_GET_DASHBOARD_STATE', tabId: tabId }, function (response) {
-      if (chrome.runtime.lastError || !response || !response.ok) {
-        return;
+    chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
+      if (!chrome.runtime.lastError && tabs && tabs.length > 0) {
+        activeTabInfo = tabs[0];
       }
-      if (typeof response.mediaCount === 'number') {
-        updateDownloaderBadge(response.mediaCount);
+      const tabId = activeTabInfo && typeof activeTabInfo.id === 'number' ? activeTabInfo.id : undefined;
+
+      // 1. Direct query to active tab content script for immediate, zero-latency metrics
+      if (typeof tabId === 'number') {
+        chrome.tabs.sendMessage(tabId, { type: 'MQ4K_GET_TAB_METRICS' }, function (tabResp) {
+          if (!chrome.runtime.lastError && tabResp && tabResp.ok && tabResp.metrics) {
+            renderDashboardState({
+              playerTelemetry: tabResp.metrics,
+              config: appliedConfig
+            });
+          }
+        });
       }
-      renderDashboardState(response);
+
+      // 2. Also query Background Service Worker for mediaCount and persistent state
+      chrome.runtime.sendMessage({ type: 'MQ4K_GET_DASHBOARD_STATE', tabId: tabId }, function (response) {
+        if (chrome.runtime.lastError || !response || !response.ok) {
+          return;
+        }
+        if (typeof response.mediaCount === 'number') {
+          updateDownloaderBadge(response.mediaCount);
+        }
+        if (response.playerTelemetry) {
+          renderDashboardState(response);
+        }
+      });
     });
   }
 

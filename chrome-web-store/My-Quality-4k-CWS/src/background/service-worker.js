@@ -62,6 +62,7 @@ const MAX_LOG_ENTRIES = 60;
 const inFlightRequests = new Map();
 const networkLogs = [];
 const tabMediaStore = new Map();
+const tabTelemetryStore = new Map();
 
 let activeConfig = Object.assign({}, DEFAULT_CONFIG);
 let latestPlayerTelemetry = null;
@@ -519,6 +520,7 @@ if (chrome.webRequest) {
 if (chrome.tabs && chrome.tabs.onRemoved) {
   chrome.tabs.onRemoved.addListener(function (tabId) {
     tabMediaStore.delete(tabId);
+    tabTelemetryStore.delete(tabId);
   });
 }
 
@@ -540,6 +542,9 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
 
   if (message.type === 'MQ4K_PLAYER_TELEMETRY') {
     latestPlayerTelemetry = message.payload;
+    if (typeof senderTabId === 'number' && senderTabId >= 0) {
+      tabTelemetryStore.set(senderTabId, message.payload);
+    }
     sendResponse({ ok: true });
     return true;
   }
@@ -548,11 +553,14 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
     const targetTabId = typeof message.tabId === 'number' ? message.tabId : senderTabId;
     const mediaMap = typeof targetTabId === 'number' ? tabMediaStore.get(targetTabId) : null;
     const mediaCount = mediaMap ? mediaMap.size : 0;
+    const tabTelemetry = (typeof targetTabId === 'number' && tabTelemetryStore.has(targetTabId))
+      ? tabTelemetryStore.get(targetTabId)
+      : latestPlayerTelemetry;
 
     sendResponse({
       ok: true,
       config: activeConfig,
-      playerTelemetry: latestPlayerTelemetry,
+      playerTelemetry: tabTelemetry,
       mediaCount: mediaCount,
       networkSummary: Object.assign({}, networkSummary, {
         totalMB: Number((networkSummary.totalBytes / (1024 * 1024)).toFixed(2))

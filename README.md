@@ -145,15 +145,15 @@ npm run verify
   <img src="assets/images/gemini-4-argon.jpg" alt="Gemini 4 Argon" width="600">
 </p>
 
-Prior to the main authorship credits, it is transparently recorded that the Open Source architecture of this project, the SABR 512 MB and MSE buffer unlocking engine, the V12 Async Warm-up & 12-worker HLS/MP4 downloader integration, the hardware codec interception hooks, the zero-overhead multi-language engine, and the technical documentation were developed with the direct AI-assisted development of **Gemini 4 Argon (Google Antigravity)**, working in pair programming with the repository author.
+This software was conceived, designed, and architected by its human author (**Joao Vitor Alves** — Google Student Ambassador 2026). The implementation of technical modules, low-level MSE/SABR optimizations, V12 async downloader algorithms, and documentation were developed with the direct pair-programming assistance of **Gemini 4 Argon (Google Antigravity)** acting as an AI engineering assistant under human direction and supervision.
 
 ---
 
 ## 7. Credits & Authorship
 
-* **Creator, Lead Author & Maintainer:** Joao Vitor Alves — **Google Student Ambassador 2026** — [github.com/Alves404](https://github.com/Alves404) (`@Alves404`)
+* **Creator, Software Architect & Maintainer:** Joao Vitor Alves — **Google Student Ambassador 2026** — [github.com/Alves404](https://github.com/Alves404) (`@Alves404`)
 * **Official Open Source Repository:** [github.com/Alves404/My-Quality-4k](https://github.com/Alves404/My-Quality-4k)
-* **AI-Assisted Development:** Gemini 4 Argon (Google Antigravity) — Co-architecture of the 512 MB SABR engine, V12 HLS/MP4 downloader, hardware codec filters, and MSE stabilization
+* **AI-Assisted Development:** Gemini 4 Argon (Google Antigravity) — AI programming assistant for technical implementation, optimizations, and documentation under human direction
 * **Supported Languages (Zero-Overhead):** English (`EN` - Default), Portugues (`PT`), and Espanol (`ES`) with automatic browser detection
 * **License:** GNU General Public License v3.0 (`GPL-3.0` Copyleft Open Source)
 * **Version:** `2.2.0` (Manifest V3 — 512 MB SABR Pre-Buffer, Hardware VP9 SDR & V12 HLS/MP4 Downloader)

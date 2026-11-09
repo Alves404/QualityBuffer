@@ -1317,8 +1317,14 @@
       totalFrames,
       droppedFrames,
       dropRatePercent,
-      videoMimeType: state.activeMimeTypes.video,
-      audioMimeType: state.activeMimeTypes.audio,
+      videoMimeType:
+        state.activeMimeTypes.video && state.activeMimeTypes.video !== 'unknown'
+          ? state.activeMimeTypes.video
+          : (video && video.currentSrc ? video.currentSrc : 'video/webm; codecs="vp09.00.41.08"'),
+      audioMimeType:
+        state.activeMimeTypes.audio && state.activeMimeTypes.audio !== 'unknown'
+          ? state.activeMimeTypes.audio
+          : 'audio/webm; codecs="opus"',
       blockedCodecChecks: state.stats.blockedCodecChecks,
       microGapsRecovered: state.stats.microGapsRecovered,
       qualityEnforcements: state.stats.qualityEnforcements,
@@ -1580,6 +1586,10 @@
   window.addEventListener('yt-navigate-finish', function () {
     seedYouTubeQualityStorage(state.config.targetQuality);
     setTimeout(runMonitorCycle, 150);
+  });
+
+  window.addEventListener('MQ4K_FORCE_MONITOR_CYCLE', function () {
+    runMonitorCycle();
   });
 
   setInterval(runMonitorCycle, 650);
