@@ -125,25 +125,17 @@ body {
 }
 
 .brand-badge {
-  width: 32px;
-  height: 32px;
-  border-radius: var(--md-shape-corner-medium);
-  background-color: var(--md-sys-color-primary);
-  color: var(--md-sys-color-on-primary);
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  background: linear-gradient(180deg, #1A73E8 0%, #0B57D0 100%);
+  color: #FFFFFF;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  font-family: var(--font-sans);
-  font-weight: 800;
-  font-size: 13.5px;
-  letter-spacing: -0.04em;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
   transition: transform 0.25s var(--md-motion-spring);
-}
-
-.brand-badge-text {
-  line-height: 1;
 }
 
 .brand-badge:hover {
