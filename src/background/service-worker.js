@@ -151,33 +151,13 @@ function classifyMedia(url, contentType = '') {
   const lowerUrl = url.toLowerCase();
   const lowerType = (contentType || '').toLowerCase();
 
-  // Active stream classification for YouTube/GoogleVideo media
-  if (lowerUrl.includes('googlevideo.com/videoplayback')) {
-    try {
-      const u = new URL(url);
-      const itag = u.searchParams.get('itag');
-      const mime = u.searchParams.get('mime') || contentType;
-      const itagInfo = typeof DownloaderUtils !== 'undefined' && DownloaderUtils.classifyYouTubeItag
-        ? DownloaderUtils.classifyYouTubeItag(itag, mime)
-        : null;
-
-      if (itagInfo) {
-        return {
-          type: itagInfo.ext,
-          label: itagInfo.label,
-          ext: itagInfo.ext,
-          quality: itagInfo.quality,
-          isMuxed: itagInfo.isMuxed
-        };
-      }
-    } catch (e) {
-      // Ignore URL parsing errors
-    }
-    return {
-      type: 'mp4',
-      label: 'Direct Stream (MP4)',
-      ext: 'mp4'
-    };
+  // Strict compliance with Chrome Web Store policies: exclude YouTube and GoogleVideo from downloader
+  if (
+    lowerUrl.includes('googlevideo.com') ||
+    lowerUrl.includes('youtube.com') ||
+    lowerUrl.includes('youtu.be')
+  ) {
+    return null;
   }
 
   // Anti-pollution filters: exclude individual segments and manifest sub-chunks
@@ -235,6 +215,16 @@ function classifyMedia(url, contentType = '') {
  */
 function recordMedia(tabId, rawUrl, source = 'network', extraInfo = {}) {
   if (typeof tabId !== 'number' || tabId < 0 || !rawUrl) {
+    return;
+  }
+
+  // Strict compliance with Chrome Web Store policies: ignore YouTube/GoogleVideo media
+  const lowerRaw = rawUrl.toLowerCase();
+  if (
+    lowerRaw.includes('googlevideo.com') ||
+    lowerRaw.includes('youtube.com') ||
+    lowerRaw.includes('youtu.be')
+  ) {
     return;
   }
 
@@ -511,10 +501,17 @@ if (chrome.webRequest) {
 
       const lower = details.url.toLowerCase();
       if (
+        lower.includes('googlevideo.com') ||
+        lower.includes('youtube.com') ||
+        lower.includes('youtu.be')
+      ) {
+        return;
+      }
+
+      if (
         lower.includes('.m3u8') ||
         lower.includes('.mp4') ||
-        lower.includes('.webm') ||
-        lower.includes('googlevideo.com/videoplayback')
+        lower.includes('.webm')
       ) {
         recordMedia(details.tabId, details.url, 'network');
       }
@@ -525,6 +522,15 @@ if (chrome.webRequest) {
   chrome.webRequest.onHeadersReceived.addListener(
     function (details) {
       if (details.tabId >= 0 && Array.isArray(details.responseHeaders)) {
+        const lowerUrl = (details.url || '').toLowerCase();
+        if (
+          lowerUrl.includes('googlevideo.com') ||
+          lowerUrl.includes('youtube.com') ||
+          lowerUrl.includes('youtu.be')
+        ) {
+          return;
+        }
+
         for (let i = 0; i < details.responseHeaders.length; i += 1) {
           const h = details.responseHeaders[i];
           if (h && h.name && h.name.toLowerCase() === 'content-type' && h.value) {

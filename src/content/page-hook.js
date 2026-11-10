@@ -844,16 +844,7 @@
             }
             rawTitle = rawTitle.replace(/\s*[-–|•]\s*YouTube.*$/i, '').trim();
 
-            window.dispatchEvent(
-              new CustomEvent('MQ4K_YOUTUBE_ACTIVE_STREAM', {
-                detail: {
-                  url: cleanUrl,
-                  itag: itag,
-                  mime: mime,
-                  title: rawTitle
-                }
-              })
-            );
+            // Note: YouTube stream dispatch disabled to comply with Chrome Web Store policies
           }
         }
       } catch (e) {
@@ -1472,17 +1463,7 @@
       }
     }
 
-    if (detected.length > 0) {
-      window.dispatchEvent(
-        new CustomEvent('MQ4K_YOUTUBE_MEDIA_FOUND', {
-          detail: {
-            videoId: videoId,
-            title: rawTitle,
-            streams: detected
-          }
-        })
-      );
-    }
+    // YouTube media dispatch disabled to comply with Chrome Web Store policies
   }
 
   // Listen for configuration updates from the ISOLATED world content-controller

@@ -6,6 +6,20 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ---
 
+## [2.2.1] - 2026-11-09
+
+### Changed
+- **Chrome Web Store Policy Compliance (YouTube Downloader Restriction):**
+  - Restricted the built-in media downloader on `youtube.com` and `googlevideo.com` domains to strictly comply with Chrome Web Store Developer Program Policies regarding YouTube content.
+  - Added a dedicated compliance notice in the popup Downloader tab when active on YouTube pages.
+  - Video and audio downloading remains fully functional for standard web pages (HLS `.m3u8` and direct MP4/WebM).
+  - All 4K playback optimizations on YouTube (512 MB SABR buffer, hardware VP9 SDR decoding, MSE stabilization, Ambient Mode disabling, and live telemetry) remain 100% active.
+- **Logo & Toolbar Icon Enhancement:**
+  - Replaced the previous checkmark emblem with an optimized Material 3 repeat/loading loop symbol (`🔁`).
+  - Added programmatic runtime icon enforcement (`applyToolbarIcon`) in the Background Service Worker.
+
+---
+
 ## [2.2.0] - 2026-11-08
 
 ### Added
