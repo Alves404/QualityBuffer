@@ -126,8 +126,7 @@ My-Quality-4k/
 ├── README.md                     # Main documentation & user guide
 ├── CHANGELOG.md                  # Release history and technical changelogs
 ├── scripts/
-│   ├── build-cws.js              # CWS policy validator & ZIP packager
-│   └── generate-icons.ps1        # Vector icon generator for assets/icons
+│   └── build-cws.js              # CWS policy validator & ZIP packager
 ├── assets/
 │   └── icons/                    # Extension icons (16px, 32px, 48px, 128px)
 ├── src/

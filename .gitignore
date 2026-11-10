@@ -15,6 +15,9 @@ dist/
 *.zip
 chrome-web-store/
 
+# Local maintenance and generator scripts
+scripts/*.ps1
+
 # Operating System and Editor files
 .DS_Store
 Thumbs.db
