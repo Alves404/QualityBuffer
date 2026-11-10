@@ -52,6 +52,18 @@ function validateManifest(manifestPath) {
   ) {
     throw new Error('Manifest host_permissions must not include localhost for CWS production package');
   }
+  if (
+    Array.isArray(manifest.host_permissions) &&
+    manifest.host_permissions.some((h) => h === '<all_urls>' || h === '*://*/*')
+  ) {
+    throw new Error('Manifest host_permissions must not use broad <all_urls>; scope to specific domains for CWS compliance');
+  }
+  if (
+    Array.isArray(manifest.content_scripts) &&
+    manifest.content_scripts.some((cs) => Array.isArray(cs.matches) && cs.matches.some((m) => m === '<all_urls>' || m === '*://*/*'))
+  ) {
+    throw new Error('Manifest content_scripts must not use broad <all_urls>; use activeTab or specific host domains');
+  }
 
   for (const size of ['16', '32', '48', '128']) {
     const iconRel = manifest.icons && manifest.icons[size];

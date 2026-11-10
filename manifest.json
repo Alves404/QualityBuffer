@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "QualityBuffer",
   "short_name": "QualityBuffer",
-  "version": "2.2.1",
+  "version": "2.2.2",
   "description": "Unlocks multi-minute 4K YouTube pre-buffering, hardware VP9 decoding, and high-speed HLS/MP4 web video downloading.",
   "author": "Joao Vitor Magalhaes Alves (https://github.com/Alves404)",
   "homepage_url": "https://github.com/Alves404/QualityBuffer",
@@ -30,7 +30,8 @@
     "downloads"
   ],
   "host_permissions": [
-    "<all_urls>"
+    "*://*.youtube.com/*",
+    "*://*.googlevideo.com/*"
   ],
   "background": {
     "service_worker": "src/background/service-worker.js"
@@ -58,7 +59,7 @@
     },
     {
       "matches": [
-        "<all_urls>"
+        "*://*.youtube.com/*"
       ],
       "js": [
         "src/core/utils.js",

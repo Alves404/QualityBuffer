@@ -107,7 +107,7 @@
       dlBtnRetry: 'Tentar Novamente',
       dlBtnDownloadAgain: 'Baixar Novamente',
       dlErrRefresh: 'Atualize a pagina (F5) para ativar o assistente de download nesta aba.',
-      aboutArchTitle: 'Arquitetura & Engenharia Humana v2.2.1',
+      aboutArchTitle: 'Arquitetura & Engenharia Humana v2.2.2',
       aboutArchBody: 'Idealizado, projetado e arquitetado por Joao Vitor Magalhaes Alves (Google Student Ambassador 2026). O QualityBuffer desbloqueia o limite interno de 35 MB (16s) do SABR do YouTube para 512 MB, permitindo pre-carregar 1, 2 ou 3 minutos em 4K (2160p) com decodificacao de hardware VP9 SDR e integra o motor V12 de 12 conexoes para download de videos HLS (M3U8 / AES-128) e MP4.',
       aboutAiTitle: 'Nota de Desenvolvimento Assistido por IA (Gemini 4 Argon)',
       aboutAiBody: 'Este software foi concebido, arquitetado e direcionado por seu autor humano (Joao Vitor Magalhaes Alves). A implementacao tecnica dos modulos, otimizacoes de baixo nivel e documentacao contaram com o auxilio do assistente de programacao por IA Gemini 4 Argon (Google Antigravity), sob supervisao e diretrizes humanas.',
@@ -117,7 +117,7 @@
       creditAi: 'Desenvolvimento Assistido por IA: Gemini 4 Argon (Google Antigravity) — Assistente de programacao para implementacao tecnica e otimizacoes sob direcao humana.',
       creditI18n: 'Idiomas Suportados (Zero-Overhead): English (EN - Padrao), Portugues (PT) e Espanol (ES) com deteccao automatica do navegador.',
       creditLicense: 'Licenca Open Source: GNU General Public License v3.0 (GPL-3.0 Copyleft) — Codigo 100% aberto, livre e auditavel.',
-      creditVersion: 'Versao: 2.2.1 (Manifest V3 — Motor SABR 512 MB, Hardware VP9 SDR & Downloader V12 HLS/MP4).',
+      creditVersion: 'Versao: 2.2.2 (Manifest V3 — Motor SABR 512 MB, Hardware VP9 SDR & Downloader V12 HLS/MP4).',
       tooltipApplied: 'Verde: Alteracoes aplicadas',
       tooltipPending: 'Vermelho: Alteracoes nao aplicadas (clique em Aplicar Agora)',
       codecDefault: 'VP9 SDR (Padrao)',
@@ -176,7 +176,7 @@
       dlBtnRetry: 'Retry Download',
       dlBtnDownloadAgain: 'Download Again',
       dlErrRefresh: 'Refresh the page (F5) to activate the download assistant on this tab.',
-      aboutArchTitle: 'Human Architecture & System Design v2.2.1',
+      aboutArchTitle: 'Human Architecture & System Design v2.2.2',
       aboutArchBody: 'Conceived, engineered, and architected by Joao Vitor Magalhaes Alves (Google Student Ambassador 2026). QualityBuffer unlocks YouTube SABR 35 MB (16s) internal buffer cap to 512 MB for 1, 2, or 3 full minutes of 4K (2160p) pre-buffering, enforces hardware VP9 SDR decoding, and integrates the V12 12-worker HLS (M3U8 / AES-128) & MP4 web video downloader.',
       aboutAiTitle: 'AI-Assisted Development Notice (Gemini 4 Argon)',
       aboutAiBody: 'This software was conceived, architected, and directed by its human author (Joao Vitor Magalhaes Alves). The technical implementation, optimizations, and documentation were assisted by Gemini 4 Argon (Google Antigravity) acting strictly as an AI programming assistant under direct human supervision.',
@@ -186,7 +186,7 @@
       creditAi: 'AI-Assisted Development: Gemini 4 Argon (Google Antigravity) — Coding assistant for implementation, optimizations, and documentation under human direction.',
       creditI18n: 'Supported Languages (Zero-Overhead): English (EN - Default), Portugues (PT), and Espanol (ES) with automatic browser detection.',
       creditLicense: 'Open Source License: GNU General Public License v3.0 (GPL-3.0 Copyleft) — 100% free, open, and auditable source code.',
-      creditVersion: 'Version: 2.2.1 (Manifest V3 — 512 MB SABR Pre-Buffer, Hardware VP9 SDR & V12 HLS/MP4 Downloader).',
+      creditVersion: 'Version: 2.2.2 (Manifest V3 — 512 MB SABR Pre-Buffer, Hardware VP9 SDR & V12 HLS/MP4 Downloader).',
       tooltipApplied: 'Green: Changes applied',
       tooltipPending: 'Red: Unapplied changes (click Apply Now)',
       codecDefault: 'VP9 SDR (Default)',
@@ -245,7 +245,7 @@
       dlBtnRetry: 'Reintentar',
       dlBtnDownloadAgain: 'Descargar de Nuevo',
       dlErrRefresh: 'Actualice la pagina (F5) para activar el asistente de descarga en esta pestana.',
-      aboutArchTitle: 'Arquitectura & Ingenieria Humana v2.2.1',
+      aboutArchTitle: 'Arquitectura & Ingenieria Humana v2.2.2',
       aboutArchBody: 'Ideado, disenado y arquitectado por Joao Vitor Magalhaes Alves (Google Student Ambassador 2026). QualityBuffer desbloquea el limite interno de 35 MB (16s) de YouTube SABR a 512 MB, permitiendo pre-cargar 1, 2 o 3 minutos completos en 4K (2160p) con decodificacion de hardware VP9 SDR e integra el motor V12 de 12 conexiones para descarga de videos HLS (M3U8 / AES-128) y MP4.',
       aboutAiTitle: 'Nota de Desarrollo Asistido por IA (Gemini 4 Argon)',
       aboutAiBody: 'Este software fue concebido, arquitectado y dirigido por su autor humano (Joao Vitor Magalhaes Alves). La implementacion tecnica, optimizaciones y documentacion contaron con la asistencia de la herramienta de programacion por IA Gemini 4 Argon (Google Antigravity) bajo supervision y directrices humanas.',
@@ -255,7 +255,7 @@
       creditAi: 'Desarrollo Asistido por IA: Gemini 4 Argon (Google Antigravity) — Asistente de programacion para implementacion tecnica y optimizaciones bajo direccion humana.',
       creditI18n: 'Idiomas Soportados (Zero-Overhead): English (EN - Predeterminado), Portugues (PT) y Espanol (ES) con deteccion automatica del navegador.',
       creditLicense: 'Licencia Open Source: GNU General Public License v3.0 (GPL-3.0 Copyleft) — Codigo 100% abierto, libre y auditable.',
-      creditVersion: 'Version: 2.2.1 (Manifest V3 — Motor SABR 512 MB, Hardware VP9 SDR y Descargador V12 HLS/MP4).',
+      creditVersion: 'Version: 2.2.2 (Manifest V3 — Motor SABR 512 MB, Hardware VP9 SDR y Descargador V12 HLS/MP4).',
       tooltipApplied: 'Verde: Cambios aplicados',
       tooltipPending: 'Rojo: Cambios no aplicados (clic en Aplicar Ahora)',
       codecDefault: 'VP9 SDR (Predeterminado)',
@@ -1059,26 +1059,65 @@
         return;
       }
 
-      chrome.runtime.sendMessage(
-        {
-          action: 'GET_TAB_MEDIA',
-          tabId: activeTabInfo.id
-        },
-        function (response) {
-          if (chrome.runtime.lastError || !response || !Array.isArray(response.list)) {
-            lastMediaCount = 0;
-            renderEmptyMedia();
-            return;
-          }
+      function queryTabMediaFromWorker() {
+        chrome.runtime.sendMessage(
+          {
+            action: 'GET_TAB_MEDIA',
+            tabId: activeTabInfo.id
+          },
+          function (response) {
+            if (chrome.runtime.lastError || !response || !Array.isArray(response.list)) {
+              lastMediaCount = 0;
+              renderEmptyMedia();
+              return;
+            }
 
-          lastMediaCount = response.list.length;
-          if (response.list.length === 0) {
-            renderEmptyMedia();
-          } else {
-            renderMediaList(response.list);
+            lastMediaCount = response.list.length;
+            if (response.list.length === 0) {
+              renderEmptyMedia();
+            } else {
+              renderMediaList(response.list);
+            }
           }
-        }
-      );
+        );
+      }
+
+      // On non-YouTube web pages, execute content scripts on-demand via activeTab permission
+      if (
+        chrome.scripting &&
+        typeof chrome.scripting.executeScript === 'function' &&
+        activeTabInfo.id &&
+        activeTabInfo.url &&
+        activeTabInfo.url.startsWith('http')
+      ) {
+        chrome.scripting.executeScript(
+          {
+            target: { tabId: activeTabInfo.id, allFrames: false },
+            files: [
+              'src/core/utils.js',
+              'src/core/hls-downloader.js',
+              'src/content/content-controller.js'
+            ]
+          },
+          function () {
+            if (chrome.runtime.lastError) {
+              // Ignore injection errors on restricted pages
+            }
+            chrome.tabs.sendMessage(
+              activeTabInfo.id,
+              { action: 'SCAN_MEDIA_NOW' },
+              function () {
+                if (chrome.runtime.lastError) {
+                  // Ignore
+                }
+                setTimeout(queryTabMediaFromWorker, 120);
+              }
+            );
+          }
+        );
+      } else {
+        queryTabMediaFromWorker();
+      }
     });
   }
 

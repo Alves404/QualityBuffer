@@ -1,6 +1,6 @@
 {
   "name": "qualitybuffer",
-  "version": "2.2.1",
+  "version": "2.2.2",
   "description": "Open Source browser extension that optimizes 4K YouTube video playback, MSE buffer stability, hardware codec selection, and V12 HLS/MP4 web video downloading.",
   "scripts": {
     "test": "node tests/test-core.js",

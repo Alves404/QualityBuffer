@@ -549,6 +549,12 @@
           return true;
         }
 
+        if (message.action === 'SCAN_MEDIA_NOW') {
+          scanPageVideos();
+          sendResponse({ success: true, count: reportedUrls.size });
+          return true;
+        }
+
         if (message.action === 'START_HLS_DOWNLOAD') {
           // Only execute the download inside the top frame to avoid duplicate frame triggers
           if (window !== window.top) {

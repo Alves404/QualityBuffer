@@ -1,7 +1,7 @@
 # QualityBuffer
 
 [![Chrome Web Store](https://img.shields.io/badge/Chrome_Web_Store-Coming_Soon-4285F4?logo=googlechrome&logoColor=white)](https://chromewebstore.google.com)
-[![Latest Release](https://img.shields.io/badge/Release-v2.2.1-89CFF0.svg)](https://github.com/Alves404/QualityBuffer/releases/latest)
+[![Latest Release](https://img.shields.io/badge/Release-v2.2.2-89CFF0.svg)](https://github.com/Alves404/QualityBuffer/releases/latest)
 [![Manifest V3](https://img.shields.io/badge/Chrome_Extension-Manifest_V3-89CFF0.svg)](manifest.json)
 [![Design System](https://img.shields.io/badge/Design_System-Chrome_Native_UI_(M3)-4285F4.svg)](src/popup/popup.css)
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-5bb5e6.svg)](LICENSE)
@@ -45,7 +45,7 @@ Conceived, architected, and engineered by **João Vitor Magalhães Alves (@Alves
 
 ## Direct Download & Documentation
 
-* **Download Latest Release Package:** [QualityBuffer-v2.2.1.zip](https://github.com/Alves404/QualityBuffer/releases/download/v2.2.1/QualityBuffer-v2.2.1.zip)
+* **Download Latest Release Package:** [QualityBuffer-v2.2.2.zip](https://github.com/Alves404/QualityBuffer/releases/download/v2.2.2/QualityBuffer-v2.2.2.zip)
 * **GitHub Releases Archive:** [github.com/Alves404/QualityBuffer/releases](https://github.com/Alves404/QualityBuffer/releases)
 * **Privacy Policy:** [`PRIVACY_POLICY.md`](PRIVACY_POLICY.md)
 * **Technical Engineering Report:** [`docs/TECHNICAL_REPORT.md`](docs/TECHNICAL_REPORT.md)
@@ -56,7 +56,7 @@ Conceived, architected, and engineered by **João Vitor Magalhães Alves (@Alves
 ## Table of Contents
 
 1. [The Engineering Problem & Architecture Solution](#1-the-engineering-problem--architecture-solution)
-2. [Key Features (v2.2.1)](#2-key-features-v221)
+2. [Key Features (v2.2.2)](#2-key-features-v222)
 3. [Chrome Native UI Design System (Material Design 3)](#3-chrome-native-ui-design-system-material-design-3)
 4. [V12 Async Warm-up & Web Video Downloader](#4-v12-async-warm-up--web-video-downloader)
 5. [Repository Structure](#5-repository-structure)
@@ -84,7 +84,7 @@ Modern desktop hardware with quad-core processors and budget GPUs (e.g. 4 GB VRA
 
 ---
 
-## 2. Key Features (v2.2.1)
+## 2. Key Features (v2.2.2)
 
 * **SABR 512 MB Deep Pre-Buffer (60s / 120s / 180s Horizon):** Replaces the stock 35 MB / 16s cap with a 512 MB readahead buffer that downloads the next minutes of video continuously at full connection speed.
 * **Integrated V12 Web Video Downloader:** Detects downloadable streams on general web pages (HLS `.m3u8` playlists and direct MP4/WebM files) directly within the **Controls** panel, downloading with 12 concurrent workers and WebCrypto AES-128 decryption. Strictly respects Chrome Web Store policies by disabling downloads on YouTube.
@@ -123,7 +123,7 @@ The **V12 Engine** powers fast, non-blocking media acquisition and streaming opt
 
 ```text
 QualityBuffer/
-├── manifest.json                 # Manifest V3 configuration (v2.2.1)
+├── manifest.json                 # Manifest V3 configuration (v2.2.2)
 ├── package.json                  # Test runner, syntax verification & packaging scripts
 ├── PRIVACY_POLICY.md             # Privacy Policy (100% client-side, zero data collection)
 ├── LICENSE                       # GNU General Public License v3.0 (GPL-3.0 Copyleft)
@@ -175,6 +175,6 @@ Artificial Intelligence tools (**Gemini 4 Argon** via Google Antigravity) functi
 * **AI-Assisted Development:** Gemini 4 Argon (Google Antigravity) — AI programming assistant for implementation and review under human direction
 * **Supported Languages:** English (`EN` - Default), Portuguese (`PT`), and Spanish (`ES`) with automatic browser detection
 * **License:** GNU General Public License v3.0 (`GPL-3.0` Copyleft Open Source)
-* **Version:** `2.2.1` (Manifest V3 — SABR 512 MB Buffer, Chrome Native UI M3 & CWS-Compliant V12 Downloader)
+* **Version:** `2.2.2` (Manifest V3 — SABR 512 MB Buffer, Chrome Native UI M3 & CWS-Compliant V12 Downloader)
 
 <sub>*Google Chrome, Google Gemini, and YouTube are trademarks of Google LLC. This open-source project is independently developed and not affiliated with or endorsed by Google LLC.*</sub>

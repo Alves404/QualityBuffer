@@ -483,69 +483,6 @@ if (chrome.webRequest) {
       readaheadBufferMs: tracked.parsed.readaheadBufferMs
     });
   }, ytFilter);
-
-  // Web Video & HLS (.m3u8 / .mp4 / .webm) detector across web pages
-  chrome.webRequest.onBeforeRequest.addListener(
-    function (details) {
-      if (details.tabId < 0 || !details.url) {
-        return;
-      }
-
-      // Reset tab media inventory on top-level page navigation without needing broad "tabs" permission
-      if (details.type === 'main_frame' && details.frameId === 0) {
-        tabMediaStore.delete(details.tabId);
-        tabFeedExclusive.delete(details.tabId);
-        updateToolbarBadge(details.tabId);
-        return;
-      }
-
-      const lower = details.url.toLowerCase();
-      if (
-        lower.includes('googlevideo.com') ||
-        lower.includes('youtube.com') ||
-        lower.includes('youtu.be')
-      ) {
-        return;
-      }
-
-      if (
-        lower.includes('.m3u8') ||
-        lower.includes('.mp4') ||
-        lower.includes('.webm')
-      ) {
-        recordMedia(details.tabId, details.url, 'network');
-      }
-    },
-    { urls: ['<all_urls>'] }
-  );
-
-  chrome.webRequest.onHeadersReceived.addListener(
-    function (details) {
-      if (details.tabId >= 0 && Array.isArray(details.responseHeaders)) {
-        const lowerUrl = (details.url || '').toLowerCase();
-        if (
-          lowerUrl.includes('googlevideo.com') ||
-          lowerUrl.includes('youtube.com') ||
-          lowerUrl.includes('youtu.be')
-        ) {
-          return;
-        }
-
-        for (let i = 0; i < details.responseHeaders.length; i += 1) {
-          const h = details.responseHeaders[i];
-          if (h && h.name && h.name.toLowerCase() === 'content-type' && h.value) {
-            const ct = h.value.toLowerCase();
-            if (ct.includes('video/') || ct.includes('mpegurl')) {
-              recordMedia(details.tabId, details.url, 'network_headers', { contentType: ct });
-            }
-            break;
-          }
-        }
-      }
-    },
-    { urls: ['<all_urls>'] },
-    ['responseHeaders']
-  );
 }
 
 if (chrome.tabs && chrome.tabs.onRemoved) {

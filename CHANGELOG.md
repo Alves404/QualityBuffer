@@ -6,6 +6,19 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ---
 
+## [2.2.2] - 2026-11-10
+
+### Changed
+- **Chrome Web Store Policy Compliance (Elimination of Broad Host Permissions):**
+  - Removed broad `<all_urls>` from `host_permissions` and `content_scripts` in `manifest.json`.
+  - Scoped `host_permissions` strictly to `*://*.youtube.com/*` and `*://*.googlevideo.com/*`.
+  - Replaced broad network hooks with on-demand `activeTab` script injection in `popup.js` via `chrome.scripting.executeScript`.
+  - Scoped `webRequest` background monitoring strictly to `*://*.googlevideo.com/videoplayback*` for YouTube 4K telemetry metrics, completely eliminating background network listeners across unrelated domains.
+- **Rebranding Finalization:**
+  - Standardized all repository references, release packages, and documentation under the official name **QualityBuffer**.
+
+---
+
 ## [2.2.1] - 2026-11-09
 
 ### Changed

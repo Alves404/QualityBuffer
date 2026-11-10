@@ -1,7 +1,7 @@
 # Engineering Technical Report & Open Source Compliance — QualityBuffer
 
 **Project:** QualityBuffer  
-**Version:** 2.2.1 (SABR 512 MB Policy Unlocker, Hardware Codec Engine & V12 HLS/MP4 Downloader)  
+**Version:** 2.2.2 (SABR 512 MB Policy Unlocker, Hardware Codec Engine & V12 HLS/MP4 Downloader)  
 **Target Platform:** Google Chrome / Chromium (Manifest V3)  
 **License:** GNU General Public License v3.0 (GPL-3.0 / Copyleft Open Source)  
 **Repository:** `https://github.com/Alves404/QualityBuffer`
@@ -76,4 +76,4 @@ The software architecture, system engineering, buffer allocation heuristics, dow
 * **Development Assistant:** AI pair programming and code review assistant under human direction
 * **Supported Languages (Zero-Overhead):** English (`EN` - Default), Portugues (`PT`), Espanol (`ES`)
 * **License:** GNU General Public License v3.0 (`GPL-3.0` Copyleft Open Source)
-* **Version:** `2.2.1` (Manifest V3 — 512 MB SABR Deep Pre-Buffer, Hardware VP9 SDR & V12 HLS/MP4 Downloader)
+* **Version:** `2.2.2` (Manifest V3 — 512 MB SABR Deep Pre-Buffer, Hardware VP9 SDR & V12 HLS/MP4 Downloader)
