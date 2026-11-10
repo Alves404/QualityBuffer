@@ -49,3 +49,4 @@ Quando estiver preenchendo o painel da Chrome Web Store, copie e cole os textos 
 * **Certifique as 3 caixas obrigatórias** de conformidade com a Política de Dados do Usuário da Chrome Web Store.
 * **Privacy Policy URL (URL da Política de Privacidade):**  
   `https://github.com/Alves404/My-Quality-4k/blob/master/PRIVACY_POLICY.md`
+
