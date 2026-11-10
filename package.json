@@ -1,5 +1,5 @@
 {
-  "name": "my-quality-4k",
+  "name": "qualitybuffer",
   "version": "2.2.1",
   "description": "Open Source browser extension that optimizes 4K YouTube video playback, MSE buffer stability, hardware codec selection, and V12 HLS/MP4 web video downloading.",
   "scripts": {
@@ -9,7 +9,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Alves404/My-Quality-4k.git"
+    "url": "git+https://github.com/Alves404/QualityBuffer.git"
   },
   "keywords": [
     "youtube",

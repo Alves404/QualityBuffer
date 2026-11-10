@@ -1,11 +1,10 @@
 /**
- * My Quality 4k - Chrome Web Store Publication Package Builder & Validator
+ * QualityBuffer - Chrome Web Store Publication Package Builder & Validator
  *
  * Verifies Chrome Web Store Manifest V3 policy compliance (description <= 132 chars,
  * least-privilege permissions, zero remote code, required icons) and builds a clean,
  * ready-to-publish unpacked directory and ZIP archive in ./chrome-web-store/.
  *
- * Assisted engineering by Gemini 4 Argon (Google Antigravity).
  * License: GPL-3.0
  */
 
@@ -17,7 +16,7 @@ const { execSync } = require('child_process');
 
 const ROOT_DIR = path.resolve(__dirname, '..');
 const CWS_ROOT = path.join(ROOT_DIR, 'chrome-web-store');
-const CWS_UNPACKED_DIR = path.join(CWS_ROOT, 'My-Quality-CWS');
+const CWS_UNPACKED_DIR = path.join(CWS_ROOT, 'QualityBuffer-CWS');
 
 function copyRecursiveSync(src, dest) {
   const stat = fs.statSync(src);
@@ -98,7 +97,7 @@ function buildChromeWebStorePackage() {
     copyRecursiveSync(srcPath, destPath);
   }
 
-  const stdZipName = `My-Quality-v${manifest.version}.zip`;
+  const stdZipName = `QualityBuffer-v${manifest.version}.zip`;
   const stdZipPath = path.join(CWS_ROOT, stdZipName);
 
   if (process.platform === 'win32') {
