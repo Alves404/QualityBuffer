@@ -95,6 +95,28 @@ function loadConfiguration() {
 }
 
 /**
+ * Ensures toolbar icon uses the latest assets from the extension bundle
+ */
+function applyToolbarIcon() {
+  if (chrome.action && chrome.action.setIcon) {
+    try {
+      chrome.action.setIcon({
+        path: {
+          16: '/assets/icons/icon16.png',
+          32: '/assets/icons/icon32.png',
+          48: '/assets/icons/icon48.png',
+          128: '/assets/icons/icon128.png'
+        }
+      }, function () {
+        if (chrome.runtime.lastError) {
+          // Silently ignore if already active or context closed
+        }
+      });
+    } catch (_) {}
+  }
+}
+
+/**
  * Updates Chrome extension toolbar badge globally or for a specific tab
  * @param {number} [tabId]
  */
@@ -644,6 +666,14 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
 
 chrome.runtime.onInstalled.addListener(function () {
   loadConfiguration();
+  applyToolbarIcon();
 });
 
+if (chrome.runtime.onStartup) {
+  chrome.runtime.onStartup.addListener(function () {
+    applyToolbarIcon();
+  });
+}
+
 loadConfiguration();
+applyToolbarIcon();
