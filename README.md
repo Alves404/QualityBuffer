@@ -119,37 +119,15 @@ The **V12 Engine** powers fast, non-blocking media acquisition and streaming opt
 
 ```text
 My-Quality-4k/
-├── manifest.json                 # Manifest V3 configuration (v2.2.0, CWS compliant)
+├── manifest.json                 # Manifest V3 configuration (v2.2.0)
 ├── package.json                  # Test runner, syntax verification & packaging scripts
-├── PRIVACY_POLICY.md             # Zero-data-collection Privacy Policy for Chrome Web Store
+├── PRIVACY_POLICY.md             # Privacy Policy (100% client-side, zero data collection)
 ├── LICENSE                       # GNU General Public License v3.0 (GPL-3.0 Copyleft)
-├── README.md                     # Main documentation
+├── README.md                     # Main documentation & user guide
 ├── CHANGELOG.md                  # Release history and technical changelogs
 ├── scripts/
-│   └── build-cws.js              # Automated CWS policy validator & ZIP packager
-├── assets/
-│   └── icons/                    # Extension icons (16px, 32px, 48px, 128px)
-├── src/
-│   ├── background/
-│   │   └── service-worker.js     # Per-tab telemetry store & passive stream classifier
-│   ├── core/
-│   │   ├── utils.js              # URL sanitizers, AES-128 IV parsers & event-loop utilities
-│   │   └── hls-downloader.js     # V12 12-worker HLS/AES-128 engine & MP4 Blob builder
-│   ├── content/
-│   │   ├── page-hook.js          # MAIN world: 512 MB SABR buffer unlocker & hardware VP9 hook
-│   │   ├── content-controller.js # ISOLATED world bridge, SPA route watcher & HLS runner
-│   │   └── player-optimize.css   # GPU rendering layer promotion & Ambient Mode neutralizer
-│   └── popup/
-│       ├── popup.html            # Chrome Native UI interface (Controls + About tabs)
-│       ├── popup.css             # Material Design 3 / Chrome WebUI stylesheet
-│       └── popup.js              # Popup controller, integrated downloader UI & O(1) i18n
-├── tests/
-│   └── test-core.js              # Automated unit tests for DownloaderUtils & V12 engine
-└── docs/
-    ├── index.html                # GitHub Pages documentation & release landing page
-    ├── TECHNICAL_REPORT.md       # Architectural deep-dive and benchmark verification
-    └── CHROME_WEB_STORE_GUIDE.md # CWS store listing metadata & permission justifications
-```
+│   ├── build-cws.js              # CWS policy validator & ZIP packager
+│   └── generate-icons.ps1        # Vector icon generator for assets/icons
 ├── assets/
 │   └── icons/                    # Extension icons (16px, 32px, 48px, 128px)
 ├── src/
