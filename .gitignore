@@ -8,12 +8,12 @@ yarn-error.log*
 backend/data/*.json
 !backend/data/.gitkeep
 
-# Packaged Chrome Extension archives (except official chrome-web-store publication folder)
+# Packaged Chrome Extension archives and build output
 dist/
 *.crx
 *.pem
 *.zip
-!chrome-web-store/*.zip
+chrome-web-store/
 
 # Operating System and Editor files
 .DS_Store

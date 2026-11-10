@@ -7,6 +7,19 @@
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-5bb5e6.svg)](LICENSE)
 [![Engine](https://img.shields.io/badge/Engine-Vanilla_JS_V12-b6e3ff.svg)](src/)
 
+> [!TIP]
+> ### 🚀 O que é o My Quality 4k? (Visão Geral para Usuários)
+> O **My Quality 4k** é uma extensão leve e gratuita para Google Chrome criada para **permitir rodar vídeos em alta resolução (4K, 2K e 1080p) sem gargalo, travamentos ou buffering constante**, mesmo em computadores mais modestos ou com conexões de internet instáveis.
+>
+> Além de eliminar travamentos desbloqueando até **3 minutos de pré-carregamento contínuo** e ativando aceleração direta por hardware na GPU, a extensão inclui uma ferramenta integrada para **detectar e baixar vídeos e áudios/músicas (MP4 e MP3) com 1 clique** direto no navegador. Tudo 100% gratuito, sem anúncios, sem rastreamento e de código aberto.
+>
+> ---
+>
+> ### 🚀 What is My Quality 4k? (Quick User Overview)
+> **My Quality 4k** is a lightweight, free Google Chrome extension designed to **play high-resolution videos (4K, 2K, and 1080p) smoothly without bottlenecks, stuttering, or constant buffering**, even on entry-level computers or fluctuating internet connections.
+>
+> In addition to eliminating video stutter with up to **3 minutes of continuous deep pre-buffering** and GPU hardware acceleration, it includes a built-in assistant to **detect and download videos and audio (MP4 & MP3) in 1 click** directly in your browser. 100% free, zero ads, zero data tracking, and open source.
+
 **My Quality 4k** is a high-performance, Open Source browser extension (Manifest V3) engineered to unlock stutter-free **4K (2160p Ultra HD)** YouTube video playback on entry-level and mid-range PCs, featuring an integrated **V12 12-Worker HLS (`M3U8` / `AES-128`) & Direct `MP4`/`WebM` Web Video Downloader** and a native **Chrome WebUI / Material Design 3** interface.
 
 Conceived, architected, and engineered by **João Vitor Magalhães Alves (@Alves404)**, the extension tackles YouTube's strict client buffering bottlenecks by lifting the SABR **35 MB (16-second)** buffer ceiling to **512 MB**, allowing the browser to cache **1, 2, or 3 full minutes** of upcoming 4K video ahead of the playhead. Combined with automatic **VP9 Profile 0 SDR hardware decoding enforcement** and **MSE micro-gap bridging**, it eliminates CPU decoding spikes and delivers fluid playback regardless of local connection jitter.
@@ -112,12 +125,31 @@ My-Quality-4k/
 ├── LICENSE                       # GNU General Public License v3.0 (GPL-3.0 Copyleft)
 ├── README.md                     # Main documentation
 ├── CHANGELOG.md                  # Release history and technical changelogs
-├── chrome-web-store/             # Chrome Web Store packaging output directory
-│   ├── My-Quality-4k-CWS/        # Unpacked publication build
-│   ├── My-Quality-4k-v2.2.0.zip  # Single production release package
-│   └── STORE_LISTING_GUIDE.md    # CWS store listing metadata & permission justifications
 ├── scripts/
 │   └── build-cws.js              # Automated CWS policy validator & ZIP packager
+├── assets/
+│   └── icons/                    # Extension icons (16px, 32px, 48px, 128px)
+├── src/
+│   ├── background/
+│   │   └── service-worker.js     # Per-tab telemetry store & passive stream classifier
+│   ├── core/
+│   │   ├── utils.js              # URL sanitizers, AES-128 IV parsers & event-loop utilities
+│   │   └── hls-downloader.js     # V12 12-worker HLS/AES-128 engine & MP4 Blob builder
+│   ├── content/
+│   │   ├── page-hook.js          # MAIN world: 512 MB SABR buffer unlocker & hardware VP9 hook
+│   │   ├── content-controller.js # ISOLATED world bridge, SPA route watcher & HLS runner
+│   │   └── player-optimize.css   # GPU rendering layer promotion & Ambient Mode neutralizer
+│   └── popup/
+│       ├── popup.html            # Chrome Native UI interface (Controls + About tabs)
+│       ├── popup.css             # Material Design 3 / Chrome WebUI stylesheet
+│       └── popup.js              # Popup controller, integrated downloader UI & O(1) i18n
+├── tests/
+│   └── test-core.js              # Automated unit tests for DownloaderUtils & V12 engine
+└── docs/
+    ├── index.html                # GitHub Pages documentation & release landing page
+    ├── TECHNICAL_REPORT.md       # Architectural deep-dive and benchmark verification
+    └── CHROME_WEB_STORE_GUIDE.md # CWS store listing metadata & permission justifications
+```
 ├── assets/
 │   └── icons/                    # Extension icons (16px, 32px, 48px, 128px)
 ├── src/
