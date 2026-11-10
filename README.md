@@ -24,6 +24,10 @@
 
 Conceived, architected, and engineered by **João Vitor Magalhães Alves (@Alves404)**, the extension tackles YouTube's strict client buffering bottlenecks by lifting the SABR **35 MB (16-second)** buffer ceiling to **512 MB**, allowing the browser to cache **1, 2, or 3 full minutes** of upcoming 4K video ahead of the playhead. Combined with automatic **VP9 Profile 0 SDR hardware decoding enforcement** and **MSE micro-gap bridging**, it eliminates CPU decoding spikes and delivers fluid playback regardless of local connection jitter.
 
+<p align="center">
+  <img src="assets/images/demo.gif" alt="QualityBuffer Demonstration" width="100%">
+</p>
+
 ---
 
 ## Chrome Web Store Installation
