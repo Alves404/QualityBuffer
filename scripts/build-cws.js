@@ -17,7 +17,7 @@ const { execSync } = require('child_process');
 
 const ROOT_DIR = path.resolve(__dirname, '..');
 const CWS_ROOT = path.join(ROOT_DIR, 'chrome-web-store');
-const CWS_UNPACKED_DIR = path.join(CWS_ROOT, 'My-Quality-4k-CWS');
+const CWS_UNPACKED_DIR = path.join(CWS_ROOT, 'My-Quality-CWS');
 
 function copyRecursiveSync(src, dest) {
   const stat = fs.statSync(src);
@@ -98,7 +98,7 @@ function buildChromeWebStorePackage() {
     copyRecursiveSync(srcPath, destPath);
   }
 
-  const stdZipName = `My-Quality-4k-v${manifest.version}.zip`;
+  const stdZipName = `My-Quality-v${manifest.version}.zip`;
   const stdZipPath = path.join(CWS_ROOT, stdZipName);
 
   if (process.platform === 'win32') {

@@ -1,4 +1,4 @@
-# My Quality 4k
+# My Quality
 
 [![Chrome Web Store](https://img.shields.io/badge/Chrome_Web_Store-Coming_Soon-4285F4?logo=googlechrome&logoColor=white)](https://chromewebstore.google.com)
 [![Latest Release](https://img.shields.io/badge/Release-v2.2.1-89CFF0.svg)](https://github.com/Alves404/My-Quality-4k/releases/latest)
@@ -8,19 +8,19 @@
 [![Engine](https://img.shields.io/badge/Engine-Vanilla_JS_V12-b6e3ff.svg)](src/)
 
 > [!TIP]
-> ### 🚀 O que é o My Quality 4k? (Visão Geral para Usuários)
-> O **My Quality 4k** é uma extensão leve e gratuita para Google Chrome criada para **permitir rodar vídeos em alta resolução (4K, 2K e 1080p) sem gargalo, travamentos ou buffering constante**, mesmo em computadores mais modestos ou com conexões de internet instáveis.
+> ### 🚀 O que é o My Quality? (Visão Geral para Usuários)
+> O **My Quality** é uma extensão leve e gratuita para Google Chrome criada para **permitir rodar vídeos em alta resolução (4K, 2K e 1080p) sem gargalo, travamentos ou buffering constante**, mesmo em computadores mais modestos ou com conexões de internet instáveis.
 >
 > Além de eliminar travamentos desbloqueando até **3 minutos de pré-carregamento contínuo** e ativando aceleração direta por hardware na GPU, a extensão inclui uma ferramenta integrada para **detectar e baixar vídeos e áudios/músicas (MP4 e MP3) com 1 clique** direto no navegador. Tudo 100% gratuito, sem anúncios, sem rastreamento e de código aberto.
 >
 > ---
 >
-> ### 🚀 What is My Quality 4k? (Quick User Overview)
-> **My Quality 4k** is a lightweight, free Google Chrome extension designed to **play high-resolution videos (4K, 2K, and 1080p) smoothly without bottlenecks, stuttering, or constant buffering**, even on entry-level computers or fluctuating internet connections.
+> ### 🚀 What is My Quality? (Quick User Overview)
+> **My Quality** is a lightweight, free Google Chrome extension designed to **play high-resolution videos (4K, 2K, and 1080p) smoothly without bottlenecks, stuttering, or constant buffering**, even on entry-level computers or fluctuating internet connections.
 >
 > In addition to eliminating video stutter with up to **3 minutes of continuous deep pre-buffering** and GPU hardware acceleration, it includes a built-in assistant to **detect and download videos and audio (MP4 & MP3) in 1 click** directly in your browser. 100% free, zero ads, zero data tracking, and open source.
 
-**My Quality 4k** is a high-performance, Open Source browser extension (Manifest V3) engineered to unlock stutter-free **4K (2160p Ultra HD)** YouTube video playback on entry-level and mid-range PCs, featuring an integrated **V12 12-Worker HLS (`M3U8` / `AES-128`) & Direct `MP4`/`WebM` Web Video Downloader** and a native **Chrome WebUI / Material Design 3** interface.
+**My Quality** is a high-performance, Open Source browser extension (Manifest V3) engineered to unlock stutter-free **4K (2160p Ultra HD)** YouTube video playback on entry-level and mid-range PCs, featuring an integrated **V12 12-Worker HLS (`M3U8` / `AES-128`) & Direct `MP4`/`WebM` Web Video Downloader** and a native **Chrome WebUI / Material Design 3** interface.
 
 Conceived, architected, and engineered by **João Vitor Magalhães Alves (@Alves404)**, the extension tackles YouTube's strict client buffering bottlenecks by lifting the SABR **35 MB (16-second)** buffer ceiling to **512 MB**, allowing the browser to cache **1, 2, or 3 full minutes** of upcoming 4K video ahead of the playhead. Combined with automatic **VP9 Profile 0 SDR hardware decoding enforcement** and **MSE micro-gap bridging**, it eliminates CPU decoding spikes and delivers fluid playback regardless of local connection jitter.
 
@@ -31,7 +31,7 @@ Conceived, architected, and engineered by **João Vitor Magalhães Alves (@Alves
 [![Available in the Chrome Web Store](https://img.shields.io/badge/Chrome_Web_Store-Add_to_Chrome-4285F4?style=for-the-badge&logo=googlechrome&logoColor=white)](https://chromewebstore.google.com/detail/YOUR_EXTENSION_ID)
 
 > [!NOTE]
-> **My Quality 4k** is packaged and prepared for the official **Google Chrome Web Store** in full compliance with Manifest V3 policies.
+> **My Quality** is packaged and prepared for the official **Google Chrome Web Store** in full compliance with Manifest V3 policies.
 > 
 > * **Official Chrome Web Store URL:** `https://chromewebstore.google.com/detail/YOUR_EXTENSION_ID` *(Link will be updated upon store publication approval)*
 > * **Releases & Source Code:** [github.com/Alves404/My-Quality-4k/releases](https://github.com/Alves404/My-Quality-4k/releases)
@@ -41,7 +41,7 @@ Conceived, architected, and engineered by **João Vitor Magalhães Alves (@Alves
 
 ## Direct Download & Documentation
 
-* **Download Latest Release Package:** [My-Quality-4k-v2.2.1.zip](https://github.com/Alves404/My-Quality-4k/releases/download/v2.2.1/My-Quality-4k-v2.2.1.zip)
+* **Download Latest Release Package:** [My-Quality-v2.2.1.zip](https://github.com/Alves404/My-Quality-4k/releases/download/v2.2.1/My-Quality-v2.2.1.zip)
 * **GitHub Releases Archive:** [github.com/Alves404/My-Quality-4k/releases](https://github.com/Alves404/My-Quality-4k/releases)
 * **Privacy Policy:** [`PRIVACY_POLICY.md`](PRIVACY_POLICY.md)
 * **Technical Engineering Report:** [`docs/TECHNICAL_REPORT.md`](docs/TECHNICAL_REPORT.md)
@@ -66,7 +66,7 @@ Conceived, architected, and engineered by **João Vitor Magalhães Alves (@Alves
 Modern desktop hardware with quad-core processors and budget GPUs (e.g. 4 GB VRAM) often struggles to stream 4K video reliably—not because of internet speed (which typically exceeds 30–50 Mbps), but due to four systemic bottlenecks in default web player stacks:
 
 1. **Hardcoded 35 MB (~16-Second) 4K Buffer Ceiling in YouTube's SABR Player:**
-   When playing video above 1080p, YouTube's internal SABR memory policy restricts buffer retention to `36,700,160` bytes (**35 MB**, or roughly **16 seconds** of 4K bitstream). Any network packet delay immediately drains this narrow buffer, causing constant stalls and quality drops. **My Quality 4k** intercepts the internal player policy via prototype descriptors to expand the buffer pool to **512 MB** (`536,870,912` bytes) for video and **64 MB** for audio, keeping **60s, 120s, or 180s** of pre-buffered 4K content continuously loaded ahead of the playhead.
+   When playing video above 1080p, YouTube's internal SABR memory policy restricts buffer retention to `36,700,160` bytes (**35 MB**, or roughly **16 seconds** of 4K bitstream). Any network packet delay immediately drains this narrow buffer, causing constant stalls and quality drops. **My Quality** intercepts the internal player policy via prototype descriptors to expand the buffer pool to **512 MB** (`536,870,912` bytes) for video and **64 MB** for audio, keeping **60s, 120s, or 180s** of pre-buffered 4K content continuously loaded ahead of the playhead.
 2. **Software AV1 CPU Decoding Overhead:**
    YouTube serves high-resolution streams in AV1 (`av01`) by default. Graphics cards without hardware AV1 decoding capabilities offload processing to the CPU via software threads (`dav1d`), consuming 90–100% of CPU time and inducing heavy frame drops. The extension intercepts `MediaSource.isTypeSupported`, `HTMLMediaElement.prototype.canPlayType`, and `navigator.mediaCapabilities.decodingInfo` to block AV1 and 10-bit HDR, enforcing lightweight **VP9 Profile 0 (8-bit SDR)** decoding natively handled by GPU hardware.
 3. **MSE SourceBuffer Discontinuities & Initial Handshake Lag:**
@@ -158,7 +158,7 @@ My-Quality-4k/
   <img src="assets/images/gemini-4-argon.jpg" alt="Gemini 4 Argon" width="600">
 </p>
 
-All software architecture, systems engineering, media pipeline design, and product decisions in **My Quality 4k** were conceived, planned, and designed in a human manner by **João Vitor Magalhães Alves (@Alves404)** (Google Student Ambassador 2026).
+All software architecture, systems engineering, media pipeline design, and product decisions in **My Quality** were conceived, planned, and designed in a human manner by **João Vitor Magalhães Alves (@Alves404)** (Google Student Ambassador 2026).
 
 Artificial Intelligence tools (**Gemini 4 Argon** via Google Antigravity) functioned strictly as an AI programming assistant and code reviewer for technical implementation, optimizations, and documentation under direct human supervision and guidelines.
 

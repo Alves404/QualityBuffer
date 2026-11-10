@@ -1,7 +1,7 @@
-# Engineering Technical Report & Open Source Compliance — My Quality 4k
+# Engineering Technical Report & Open Source Compliance — My Quality
 
-**Project:** My Quality 4k  
-**Version:** 2.2.0 (SABR 512 MB Policy Unlocker, Hardware Codec Engine & V12 HLS/MP4 Downloader)  
+**Project:** My Quality  
+**Version:** 2.2.1 (SABR 512 MB Policy Unlocker, Hardware Codec Engine & V12 HLS/MP4 Downloader)  
 **Target Platform:** Google Chrome / Chromium (Manifest V3)  
 **License:** GNU General Public License v3.0 (GPL-3.0 / Copyleft Open Source)  
 **Repository:** `https://github.com/Alves404/My-Quality-4k`
@@ -10,7 +10,7 @@
 
 ## 1. Executive Summary
 
-**My Quality 4k** is a 100% standalone Open Source browser extension. Its primary engineering goals are:
+**My Quality** is a 100% standalone Open Source browser extension. Its primary engineering goals are:
 1. Enabling entry-level and mid-range computers to play **4K (2160p)** YouTube videos smoothly without rebuffering stalls by unlocking YouTube's internal SABR buffer limits (`60s`, `120s`, or `180s` ahead), pre-warming CDN nodes at millisecond zero, stabilizing `MediaSource Extensions (MSE)` buffers, and enforcing hardware-accelerated `VP9 SDR` decoding.
 2. Providing an integrated **V12 (`Async Warm-up & Max Agility`) 12-Worker HLS (`M3U8` / `AES-128`) & Direct `MP4`/`WebM` Web Video Downloader** for standard web pages and learning platforms.
 
@@ -40,7 +40,7 @@ Inspects `video.buffered` ranges to automatically step over sub-second timestamp
 
 ## 3. V12 Async Warm-up & 12-Worker HLS/MP4 Downloader Engine
 
-In version `2.2.0`, the **V12 (`Async Warm-up & Max Agility`)** architecture was integrated across both playback optimization and media downloading:
+In version `2.2.1`, the **V12 (`Async Warm-up & Max Agility`)** architecture was integrated across both playback optimization and media downloading:
 
 1. **Dual `fetch` + `XMLHttpRequest.prototype.open` Hook & Millisecond-Zero CDN Warm-up (`src/content/page-hook.js`):**
    Pre-warms high-resolution CDN origins (`dns-prefetch` + `preconnect`) immediately when `streamingData.adaptiveFormats` is parsed or when `fetch`/`XMLHttpRequest` requests media segments, eliminating 150–400ms of initial handshake latency.
@@ -76,4 +76,4 @@ Prior to formal authorship credits, it is transparently declared for technical a
 * **AI-Assisted Development:** Gemini 4 Argon (Google Antigravity)
 * **Supported Languages (Zero-Overhead):** English (`EN` - Default), Portugues (`PT`), Espanol (`ES`)
 * **License:** GNU General Public License v3.0 (`GPL-3.0` Copyleft Open Source)
-* **Version:** `2.2.0` (Manifest V3 — 512 MB SABR Deep Pre-Buffer, Hardware VP9 SDR & V12 HLS/MP4 Downloader)
+* **Version:** `2.2.1` (Manifest V3 — 512 MB SABR Deep Pre-Buffer, Hardware VP9 SDR & V12 HLS/MP4 Downloader)

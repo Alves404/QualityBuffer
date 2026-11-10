@@ -1,8 +1,8 @@
-# Privacy Policy — My Quality 4k
+# Privacy Policy — My Quality
 
-**Last Updated:** November 8, 2026  
-**Extension Name:** My Quality 4k  
-**Version:** 2.2.0 (Manifest V3)  
+**Last Updated:** November 9, 2026  
+**Extension Name:** My Quality  
+**Version:** 2.2.1 (Manifest V3)  
 **Author & Maintainer:** Joao Vitor Magalhaes Alves ([github.com/Alves404](https://github.com/Alves404))  
 **Repository:** [https://github.com/Alves404/My-Quality-4k](https://github.com/Alves404/My-Quality-4k)
 
@@ -10,7 +10,7 @@
 
 ## 1. Zero Personal Data Collection & Zero Telemetry
 
-**My Quality 4k** does **not** collect, store, sell, rent, share, or transmit any personal data, personally identifiable information (PII), browsing history, user credentials, cookies, or telemetry to any external or local server.
+**My Quality** does **not** collect, store, sell, rent, share, or transmit any personal data, personally identifiable information (PII), browsing history, user credentials, cookies, or telemetry to any external or local server.
 
 All extension logic executes **100% locally and standalone** inside the user's web browser.
 
@@ -35,7 +35,7 @@ To fulfill its purpose—optimizing 4K YouTube video pre-buffering, enforcing ha
 
 ## 3. Open Source Transparency & Contact
 
-**My Quality 4k** is 100% Open Source software licensed under the **GNU General Public License v3.0 (GPL-3.0)**. Every line of code can be audited publicly at:
+**My Quality** is 100% Open Source software licensed under the **GNU General Public License v3.0 (GPL-3.0)**. Every line of code can be audited publicly at:
 * [https://github.com/Alves404/My-Quality-4k](https://github.com/Alves404/My-Quality-4k)
 
 For questions regarding privacy or security, please open an issue on the official GitHub repository.

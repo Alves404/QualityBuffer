@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
-  "name": "My Quality 4k",
-  "short_name": "MyQuality4k",
+  "name": "My Quality",
+  "short_name": "MyQuality",
   "version": "2.2.1",
   "description": "Unlocks multi-minute 4K YouTube pre-buffering, hardware VP9 decoding, and high-speed HLS/MP4 web video downloading.",
   "author": "Joao Vitor Magalhaes Alves (https://github.com/Alves404) — AI-Assisted Development by Gemini 4 Argon",
@@ -13,7 +13,7 @@
     "128": "assets/icons/icon128.png"
   },
   "action": {
-    "default_title": "My Quality 4k - 4K Optimizer & Video Downloader",
+    "default_title": "My Quality - Video Optimizer & Downloader",
     "default_popup": "src/popup/popup.html",
     "default_icon": {
       "16": "assets/icons/icon16.png",
