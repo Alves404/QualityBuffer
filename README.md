@@ -1,6 +1,6 @@
 # QualityBuffer
 
-[![Chrome Web Store](https://img.shields.io/badge/Chrome_Web_Store-Coming_Soon-4285F4?logo=googlechrome&logoColor=white)](https://chromewebstore.google.com)
+[![Chrome Web Store](https://img.shields.io/badge/Chrome_Web_Store-Available-4285F4?logo=googlechrome&logoColor=white)](https://chromewebstore.google.com/detail/mdefdlcocdakdpkgfhpnhdcjihaajomg)
 [![Latest Release](https://img.shields.io/badge/Release-v2.2.2-89CFF0.svg)](https://github.com/Alves404/QualityBuffer/releases/latest)
 [![Manifest V3](https://img.shields.io/badge/Chrome_Extension-Manifest_V3-89CFF0.svg)](manifest.json)
 [![Design System](https://img.shields.io/badge/Design_System-Chrome_Native_UI_(M3)-4285F4.svg)](src/popup/popup.css)
@@ -32,12 +32,12 @@ Conceived, architected, and engineered by **João Vitor Magalhães Alves (@Alves
 
 ## Chrome Web Store Installation
 
-[![Available in the Chrome Web Store](https://img.shields.io/badge/Chrome_Web_Store-Add_to_Chrome-4285F4?style=for-the-badge&logo=googlechrome&logoColor=white)](https://chromewebstore.google.com/detail/mdefdlcocdakdpkgfhpnhdcjihaajomg?utm_source=item-share-cb)
+[![Available in the Chrome Web Store](https://img.shields.io/badge/Chrome_Web_Store-Add_to_Chrome-4285F4?style=for-the-badge&logo=googlechrome&logoColor=white)](https://chromewebstore.google.com/detail/mdefdlcocdakdpkgfhpnhdcjihaajomg)
 
-> [!NOTE]
-> **QualityBuffer** is packaged and prepared for the official **Google Chrome Web Store** in full compliance with Manifest V3 policies.
+> [!TIP]
+> **QualityBuffer** is officially published, verified, and available in the **Google Chrome Web Store** in full compliance with Manifest V3 policies.
 > 
-> * **Official Chrome Web Store URL:** `https://chromewebstore.google.com/detail/YOUR_EXTENSION_ID` *(Link will be updated upon store publication approval)*
+> * **Official Chrome Web Store URL:** [chromewebstore.google.com/detail/mdefdlcocdakdpkgfhpnhdcjihaajomg](https://chromewebstore.google.com/detail/mdefdlcocdakdpkgfhpnhdcjihaajomg)
 > * **Releases & Source Code:** [github.com/Alves404/QualityBuffer/releases](https://github.com/Alves404/QualityBuffer/releases)
 > * **Privacy Policy (100% Client-Side Privacy):** [`PRIVACY_POLICY.md`](PRIVACY_POLICY.md)
 
