@@ -32,7 +32,7 @@ Conceived, architected, and engineered by **João Vitor Magalhães Alves (@Alves
 
 ## Chrome Web Store Installation
 
-[![Available in the Chrome Web Store](https://img.shields.io/badge/Chrome_Web_Store-Add_to_Chrome-4285F4?style=for-the-badge&logo=googlechrome&logoColor=white)](https://chromewebstore.google.com/detail/YOUR_EXTENSION_ID)
+[![Available in the Chrome Web Store](https://img.shields.io/badge/Chrome_Web_Store-Add_to_Chrome-4285F4?style=for-the-badge&logo=googlechrome&logoColor=white)](https://chromewebstore.google.com/detail/mdefdlcocdakdpkgfhpnhdcjihaajomg?utm_source=item-share-cb)
 
 > [!NOTE]
 > **QualityBuffer** is packaged and prepared for the official **Google Chrome Web Store** in full compliance with Manifest V3 policies.
