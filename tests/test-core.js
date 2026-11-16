@@ -3,6 +3,29 @@
 const assert = require('assert');
 const path = require('path');
 const fs = require('fs');
+const vm = require('vm');
+
+{
+  const context = vm.createContext({
+    window: { addEventListener() {} },
+    document: { addEventListener() {} },
+    setInterval() {}
+  });
+  const pageHook = fs.readFileSync(path.join(__dirname, '../src/content/page-hook.js'), 'utf8');
+  vm.runInContext(pageHook, context);
+  const policy = vm.runInContext(`
+    const policy = { Sa: 36700160, nb: 5242880, Ba: 120, ha: 1.05, sb: NaN };
+    const player = { policy };
+    player.videoTrack = {};
+    policy;
+  `, context);
+
+  assert.strictEqual(policy.ha, 1.05);
+  assert.strictEqual(policy.sb, NaN);
+  assert.strictEqual(policy.Sa, 536870912);
+  assert.strictEqual(policy.nb, 67108864);
+  assert.strictEqual(policy.Ba, 180);
+}
 
 const utilsCode = fs.readFileSync(path.join(__dirname, '../src/core/utils.js'), 'utf8');
 eval(utilsCode);

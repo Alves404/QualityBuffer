@@ -11,10 +11,8 @@
  *    across both MediaSource and navigator.mediaCapabilities.decodingInfo, while certifying
  *    VP9 Profile 0 (4K SDR) as { supported: true, smooth: true, powerEfficient: true }.
  * 2. Deep Pre-Buffer SABR & Policy Unlocker (60s / 120s / 180s Multi-Minute Buffering):
- *    - Intercepts YouTube's internal player policy (g.vWa) via Object.prototype.videoTrack
- *      to unlock the hardcoded 35 MB 4K video byte cap (ya: 36700160 -> 512 MB / 536870912)
- *      and 5 MB audio byte cap (Ta: 5242880 -> 64 MB / 67108864), as well as min/max
- *      readahead seconds (sb / ha -> targetBufferSec).
+ *    - Intercepts YouTube's internal player policy via Object.prototype.videoTrack
+ *      to raise the video and audio byte caps and readahead limits.
  *    - Hooks SABR NextRequestPolicy (Mq / targetVideoReadaheadMs / targetAudioReadaheadMs)
  *      and outgoing SABR request builder (RO / bc / mp / UF / TF) so googlevideo.com
  *      continues streaming 4K segments past the default 15-16 second ceiling up to the
@@ -353,6 +351,7 @@
     state.patchedPolicies.add(policy);
 
     try {
+      // Match by value because YouTube reuses minified names across builds.
       const keys = Object.keys(policy);
 
       for (let i = 0; i < keys.length; i += 1) {
@@ -405,33 +404,6 @@
             return CHUNK_REQUEST_BYTE_CAP;
           });
         }
-      }
-
-      // Also lock explicit property names if present in current build
-      if (typeof policy.ya === 'number') {
-        lockPolicyProperty(policy, 'ya', function () {
-          return VIDEO_BUFFER_BYTE_CAP;
-        });
-      }
-      if (typeof policy.Ta === 'number') {
-        lockPolicyProperty(policy, 'Ta', function () {
-          return AUDIO_BUFFER_BYTE_CAP;
-        });
-      }
-      if (typeof policy.ha === 'number') {
-        lockPolicyProperty(policy, 'ha', function () {
-          return Math.max(180, getTargetBufferSeconds());
-        });
-      }
-      if (typeof policy.sb === 'number') {
-        lockPolicyProperty(policy, 'sb', function () {
-          return getTargetBufferSeconds();
-        });
-      }
-      if (typeof policy.f$ === 'number') {
-        lockPolicyProperty(policy, 'f$', function () {
-          return getTargetBufferSeconds() * 1000;
-        });
       }
     } catch (e) {
       // Never break player initialization
