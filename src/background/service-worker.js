@@ -1,13 +1,13 @@
 /**
- * My Quality 4k v2.2 - Background Service Worker (Manifest V3)
+ * QualityBuffer v2.3.0 - Background Service Worker (Manifest V3)
+ *
+ * Conceived and architected by Joao Vitor Magalhaes Alves (@Alves404).
  *
  * Responsibilities:
  * 1. Passive googlevideo.com chunk monitor for real-time 4K bandwidth throughput (Mbps)
  *    and CDN node latency (ms) in the Popup dashboard.
- * 2. Web Video & HLS (.m3u8 / .mp4 / .webm) network detector and per-tab media store
- *    with V12 anti-pollution filtering and direct file download support.
+ * 2. Per-tab media store for external Web Video & HLS (.m3u8 / .mp4 / .webm) downloads.
  *
- * Assisted engineering by Gemini 4 Argon (Google Antigravity).
  * License: GPL-3.0
  */
 
@@ -22,6 +22,7 @@ try {
 const DEFAULT_CONFIG = {
   enabled: true,
   targetQuality: 'hd2160',
+  stabilityProfile: 'balanced',
   targetBufferSec: 120,
   deepPreBuffer: true,
   parallelPrefetch: true,

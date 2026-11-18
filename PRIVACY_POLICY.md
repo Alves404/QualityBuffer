@@ -1,8 +1,8 @@
 # Privacy Policy — QualityBuffer
 
-**Last Updated:** November 10, 2026  
+**Last Updated:** November 17, 2026  
 **Extension Name:** QualityBuffer  
-**Version:** 2.2.2 (Manifest V3)  
+**Version:** 2.3.0 (Manifest V3)  
 **Author & Maintainer:** Joao Vitor Magalhaes Alves ([github.com/Alves404](https://github.com/Alves404))  
 **Repository:** [https://github.com/Alves404/QualityBuffer](https://github.com/Alves404/QualityBuffer)
 
@@ -18,10 +18,10 @@ All extension logic executes **100% locally and standalone** inside the user's w
 
 ## 2. How Permissions Are Used Locally
 
-To fulfill its purpose—optimizing 4K YouTube video pre-buffering, enforcing hardware-accelerated video codecs (`VP9 SDR`), and enabling local downloads of standard web video streams (`HLS M3U8` / `MP4` / `WebM`)—the extension requests the minimum required Chrome Manifest V3 permissions:
+To fulfill its purpose—optimizing 4K/HD YouTube video playback stability, guiding hardware-accelerated video codec selection (`VP9 SDR`), and enabling local downloads of standard external web video streams (`HLS M3U8` / `MP4` / `WebM`)—the extension requests the minimum required Chrome Manifest V3 permissions:
 
 1. **`storage` (`chrome.storage.local`):**
-   Used strictly to save the user's local preferences on their own device (target resolution `2160p/1440p/1080p`, pre-buffer horizon `60s/120s/180s`, hardware codec toggles, and interface language `EN/PT/ES`). No configuration data ever leaves the user's browser.
+   Used strictly to save the user's local preferences on their own device (target resolution `2160p/1440p/1080p`, stability profile, hardware codec toggles, and interface language `EN/PT/ES`). No configuration data ever leaves the user's browser.
 2. **`activeTab` & `scripting`:**
    Used strictly when the user interacts with the extension popup (explicit user gesture) to apply updated playback settings or scan and download user-requested video streams on the active tab without requiring broad host permissions.
 3. **`downloads`:**

@@ -66,37 +66,33 @@
       tabAbout: 'Sobre & Creditos',
       metricResLabel: 'Resolucao / Stream',
       metricWaiting: 'Aguardando...',
-      metricBufLabel: 'Buffer Real / Meta',
+      metricBufLabel: 'Buffer & Estabilidade',
       labelTargetQuality: 'Qualidade Alvo do Player',
       btnApplyNow: 'Aplicar Agora',
       optQ2160: '2160p (4K Ultra HD) - Recomendado',
       optQ1440: '1440p (2K Quad HD)',
       optQ1080: '1080p (Full HD)',
-      optQAuto: 'Automatico (Apenas Otimizar Buffer/Codec)',
-      labelBufferHorizon: 'Horizonte de Pre-Carregamento (Minutos Seguintes)',
-      optBuf60: '60 segundos (1 Minuto a frente - Leve)',
-      optBuf120: '120 segundos (2 Minutos a frente - Recomendado)',
-      optBuf180: '180 segundos (3 Minutos a frente - Maximo)',
+      optQAuto: 'Automatico (Apenas Otimizar Codec/Estabilidade)',
+      labelBufferHorizon: 'Perfil de Estabilidade de Reproducao',
+      optBuf120: 'Equilibrado (VP9 Hardware + Protecao Auto - Recomendado)',
+      optBuf180: 'Priorizar Qualidade (Manter Resolucao Alvo)',
+      optBuf60: 'Economia de GPU & Rede (30fps + Step-Down Rapido)',
       dropdownTitle: 'Funcionalidades',
       activeCountSuffix: 'ativos',
-      featDeepTitle: 'Deep Pre-Buffer (Carregar Minutos Seguintes)',
-      featDeepDesc: 'Desbloqueia o limite de 15s do YouTube para baixar os proximos minutos continuamente na velocidade da internet.',
-      featPrefetchTitle: 'Pre-Fetch Paralelo & Warm-up V12',
-      featPrefetchDesc: 'Pre-aquece conexoes CDN em DNS/TLS/QUIC no segundo zero antes do player requisitar os segmentos.',
-      featHeadstartTitle: 'Pre-Carga Inicial (Trilho Antes do Trem)',
-      featHeadstartDesc: 'Acumula um colchao inicial solido em 4K no segundo zero antes de liberar a reproducao.',
-      featAv1Title: 'Bloquear Codec AV1 (Forcar VP9 Hardware)',
-      featAv1Desc: 'Impede decodificacao AV1 via software na CPU em placas de video sem suporte nativo.',
-      featHdrTitle: 'Bloquear VP9 HDR 10-bit (Forcar 4K SDR)',
+      featPrefetchTitle: 'Warm-up Passivo de Conexao CDN',
+      featPrefetchDesc: 'Pre-aquece nos de midia googlevideo.com via PerformanceObserver (dns-prefetch e preconnect).',
+      featAv1Title: 'Preferir VP9 Hardware sobre AV1',
+      featAv1Desc: 'Orienta o MediaCapabilities para decodificacao VP9 na GPU sem quebrar videos exclusivos em AV1.',
+      featHdrTitle: 'Preferir SDR 8-bit sobre HDR 10-bit',
       featHdrDesc: 'Evita sobrecarga de tonemapping em GPUs de 4 GB VRAM mantendo resolucao 2160p fluida.',
-      featFpsTitle: 'Limitar Streams a 30fps (Bloquear 60fps)',
-      featFpsDesc: 'Reduz pela metade os quadros decodificados por segundo em videos de gameplay para aliviar GPUs modestas.',
-      featMseTitle: 'Estabilizador de Buffer MSE & Micro-Gaps',
-      featMseDesc: 'Corrige lacunas de tempo entre segmentos no SourceBuffer para evitar travamentos.',
+      featFpsTitle: 'Preferir Streams a 30fps (Alivio de GPU)',
+      featFpsDesc: 'Desprioriza 60fps no MediaCapabilities para reduzir pela metade a carga de decodificacao em PCs modestos.',
+      featMseTitle: 'Recuperacao Conservadora de Micro-Gaps MSE',
+      featMseDesc: 'Avanca lacunas de tempo no SourceBuffer apenas apos travamentos reais de multiplos segundos.',
       featAmbientTitle: 'Desativar Modo Ambiente (Economia de GPU)',
       featAmbientDesc: 'Remove o canvas de iluminacao desfocada do YouTube para liberar VRAM e GPU.',
-      featDropTitle: 'Protecao contra Queda Severa de Quadros',
-      featDropDesc: 'Reduz automaticamente de 4K para 2K caso a perda de quadros ultrapasse 18%.',
+      featDropTitle: 'Protecao Adaptativa de Queda e Rebuffer',
+      featDropDesc: 'Reduz 1 nivel de resolucao automaticamente se houver perda severa de quadros ou engasgos repetidos.',
       dlSectionTitle: 'Download de Video',
       dlEmptyTitle: 'Nenhum video detectado',
       dlEmptyDesc: 'Inicie a reproducao de um video nesta aba para capturar streams HLS (M3U8 / AES-128) ou MP4/WebM automaticamente.',
@@ -107,8 +103,8 @@
       dlBtnRetry: 'Tentar Novamente',
       dlBtnDownloadAgain: 'Baixar Novamente',
       dlErrRefresh: 'Atualize a pagina (F5) para ativar o assistente de download nesta aba.',
-      aboutArchTitle: 'Arquitetura & Engenharia Humana v2.2.2',
-      aboutArchBody: 'Idealizado, projetado e arquitetado por Joao Vitor Magalhaes Alves (Google Student Ambassador 2026). O QualityBuffer desbloqueia o limite interno de 35 MB (16s) do SABR do YouTube para 512 MB, permitindo pre-carregar 1, 2 ou 3 minutos em 4K (2160p) com decodificacao de hardware VP9 SDR e integra o motor V12 de 12 conexoes para download de videos HLS (M3U8 / AES-128) e MP4.',
+      aboutArchTitle: 'Arquitetura & Engenharia Humana v2.3.0',
+      aboutArchBody: 'Idealizado, projetado e arquitetado por Joao Vitor Magalhaes Alves (Google Student Ambassador 2026). O QualityBuffer otimiza a reproducao 4K/HD no YouTube usando preferencia nao-destrutiva de hardware VP9 via MediaCapabilities, controle oficial de qualidade Ad-Safe, protecao adaptativa contra queda de quadros e o motor V12 de 12 conexoes para download de videos HLS (M3U8 / AES-128) e MP4 em sites externos.',
       aboutAiTitle: 'Nota de Desenvolvimento Assistido por IA (Gemini 4 Argon)',
       aboutAiBody: 'Este software foi concebido, arquitetado e direcionado por seu autor humano (Joao Vitor Magalhaes Alves). A implementacao tecnica dos modulos, otimizacoes de baixo nivel e documentacao contaram com o auxilio do assistente de programacao por IA Gemini 4 Argon (Google Antigravity), sob supervisao e diretrizes humanas.',
       aboutCreditsTitle: 'Creditos, Autoria e Licenca',
@@ -117,7 +113,7 @@
       creditAi: 'Desenvolvimento Assistido por IA: Gemini 4 Argon (Google Antigravity) — Assistente de programacao para implementacao tecnica e otimizacoes sob direcao humana.',
       creditI18n: 'Idiomas Suportados (Zero-Overhead): English (EN - Padrao), Portugues (PT) e Espanol (ES) com deteccao automatica do navegador.',
       creditLicense: 'Licenca Open Source: GNU General Public License v3.0 (GPL-3.0 Copyleft) — Codigo 100% aberto, livre e auditavel.',
-      creditVersion: 'Versao: 2.2.2 (Manifest V3 — Motor SABR 512 MB, Hardware VP9 SDR & Downloader V12 HLS/MP4).',
+      creditVersion: 'Versao: 2.3.0 (Manifest V3 — Motor VP9 Hardware Seguro, Estabilidade Adaptativa & Downloader V12 HLS/MP4).',
       tooltipApplied: 'Verde: Alteracoes aplicadas',
       tooltipPending: 'Vermelho: Alteracoes nao aplicadas (clique em Aplicar Agora)',
       codecDefault: 'VP9 SDR (Padrao)',
@@ -128,44 +124,40 @@
       dlBtnAudio: 'Baixar MP3',
       dlBtnDownloadingAudio: 'Acelerando MP3...',
       dlYtNoticeTitle: 'Downloads no YouTube Desativados',
-      dlYtNoticeDesc: 'Em conformidade com as diretrizes da Chrome Web Store e os termos do YouTube, o download de mídia neste domínio foi desativado. A otimização 4K (Buffer 512 MB e aceleração por GPU) continua 100% ativa.'
+      dlYtNoticeDesc: 'Em conformidade com as diretrizes da Chrome Web Store e os termos do YouTube, o download de mídia neste domínio foi desativado. A otimização 4K por GPU VP9 e proteção anti-travamento continuam 100% ativas.'
     }),
     en: Object.freeze({
       tabControls: 'Controls',
       tabAbout: 'About & Credits',
       metricResLabel: 'Resolution / Stream',
       metricWaiting: 'Waiting...',
-      metricBufLabel: 'Real Buffer / Target',
+      metricBufLabel: 'Buffer & Stability',
       labelTargetQuality: 'Target Player Quality',
       btnApplyNow: 'Apply Now',
       optQ2160: '2160p (4K Ultra HD) - Recommended',
       optQ1440: '1440p (2K Quad HD)',
       optQ1080: '1080p (Full HD)',
-      optQAuto: 'Auto (Optimize Buffer/Codec Only)',
-      labelBufferHorizon: 'Pre-Buffer Horizon (Upcoming Minutes)',
-      optBuf60: '60 seconds (1 Minute ahead - Light)',
-      optBuf120: '120 seconds (2 Minutes ahead - Recommended)',
-      optBuf180: '180 seconds (3 Minutes ahead - Maximum)',
+      optQAuto: 'Auto (Optimize Codec/Stability Only)',
+      labelBufferHorizon: 'Playback Stability Profile',
+      optBuf120: 'Balanced (Hardware VP9 & Auto Guard - Recommended)',
+      optBuf180: 'Strict Quality (Hold Target Resolution)',
+      optBuf60: 'GPU & Network Saver (30fps + Fast Step-Down)',
       dropdownTitle: 'Features',
       activeCountSuffix: 'active',
-      featDeepTitle: 'Deep Pre-Buffer (Load Upcoming Minutes)',
-      featDeepDesc: 'Unlocks YouTube 15s limit to continuously download the next minutes at full connection speed.',
-      featPrefetchTitle: 'Parallel Pre-Fetch & V12 CDN Warm-up',
-      featPrefetchDesc: 'Pre-warms high-resolution CDN nodes over DNS/TLS/QUIC at millisecond zero before segments are requested.',
-      featHeadstartTitle: 'Initial Headstart Cushion (Track Before Train)',
-      featHeadstartDesc: 'Builds a solid initial 4K buffer cushion at second zero before releasing playback.',
-      featAv1Title: 'Block AV1 Codec (Force Hardware VP9)',
-      featAv1Desc: 'Prevents CPU software AV1 decoding on graphics cards without native hardware support.',
-      featHdrTitle: 'Block VP9 10-bit HDR (Force 4K SDR)',
-      featHdrDesc: 'Prevents shader tonemapping overload on 4 GB VRAM GPUs while keeping smooth 2160p.',
-      featFpsTitle: 'Limit Streams to 30fps (Block 60fps)',
-      featFpsDesc: 'Halves decoded frames per second on high-FPS videos to relieve entry-level GPUs.',
-      featMseTitle: 'MSE Buffer & Micro-Gap Stabilizer',
-      featMseDesc: 'Bridges millisecond timestamp gaps between SourceBuffer segments to prevent stalls.',
+      featPrefetchTitle: 'Passive CDN Connection Warm-up',
+      featPrefetchDesc: 'Pre-warms googlevideo.com media nodes via PerformanceObserver (dns-prefetch & preconnect).',
+      featAv1Title: 'Prefer Hardware VP9 over AV1',
+      featAv1Desc: 'Guides MediaCapabilities toward GPU VP9 decoding without breaking AV1-only videos.',
+      featHdrTitle: 'Prefer 8-bit SDR over 10-bit HDR',
+      featHdrDesc: 'Avoids heavy HDR shader tonemapping on 4 GB VRAM GPUs while keeping smooth 2160p.',
+      featFpsTitle: 'Prefer 30fps Streams (GPU Relief)',
+      featFpsDesc: 'Deprioritizes 60fps streams in MediaCapabilities to halve GPU decode load on modest PCs.',
+      featMseTitle: 'Conservative MSE Micro-Gap Recovery',
+      featMseDesc: 'Steps across buffered segment timestamp gaps only after genuine multi-second stalls.',
       featAmbientTitle: 'Disable Ambient Mode (GPU Saver)',
       featAmbientDesc: 'Removes YouTube blurred lighting canvas to free VRAM and GPU fill-rate.',
-      featDropTitle: 'Severe Frame Drop Protection',
-      featDropDesc: 'Automatically steps down from 4K to 2K if frame drop rate exceeds 18%.',
+      featDropTitle: 'Adaptive Drop & Rebuffer Guard',
+      featDropDesc: 'Steps down one resolution tier automatically if severe frame drops or repeated stalls occur.',
       dlSectionTitle: 'Video Download',
       dlEmptyTitle: 'No video streams detected',
       dlEmptyDesc: 'Play a video on the active page to capture HLS (M3U8 / AES-128) or direct MP4/WebM streams automatically.',
@@ -176,8 +168,8 @@
       dlBtnRetry: 'Retry Download',
       dlBtnDownloadAgain: 'Download Again',
       dlErrRefresh: 'Refresh the page (F5) to activate the download assistant on this tab.',
-      aboutArchTitle: 'Human Architecture & System Design v2.2.2',
-      aboutArchBody: 'Conceived, engineered, and architected by Joao Vitor Magalhaes Alves (Google Student Ambassador 2026). QualityBuffer unlocks YouTube SABR 35 MB (16s) internal buffer cap to 512 MB for 1, 2, or 3 full minutes of 4K (2160p) pre-buffering, enforces hardware VP9 SDR decoding, and integrates the V12 12-worker HLS (M3U8 / AES-128) & MP4 web video downloader.',
+      aboutArchTitle: 'Human Architecture & System Design v2.3.0',
+      aboutArchBody: 'Conceived, engineered, and architected by Joao Vitor Magalhaes Alves (Google Student Ambassador 2026). QualityBuffer optimizes 4K/HD YouTube playback using non-destructive MediaCapabilities hardware VP9 preference, ad-safe official player quality control, adaptive frame-drop protection, and the V12 12-worker HLS (M3U8 / AES-128) & MP4 web video downloader.',
       aboutAiTitle: 'AI-Assisted Development Notice (Gemini 4 Argon)',
       aboutAiBody: 'This software was conceived, architected, and directed by its human author (Joao Vitor Magalhaes Alves). The technical implementation, optimizations, and documentation were assisted by Gemini 4 Argon (Google Antigravity) acting strictly as an AI programming assistant under direct human supervision.',
       aboutCreditsTitle: 'Credits, Authorship & License',
@@ -186,7 +178,7 @@
       creditAi: 'AI-Assisted Development: Gemini 4 Argon (Google Antigravity) — Coding assistant for implementation, optimizations, and documentation under human direction.',
       creditI18n: 'Supported Languages (Zero-Overhead): English (EN - Default), Portugues (PT), and Espanol (ES) with automatic browser detection.',
       creditLicense: 'Open Source License: GNU General Public License v3.0 (GPL-3.0 Copyleft) — 100% free, open, and auditable source code.',
-      creditVersion: 'Version: 2.2.2 (Manifest V3 — 512 MB SABR Pre-Buffer, Hardware VP9 SDR & V12 HLS/MP4 Downloader).',
+      creditVersion: 'Version: 2.3.0 (Manifest V3 — Safe Hardware VP9 Engine, Adaptive Stability Guard & V12 HLS/MP4 Downloader).',
       tooltipApplied: 'Green: Changes applied',
       tooltipPending: 'Red: Unapplied changes (click Apply Now)',
       codecDefault: 'VP9 SDR (Default)',
@@ -197,44 +189,40 @@
       dlBtnAudio: 'Download MP3',
       dlBtnDownloadingAudio: 'Accelerating MP3...',
       dlYtNoticeTitle: 'YouTube Downloads Disabled',
-      dlYtNoticeDesc: 'In compliance with Chrome Web Store policies and YouTube terms of service, media downloads are disabled on this domain. 4K SABR buffer & GPU hardware acceleration remain fully active.'
+      dlYtNoticeDesc: 'In compliance with Chrome Web Store policies and YouTube terms of service, media downloads are disabled on this domain. 4K hardware VP9 & anti-stutter optimizations remain 100% active.'
     }),
     es: Object.freeze({
       tabControls: 'Controles',
       tabAbout: 'Acerca y Creditos',
       metricResLabel: 'Resolucion / Stream',
       metricWaiting: 'Esperando...',
-      metricBufLabel: 'Buffer Real / Meta',
+      metricBufLabel: 'Buffer y Estabilidad',
       labelTargetQuality: 'Calidad Objetivo del Reproductor',
       btnApplyNow: 'Aplicar Ahora',
       optQ2160: '2160p (4K Ultra HD) - Recomendado',
       optQ1440: '1440p (2K Quad HD)',
       optQ1080: '1080p (Full HD)',
-      optQAuto: 'Automatico (Solo Optimizar Buffer/Codec)',
-      labelBufferHorizon: 'Horizonte de Pre-Carga (Minutos Siguientes)',
-      optBuf60: '60 segundos (1 Minuto adelante - Ligero)',
-      optBuf120: '120 segundos (2 Minutos adelante - Recomendado)',
-      optBuf180: '180 segundos (3 Minutos adelante - Maximo)',
+      optQAuto: 'Automatico (Solo Optimizar Codec/Estabilidad)',
+      labelBufferHorizon: 'Perfil de Estabilidad de Reproduccion',
+      optBuf120: 'Equilibrado (VP9 Hardware + Proteccion Auto - Recomendado)',
+      optBuf180: 'Priorizar Calidad (Mantener Resolucion Objetivo)',
+      optBuf60: 'Ahorro de GPU y Red (30fps + Step-Down Rapido)',
       dropdownTitle: 'Funcionalidades',
       activeCountSuffix: 'activos',
-      featDeepTitle: 'Deep Pre-Buffer (Cargar Minutos Siguientes)',
-      featDeepDesc: 'Desbloquea el limite de 15s de YouTube para descargar los proximos minutos continuamente.',
-      featPrefetchTitle: 'Pre-Fetch Paralelo y Warm-up V12',
-      featPrefetchDesc: 'Pre-calienta conexiones CDN en DNS/TLS/QUIC en el segundo cero antes de solicitar segmentos.',
-      featHeadstartTitle: 'Pre-Carga Inicial (Riel Antes del Tren)',
-      featHeadstartDesc: 'Acumula un colchon inicial solido en 4K en el segundo cero antes de reproducir.',
-      featAv1Title: 'Bloquear Codec AV1 (Forzar VP9 Hardware)',
-      featAv1Desc: 'Impide la decodificacion AV1 por software en la CPU en tarjetas sin soporte nativo.',
-      featHdrTitle: 'Bloquear VP9 HDR 10-bit (Forzar 4K SDR)',
+      featPrefetchTitle: 'Warm-up Pasivo de Conexion CDN',
+      featPrefetchDesc: 'Pre-calienta nodos de medios googlevideo.com via PerformanceObserver (dns-prefetch y preconnect).',
+      featAv1Title: 'Preferir VP9 Hardware sobre AV1',
+      featAv1Desc: 'Orienta MediaCapabilities hacia decodificacion VP9 en GPU sin romper videos exclusivos en AV1.',
+      featHdrTitle: 'Preferir SDR 8-bit sobre HDR 10-bit',
       featHdrDesc: 'Evita la sobrecarga de tonemapping en GPUs de 4 GB VRAM manteniendo 2160p fluido.',
-      featFpsTitle: 'Limitar Streams a 30fps (Bloquear 60fps)',
-      featFpsDesc: 'Reduce a la mitad los cuadros decodificados por segundo para aliviar GPUs modestas.',
-      featMseTitle: 'Estabilizador de Buffer MSE y Micro-Gaps',
-      featMseDesc: 'Corrige brechas de tiempo entre segmentos en el SourceBuffer para evitar pausas.',
+      featFpsTitle: 'Preferir Streams a 30fps (Alivio de GPU)',
+      featFpsDesc: 'Desprioriza 60fps en MediaCapabilities para reducir a la mitad la carga de decodificacion en PCs modestos.',
+      featMseTitle: 'Recuperacion Conservadora de Micro-Gaps MSE',
+      featMseDesc: 'Avanza brechas de tiempo en el SourceBuffer solo tras pausas reales de varios segundos.',
       featAmbientTitle: 'Desactivar Modo Ambiente (Ahorro de GPU)',
       featAmbientDesc: 'Elimina el canvas de iluminacion difuminada de YouTube para liberar VRAM y GPU.',
-      featDropTitle: 'Proteccion contra Caida Severa de Cuadros',
-      featDropDesc: 'Reduce automaticamente de 4K a 2K si la perdida de cuadros supera el 18%.',
+      featDropTitle: 'Proteccion Adaptativa de Caida y Rebuffer',
+      featDropDesc: 'Reduce 1 nivel de resolucion automaticamente si hay perdida severa de cuadros o pausas repetidas.',
       dlSectionTitle: 'Descarga de Video',
       dlEmptyTitle: 'Ningun video detectado',
       dlEmptyDesc: 'Inicie la reproduccion de un video en esta pestana para capturar streams HLS (M3U8 / AES-128) o MP4/WebM automaticamente.',
@@ -245,8 +233,8 @@
       dlBtnRetry: 'Reintentar',
       dlBtnDownloadAgain: 'Descargar de Nuevo',
       dlErrRefresh: 'Actualice la pagina (F5) para activar el asistente de descarga en esta pestana.',
-      aboutArchTitle: 'Arquitectura & Ingenieria Humana v2.2.2',
-      aboutArchBody: 'Ideado, disenado y arquitectado por Joao Vitor Magalhaes Alves (Google Student Ambassador 2026). QualityBuffer desbloquea el limite interno de 35 MB (16s) de YouTube SABR a 512 MB, permitiendo pre-cargar 1, 2 o 3 minutos completos en 4K (2160p) con decodificacion de hardware VP9 SDR e integra el motor V12 de 12 conexiones para descarga de videos HLS (M3U8 / AES-128) y MP4.',
+      aboutArchTitle: 'Arquitectura & Ingenieria Humana v2.3.0',
+      aboutArchBody: 'Ideado, disenado y arquitectado por Joao Vitor Magalhaes Alves (Google Student Ambassador 2026). QualityBuffer optimiza la reproduccion 4K/HD en YouTube mediante preferencia no destructiva de hardware VP9 en MediaCapabilities, control oficial de calidad Ad-Safe, proteccion adaptativa contra caida de cuadros y el motor V12 de 12 conexiones para descarga de videos HLS (M3U8 / AES-128) y MP4.',
       aboutAiTitle: 'Nota de Desarrollo Asistido por IA (Gemini 4 Argon)',
       aboutAiBody: 'Este software fue concebido, arquitectado y dirigido por su autor humano (Joao Vitor Magalhaes Alves). La implementacion tecnica, optimizaciones y documentacion contaron con la asistencia de la herramienta de programacion por IA Gemini 4 Argon (Google Antigravity) bajo supervision y directrices humanas.',
       aboutCreditsTitle: 'Creditos, Autoria y Licencia',
@@ -255,7 +243,7 @@
       creditAi: 'Desarrollo Asistido por IA: Gemini 4 Argon (Google Antigravity) — Asistente de programacion para implementacion tecnica y optimizaciones bajo direccion humana.',
       creditI18n: 'Idiomas Soportados (Zero-Overhead): English (EN - Predeterminado), Portugues (PT) y Espanol (ES) con deteccion automatica del navegador.',
       creditLicense: 'Licencia Open Source: GNU General Public License v3.0 (GPL-3.0 Copyleft) — Codigo 100% abierto, libre y auditable.',
-      creditVersion: 'Version: 2.2.2 (Manifest V3 — Motor SABR 512 MB, Hardware VP9 SDR y Descargador V12 HLS/MP4).',
+      creditVersion: 'Version: 2.3.0 (Manifest V3 — Motor VP9 Hardware Seguro, Estabilidad Adaptativa y Descargador V12 HLS/MP4).',
       tooltipApplied: 'Verde: Cambios aplicados',
       tooltipPending: 'Rojo: Cambios no aplicados (clic en Aplicar Ahora)',
       codecDefault: 'VP9 SDR (Predeterminado)',
@@ -266,7 +254,7 @@
       dlBtnAudio: 'Descargar MP3',
       dlBtnDownloadingAudio: 'Acelerando MP3...',
       dlYtNoticeTitle: 'Descargas de YouTube Deshabilitadas',
-      dlYtNoticeDesc: 'De acuerdo con las políticas de Chrome Web Store y los términos de YouTube, la descarga de medios está deshabilitada en este dominio. La optimización 4K (Buffer de 512 MB y aceleración por GPU) permanece 100% activa.'
+      dlYtNoticeDesc: 'De acuerdo con las políticas de Chrome Web Store y los términos de YouTube, la descarga de medios está deshabilitada en este dominio. La optimización 4K por GPU VP9 y protección anti-pausas permanece 100% activa.'
     })
   });
 
@@ -275,6 +263,7 @@
     lang: detectBrowserLanguage(),
     userSelectedLang: null,
     targetQuality: 'hd2160',
+    stabilityProfile: 'balanced',
     targetBufferSec: 120,
     deepPreBuffer: true,
     parallelPrefetch: true,
@@ -305,6 +294,7 @@
   let appliedConfig = Object.assign({}, DEFAULT_CONFIG);
   let currentConfig = Object.assign({}, DEFAULT_CONFIG);
   let lastDashboardData = null;
+  let lastNetworkSummary = null;
   let activeTabInfo = null;
   let lastMediaCount = -1;
   const activeDownloads = new Map();
@@ -322,9 +312,7 @@
   const elBtnFeaturesDropdown = document.getElementById('btn-features-dropdown');
   const elDropdownActiveCount = document.getElementById('dropdown-active-count');
 
-  const elToggleDeepPrebuffer = document.getElementById('toggle-deep-prebuffer');
   const elToggleParallelPrefetch = document.getElementById('toggle-parallel-prefetch');
-  const elToggleHeadstartBoost = document.getElementById('toggle-headstart-boost');
   const elToggleBlockAv1 = document.getElementById('toggle-block-av1');
   const elToggleBlockHdr = document.getElementById('toggle-block-hdr');
   const elToggleBlock60fps = document.getElementById('toggle-block-60fps');
@@ -346,9 +334,7 @@
   const i18nElements = document.querySelectorAll('[data-i18n]');
 
   const featureToggleElements = [
-    elToggleDeepPrebuffer,
     elToggleParallelPrefetch,
-    elToggleHeadstartBoost,
     elToggleBlockAv1,
     elToggleBlockHdr,
     elToggleBlock60fps,
@@ -356,6 +342,21 @@
     elToggleDisableAmbient,
     elToggleDropGuard
   ];
+
+  /**
+   * Normalizes legacy numeric buffer horizon values (60/120/180) into stabilityProfile
+   * @param {string|number} val
+   * @returns {string}
+   */
+  function normalizeStabilityProfile(val) {
+    if (val === 'strict_quality' || val === '180' || val === 180) {
+      return 'strict_quality';
+    }
+    if (val === 'gpu_saver' || val === '60' || val === 60) {
+      return 'gpu_saver';
+    }
+    return 'balanced';
+  }
 
   /**
    * O(1) string lookup from frozen language table (English default fallback)
@@ -442,7 +443,7 @@
   }
 
   /**
-   * Initializes collapsible dropdown menu for the 9 buffer & codec features
+   * Initializes collapsible dropdown menu for the 7 stability & codec features
    */
   function setupFeaturesDropdown() {
     if (!elBtnFeaturesDropdown || !elFeaturesDropdown) {
@@ -456,7 +457,7 @@
   }
 
   /**
-   * Updates the X/9 active features badge on the dropdown header
+   * Updates the X/7 active features badge on the dropdown header
    */
   function updateDropdownActiveCountBadge() {
     if (!elDropdownActiveCount) {
@@ -476,15 +477,16 @@
    * @returns {object}
    */
   function readConfigFromUI() {
+    const profile = elSelectBufferTarget
+      ? normalizeStabilityProfile(elSelectBufferTarget.value)
+      : 'balanced';
     return {
       enabled: elToggleEnabled ? elToggleEnabled.checked : true,
       lang: currentLang,
       userSelectedLang: appliedConfig.userSelectedLang || null,
       targetQuality: elSelectQuality ? elSelectQuality.value : 'hd2160',
-      targetBufferSec: elSelectBufferTarget ? Number(elSelectBufferTarget.value) || 120 : 120,
-      deepPreBuffer: elToggleDeepPrebuffer ? elToggleDeepPrebuffer.checked : true,
+      stabilityProfile: profile,
       parallelPrefetch: elToggleParallelPrefetch ? elToggleParallelPrefetch.checked : true,
-      headstartBoost: elToggleHeadstartBoost ? elToggleHeadstartBoost.checked : false,
       blockAV1: elToggleBlockAv1 ? elToggleBlockAv1.checked : true,
       blockHDR60: elToggleBlockHdr ? elToggleBlockHdr.checked : true,
       block60fps: elToggleBlock60fps ? elToggleBlock60fps.checked : false,
@@ -507,10 +509,8 @@
     const keys = [
       'enabled',
       'targetQuality',
-      'targetBufferSec',
-      'deepPreBuffer',
+      'stabilityProfile',
       'parallelPrefetch',
-      'headstartBoost',
       'blockAV1',
       'blockHDR60',
       'block60fps',
@@ -529,7 +529,6 @@
 
   /**
    * Updates the button indicator: when changes are pending, Apply button turns red
-   * with the rotating Pixel clock scallop halo animation.
    */
   function updateApplyStatusIndicator() {
     const uiCfg = readConfigFromUI();
@@ -576,16 +575,12 @@
     elToggleEnabled.checked = Boolean(cfg.enabled);
     elSelectQuality.value = cfg.targetQuality || 'hd2160';
     if (elSelectBufferTarget) {
-      elSelectBufferTarget.value = String(cfg.targetBufferSec || 120);
-    }
-    if (elToggleDeepPrebuffer) {
-      elToggleDeepPrebuffer.checked = cfg.deepPreBuffer !== false;
+      elSelectBufferTarget.value = normalizeStabilityProfile(
+        cfg.stabilityProfile || cfg.targetBufferSec
+      );
     }
     if (elToggleParallelPrefetch) {
       elToggleParallelPrefetch.checked = cfg.parallelPrefetch !== false;
-    }
-    if (elToggleHeadstartBoost) {
-      elToggleHeadstartBoost.checked = Boolean(cfg.headstartBoost);
     }
     elToggleBlockAv1.checked = Boolean(cfg.blockAV1);
     elToggleBlockHdr.checked = Boolean(cfg.blockHDR60);
@@ -620,20 +615,19 @@
   }
 
   /**
-   * Updates dashboard telemetry cards with 100% efficient live/idle/paused state
+   * Updates dashboard telemetry cards with live buffer cushion, frame drop rate, and CDN throughput
    */
   function renderDashboardState(data) {
     if (!data) {
       return;
     }
+    if (data.networkSummary) {
+      lastNetworkSummary = data.networkSummary;
+    }
     lastDashboardData = data;
 
     const player = data.playerTelemetry;
-    const targetSec = Number(
-      (player && player.targetBufferSec) ||
-      appliedConfig.targetBufferSec ||
-      120
-    );
+    const net = data.networkSummary || lastNetworkSummary;
 
     if (!player || player.hasActiveVideo === false || player.resolution === 'N/A') {
       if (elMetricResolution) {
@@ -643,7 +637,7 @@
         elMetricCodec.textContent = 'Codec: N/A';
       }
       if (elMetricBuffer) {
-        elMetricBuffer.textContent = `0.0s / ${targetSec}s (${t('metricIdle')})`;
+        elMetricBuffer.textContent = `0.0s (${t('metricIdle')})`;
       }
       if (elBufferBarFill) {
         elBufferBarFill.style.width = '0%';
@@ -655,6 +649,8 @@
     const qLabel = QUALITY_LABELS[player.currentQuality] || player.currentQuality || 'Auto';
     const isPaused = Boolean(player.isPaused);
     const bufSec = Math.max(0, Number(player.bufferAheadSec || 0));
+    const dropPct = Math.max(0, Number(player.dropRatePercent || 0));
+    const mbps = net && typeof net.avgThroughputMbps === 'number' ? net.avgThroughputMbps : 0;
 
     if (elMetricResolution) {
       const resText =
@@ -669,15 +665,20 @@
     }
 
     if (elMetricBuffer) {
-      elMetricBuffer.textContent = isPaused
-        ? `${bufSec.toFixed(1)}s / ${targetSec}s (${t('metricPaused')})`
-        : `${bufSec.toFixed(1)}s / ${targetSec}s`;
+      if (isPaused) {
+        elMetricBuffer.textContent = `${bufSec.toFixed(1)}s [${t('metricPaused')}]`;
+      } else if (mbps > 0) {
+        elMetricBuffer.textContent = `${bufSec.toFixed(1)}s • ${mbps.toFixed(1)} Mbps`;
+      } else {
+        elMetricBuffer.textContent = `${bufSec.toFixed(1)}s • Drops: ${dropPct.toFixed(1)}%`;
+      }
     }
 
     if (elBufferBarFill) {
-      const pct = Math.min(100, Math.max(0, Math.round((bufSec / targetSec) * 100)));
+      const healthyHorizonSec = 25;
+      const pct = Math.min(100, Math.max(0, Math.round((bufSec / healthyHorizonSec) * 100)));
       elBufferBarFill.style.width = `${pct}%`;
-      elBufferBarFill.classList.toggle('buffer-low', !isPaused && bufSec < 10);
+      elBufferBarFill.classList.toggle('buffer-low', !isPaused && bufSec < 4);
     }
   }
 
@@ -1234,6 +1235,9 @@
         if (chrome.runtime.lastError || !response || !response.ok) {
           return;
         }
+        if (response.networkSummary) {
+          lastNetworkSummary = response.networkSummary;
+        }
         if (
           typeof response.mediaCount === 'number' &&
           response.mediaCount !== lastMediaCount &&
@@ -1344,9 +1348,7 @@
     elToggleEnabled,
     elSelectQuality,
     elSelectBufferTarget,
-    elToggleDeepPrebuffer,
     elToggleParallelPrefetch,
-    elToggleHeadstartBoost,
     elToggleBlockAv1,
     elToggleBlockHdr,
     elToggleBlock60fps,
@@ -1375,6 +1377,9 @@
     chrome.storage.local.get(['mq4k_config'], function (result) {
       if (result && result.mq4k_config) {
         appliedConfig = Object.assign({}, DEFAULT_CONFIG, result.mq4k_config);
+        appliedConfig.stabilityProfile = normalizeStabilityProfile(
+          appliedConfig.stabilityProfile || appliedConfig.targetBufferSec
+        );
         currentConfig = Object.assign({}, appliedConfig);
       }
       renderConfigControls(appliedConfig);

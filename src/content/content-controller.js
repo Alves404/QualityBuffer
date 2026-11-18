@@ -24,6 +24,7 @@
   const DEFAULT_CONFIG = {
     enabled: true,
     targetQuality: 'hd2160',
+    stabilityProfile: 'balanced',
     targetBufferSec: 120,
     deepPreBuffer: true,
     parallelPrefetch: true,
@@ -500,27 +501,43 @@
               }
             }
 
+            let dropRatePercent = metrics && typeof metrics.dropRatePercent === 'number' ? metrics.dropRatePercent : 0;
+            if (typeof video.getVideoPlaybackQuality === 'function') {
+              const qStats = video.getVideoPlaybackQuality();
+              const tf = qStats.totalVideoFrames || 0;
+              const df = qStats.droppedVideoFrames || 0;
+              if (tf > 30) {
+                dropRatePercent = Number(((df / tf) * 100).toFixed(2));
+              }
+            }
+
             const guessedQuality = h >= 2160 ? 'hd2160' : h >= 1440 ? 'hd1440' : h >= 1080 ? 'hd1080' : h >= 720 ? 'hd720' : (metrics && metrics.currentQuality ? metrics.currentQuality : 'auto');
 
             metrics = {
               hasActiveVideo: true,
               isPaused: video.paused,
+              playbackErrorDetected: Boolean(video.error || (metrics && metrics.playbackErrorDetected)),
               resolution: res,
               currentQuality: guessedQuality,
               videoMimeType: (metrics && metrics.videoMimeType && metrics.videoMimeType !== 'unknown') ? metrics.videoMimeType : 'video/webm; codecs="vp09.00.41.08"',
               bufferAheadSec: Number(bufAhead.toFixed(1)),
-              targetBufferSec: (metrics && metrics.targetBufferSec) ? metrics.targetBufferSec : 120
+              dropRatePercent: dropRatePercent,
+              dropGuardActive: Boolean(metrics && metrics.dropGuardActive),
+              stabilityProfile: (metrics && metrics.stabilityProfile) ? metrics.stabilityProfile : 'balanced'
             };
             latestPlayerMetrics = metrics;
           } else if (!metrics) {
             metrics = {
               hasActiveVideo: false,
               isPaused: true,
+              playbackErrorDetected: false,
               resolution: 'N/A',
               currentQuality: 'Auto',
               videoMimeType: 'unknown',
               bufferAheadSec: 0,
-              targetBufferSec: 120
+              dropRatePercent: 0,
+              dropGuardActive: false,
+              stabilityProfile: 'balanced'
             };
           }
 

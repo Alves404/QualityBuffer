@@ -160,5 +160,30 @@ seg_1.ts
     console.log('✓ Test 8: classifyYouTubeItag metadata mapping passed.');
   }
 
+  // Test 9: YouTube ToS & Playback Safety verification on page-hook.js
+  {
+    const pageHookSrc = fs.readFileSync(
+      path.join(__dirname, '../src/content/page-hook.js'),
+      'utf8'
+    );
+    assert.ok(
+      !pageHookSrc.includes('Object.defineProperty(Object.prototype'),
+      'page-hook.js must not pollute Object.prototype'
+    );
+    assert.ok(
+      !pageHookSrc.includes('/api/stats/qoe') && !pageHookSrc.includes('/youtubei/v1/log_event'),
+      'page-hook.js must not block YouTube QoE or logging endpoints'
+    );
+    assert.ok(
+      !pageHookSrc.includes('extractYouTubeDownloadableStreams'),
+      'page-hook.js must not include YouTube stream scraping routines'
+    );
+    assert.ok(
+      !pageHookSrc.includes('window.MediaSource.isTypeSupported ='),
+      'page-hook.js must not override MediaSource.isTypeSupported with destructive false returns'
+    );
+    console.log('✓ Test 9: YouTube ToS & Playback Safety verification passed.');
+  }
+
   console.log('\nALL CORE UNIT TESTS PASSED SUCCESSFULLY!\n');
 })();

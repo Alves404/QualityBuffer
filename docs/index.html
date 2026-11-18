@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>QualityBuffer v2.2.2 - Official Documentation &amp; Release Download</title>
+  <title>QualityBuffer v2.3.0 - Official Documentation &amp; Release Download</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -352,16 +352,16 @@
   <main class="container">
     <div class="hero-shell">
       <section class="hero">
-        <span class="version-pill">RELEASE v2.2.2 | MANIFEST V3 | GNU GPLv3</span>
-        <h1>Unlock Multi-Minute <span>4K YouTube Pre-Buffering</span> &amp; V12 HLS/MP4 Downloading</h1>
+        <span class="version-pill">RELEASE v2.3.0 | MANIFEST V3 | GNU GPLv3</span>
+        <h1>Smooth <span>4K YouTube Playback Stability</span> &amp; V12 HLS/MP4 Downloading</h1>
         <p>
-          QualityBuffer removes YouTube's hardcoded 35 MB (16-second) 4K SABR buffer cap to pre-load 1, 2, or 3 upcoming minutes of 2160p video while enforcing hardware-accelerated VP9 SDR decoding and integrating a 12-worker HLS (M3U8 / AES-128) &amp; MP4 web video downloader.
+          QualityBuffer delivers stutter-free 2160p/1440p/1080p YouTube playback using non-destructive MediaCapabilities hardware VP9 SDR preference, ad-safe quality control, adaptive frame-drop protection, and an integrated 12-worker HLS (M3U8 / AES-128) &amp; MP4 external web video downloader.
         </p>
         <div class="cta-row">
           <a class="btn-primary" href="https://chromewebstore.google.com/detail/mdefdlcocdakdpkgfhpnhdcjihaajomg" target="_blank" rel="noopener noreferrer">
             Add to Chrome (Official Web Store)
           </a>
-          <a class="btn-outline" href="https://github.com/Alves404/QualityBuffer/releases/download/v2.2.2/QualityBuffer-v2.2.2.zip">
+          <a class="btn-outline" href="https://github.com/Alves404/QualityBuffer/releases/download/v2.3.0/QualityBuffer-v2.3.0.zip">
             Download ZIP
           </a>
           <a class="btn-outline" href="https://github.com/Alves404/QualityBuffer">
@@ -371,30 +371,30 @@
       </section>
     </div>
 
-    <h2 id="architecture" class="section-title">1. Core Engineering Architecture (v2.2.2)</h2>
+    <h2 id="architecture" class="section-title">1. Core Engineering Architecture (v2.3.0)</h2>
     <div class="grid-2">
       <div class="card">
-        <h3>512 MB SABR &amp; Policy Unlocker</h3>
+        <h3>Non-Destructive Hardware VP9 Preference</h3>
         <p>
-          YouTube's internal <code>base.js</code> player caps 4K video buffers at <code>36,700,160</code> bytes (35 MB = 16.3s) and enforces a 15-second server-driven <code>targetVideoReadaheadMs</code>. QualityBuffer intercepts <code>g.vWa</code> policy objects and the SABR request coordinator to expand the video budget to <strong>512 MB</strong> and continuously stream up to <strong>60s, 120s, or 180s</strong> ahead. <em>(Side-effect: Sub-4K streams like 1080p and 720p buffer their target minutes almost instantaneously).</em>
+          Wraps <code>navigator.mediaCapabilities.decodingInfo</code> to preserve native <code>supported: true</code> status while adjusting <code>smooth</code> and <code>powerEfficient</code> hints so YouTube naturally prefers GPU hardware <code>VP9 Profile 0 (8-bit SDR)</code> over CPU-heavy <code>AV1</code> without ever triggering Playback Errors on AV1-only videos or ads.
         </p>
       </div>
       <div class="card">
-        <h3>Hardware Codec Enforcement (VP9 SDR)</h3>
+        <h3>Ad-Safe Official Quality Control &amp; Stability Profiles</h3>
         <p>
-          Intercepts <code>MediaSource.isTypeSupported</code> and <code>navigator.mediaCapabilities.decodingInfo</code> to block software-heavy <code>AV1 (av01)</code> and 10-bit <code>VP9 HDR (vp09.02)</code>, certifying 8-bit <code>VP9 Profile 0</code> for smooth GPU hardware decoding.
+          Uses YouTube's official <code>#movie_player</code> API strictly on active watch pages after metadata loads, never interfering with advertisements or manual gear-menu quality changes, and steps down gracefully if frame drops exceed profile thresholds.
         </p>
       </div>
       <div class="card">
         <h3>Zero-Reload Live Apply &amp; Switch Indicator</h3>
         <p>
-          Features a switch-style Green/Red status indicator beside the <strong>Aplicar Agora</strong> button (Green = Applied, Red = Unapplied Changes) that hot-applies resolution, SABR horizon, and codec changes live without reloading the YouTube page.
+          Features a switch-style Green/Red status indicator beside the <strong>Aplicar Agora</strong> button (Green = Applied, Red = Unapplied Changes) that hot-applies resolution, stability profile, and codec changes live without reloading the YouTube page.
         </p>
       </div>
       <div class="card">
-        <h3>MSE Micro-Gap Stabilizer &amp; Zero-Overhead Multi-Language UI</h3>
+        <h3>Conservative MSE Stabilizer &amp; Multi-Language UI</h3>
         <p>
-          Automatically bridges millisecond timestamp gaps in <code>video.buffered</code> to prevent infinite spinner stalls, while providing a zero-overhead multi-language interface (<strong>English default</strong> + automatic browser detection for <code>EN</code>, <code>PT</code>, and <code>ES</code>).
+          Safely bridges timestamp micro-gaps in <code>video.buffered</code> after verified multi-second stalls, while providing a zero-overhead multi-language interface (<strong>English default</strong> + automatic browser detection for <code>EN</code>, <code>PT</code>, and <code>ES</code>).
         </p>
       </div>
     </div>
@@ -403,7 +403,7 @@
     <div class="card">
       <ol class="steps-list">
         <li><strong>Chrome Web Store (Recommended):</strong> Install directly with one click from the official <a href="https://chromewebstore.google.com/detail/mdefdlcocdakdpkgfhpnhdcjihaajomg" target="_blank" rel="noopener noreferrer"><strong>Chrome Web Store</strong></a>.</li>
-        <li><strong>Manual (Developer Mode):</strong> Download <a href="https://github.com/Alves404/QualityBuffer/releases/download/v2.2.2/QualityBuffer-v2.2.2.zip"><strong>QualityBuffer-v2.2.2.zip</strong></a> from GitHub Releases, extract to a permanent folder, open <code>chrome://extensions/</code>, enable <strong>Developer mode</strong>, and click <strong>Load unpacked</strong>.</li>
+        <li><strong>Manual (Developer Mode):</strong> Download <a href="https://github.com/Alves404/QualityBuffer/releases/download/v2.3.0/QualityBuffer-v2.3.0.zip"><strong>QualityBuffer-v2.3.0.zip</strong></a> from GitHub Releases, extract to a permanent folder, open <code>chrome://extensions/</code>, enable <strong>Developer mode</strong>, and click <strong>Load unpacked</strong>.</li>
         <li>Open any web video page, click the <strong>QualityBuffer</strong> extension icon, and switch between <strong>Controls</strong> and <strong>Downloader</strong>.</li>
       </ol>
     </div>
@@ -437,13 +437,13 @@ npm run build:cws</code></pre>
         <li><strong>Development Assistant:</strong> AI pair programming and code review assistant under human direction</li>
         <li><strong>Supported Languages (Zero-Overhead):</strong> English (<code>EN</code> - Default), Portugues (<code>PT</code>), Espanol (<code>ES</code>) with automatic browser detection</li>
         <li><strong>License:</strong> GNU General Public License v3.0 (<code>GPL-3.0</code> Copyleft Open Source)</li>
-        <li><strong>Version:</strong> <code>2.2.2</code> (Manifest V3 — 512 MB SABR Pre-Buffer, Hardware VP9 SDR &amp; V12 HLS/MP4 Downloader)</li>
+        <li><strong>Version:</strong> <code>2.3.0</code> (Manifest V3 — Safe Hardware VP9 Engine, Adaptive Stability Guard &amp; V12 HLS/MP4 Downloader)</li>
       </ul>
     </div>
   </main>
 
   <footer>
-    QualityBuffer v2.2.2 | Distributed under the GNU GPLv3 Open Source License
+    QualityBuffer v2.3.0 | Distributed under the GNU GPLv3 Open Source License
   </footer>
 </body>
 </html>

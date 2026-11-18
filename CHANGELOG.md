@@ -1,8 +1,22 @@
 # Changelog
 
-All notable changes to the **My Quality 4k** project are documented in this file.
+All notable changes to the **QualityBuffer** project are documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+---
+
+## [2.3.0] - 2026-11-17
+
+### Changed
+- **YouTube Playback Error Resolution & Terms of Service Compliance (`src/content/page-hook.js`):**
+  - Removed all `Object.prototype` property hooks (`videoTrack`, `maxReadAheadMediaTimeMs`), minified SABR coordinator prototype wrappers, playhead spoofing (`result.mp`), and rate-limit resets (`this.U = 0`) that triggered SABR desynchronization and YouTube "Playback Error" screens.
+  - Removed overrides on `window.fetch`, `XMLHttpRequest.prototype.open`, `navigator.sendBeacon` (restoring native `/api/stats/qoe` and `/youtubei/v1/log_event` endpoints), `JSON.parse`, and `Navigator.prototype.connection`.
+  - Replaced destructive `MediaSource.isTypeSupported = false` codec blocking with non-destructive `navigator.mediaCapabilities.decodingInfo()` hinting (`smooth`/`powerEfficient`), ensuring YouTube naturally prefers GPU hardware VP9 SDR and 30fps without failing on AV1-only videos, HDR streams, Shorts, or advertisements.
+  - Added Ad-Safe and Error-Safe guards around `#movie_player` quality control (`isSafeWatchPlayer`) and manual gear-menu override detection (`onPlaybackQualityChange`).
+  - Replaced fetch/XHR interception with a passive `PerformanceObserver` (`resource`) for CDN `preconnect` warm-up.
+  - Replaced forced SABR horizon selector in the Popup UI with **Playback Stability Profiles** (*Balanced*, *Strict Quality*, *GPU & Network Saver*) and live buffer/throughput/drop-rate telemetry.
+  - Updated `src/content/player-optimize.css` from `contain: strict` to `contain: layout paint` to prevent video layout collapse.
 
 ---
 

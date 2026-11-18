@@ -1,7 +1,7 @@
 # Engineering Technical Report & Open Source Compliance — QualityBuffer
 
 **Project:** QualityBuffer  
-**Version:** 2.2.2 (SABR 512 MB Policy Unlocker, Hardware Codec Engine & V12 HLS/MP4 Downloader)  
+**Version:** 2.3.0 (Safe Hardware VP9 Engine, Adaptive Stability Guard & V12 HLS/MP4 Downloader)  
 **Target Platform:** Google Chrome / Chromium (Manifest V3)  
 **License:** GNU General Public License v3.0 (GPL-3.0 / Copyleft Open Source)  
 **Repository:** `https://github.com/Alves404/QualityBuffer`
@@ -11,39 +11,32 @@
 ## 1. Executive Summary
 
 **QualityBuffer** is a 100% standalone Open Source browser extension. Its primary engineering goals are:
-1. Enabling entry-level and mid-range computers to play **4K (2160p)** YouTube videos smoothly without rebuffering stalls by unlocking YouTube's internal SABR buffer limits (`60s`, `120s`, or `180s` ahead), pre-warming CDN nodes at millisecond zero, stabilizing `MediaSource Extensions (MSE)` buffers, and enforcing hardware-accelerated `VP9 SDR` decoding.
-2. Providing an integrated **V12 (`Async Warm-up & Max Agility`) 12-Worker HLS (`M3U8` / `AES-128`) & Direct `MP4`/`WebM` Web Video Downloader** for standard web pages and learning platforms.
+1. Enabling entry-level and mid-range computers to play **4K (2160p)** and HD YouTube videos smoothly without Playback Errors or CPU decoding spikes by using non-destructive `MediaCapabilities` hardware `VP9 SDR` preference, ad-safe official player quality control, passive `PerformanceObserver` CDN preconnect warm-up, and adaptive frame-drop/rebuffer protection.
+2. Providing an integrated **V12 (`Async Warm-up & Max Agility`) 12-Worker HLS (`M3U8` / `AES-128`) & Direct `MP4`/`WebM` Web Video Downloader** for external web pages and learning platforms.
 
 ---
 
-## 2. Engineering Root-Cause Analysis: Why 4K Stalls on Modest PCs & Stops Buffering at 16 Seconds
+## 2. Engineering Architecture: Safe 4K Playback Optimization Without Protocol Tampering
 
-On computers equipped with 4-core CPUs, 8 GB of RAM, and entry-level 4 GB VRAM GPUs, standard 4K playback suffers from four critical bottlenecks:
+On computers equipped with 4-core CPUs, 8 GB of RAM, and entry-level 4 GB VRAM GPUs, standard 4K playback suffers from three critical bottlenecks that QualityBuffer v2.3.0 resolves using strictly standard, Terms-of-Service-compliant APIs:
 
-### 2.1. YouTube's Hardcoded 35 MB (16.3-Second) 4K Buffer Cap & Server-Driven ABR (SABR)
-In modern YouTube (`base.js`), adaptive streams are delivered via `serverAbrStreamingUrl` (`useServerDrivenAbr: true`). Two mechanisms cap 4K pre-buffering at ~16 seconds:
-1. **Client-Side Byte Cap (`fPa` / `kO`):** When `b.video.qualityOrdinal > 1080`, `fPa` sets `a.policy.ya = 36700160` bytes (**35 MB** = **16.3 seconds**).
-2. **Server-Side NextRequestPolicy (`Owa` / `JRa` / `RO`):** Google's `googlevideo.com` server returns UMP part #35 (`Owa`) with `targetVideoReadaheadMs: 15000` (15 seconds) and stops transmitting video slices once `(bufferedEndMs - mp) >= 16000 ms`.
+### 2.1. Non-Destructive Hardware Codec Preference (`MediaCapabilities.decodingInfo`)
+Instead of returning `false` in `MediaSource.isTypeSupported()` (which causes Playback Errors when a video, Short, or advertisement only offers AV1), `src/content/page-hook.js` awaits the browser's native `navigator.mediaCapabilities.decodingInfo()` result and adjusts only the `smooth` and `powerEfficient` hints (`{ supported: true, smooth: false, powerEfficient: false }`) for software-heavy `av01`, 10-bit HDR (`vp09.02`), and optional `>30fps` streams. YouTube's adaptive selector naturally prefers hardware-accelerated **VP9 Profile 0 (8-bit SDR)** whenever available while keeping AV1-only videos 100% playable.
 
-**Implemented Solution (`src/content/page-hook.js`):**
-- Hooks `Object.prototype.videoTrack` to capture YouTube's internal `policy` (`g.vWa`), `loader` (`AWa`), and SABR coordinator (`qkb`).
-- Locks `policy.ya` to **512 MB** (`536,870,912` bytes), `policy.Ta` to **64 MB** (`67,108,864` bytes), and `policy.sb` / `policy.ha` to the user's configured `targetBufferSec` (`60s`, `120s`, or `180s`).
-- Wraps the SABR coordinator prototype methods (`Mq` and `RO`) so `targetVideoReadaheadMs` and `targetAudioReadaheadMs` are boosted to `targetBufferSec * 1000`, `UF`/`TF` byte budgets report 512 MB / 64 MB, and the outgoing media position (`mp`) advances inside the active buffered range (`bc`) until the full multi-minute buffer target is reached.
+### 2.2. Ad-Safe Official `#movie_player` Quality Control & Adaptive Stability Guard
+Applies the user's preferred resolution (`hd2160`, `hd1440`, `hd1080`) once per video via YouTube's official `#movie_player` API strictly after metadata loads (`video.readyState >= 1`) and never during active advertisements (`ad-showing` / `getAdState() === 1`) or error states. Listens to `onPlaybackQualityChange` to respect manual user gear-menu changes, and monitors real-time dropped frames (`getVideoPlaybackQuality()`) and `waiting` stalls to step down one resolution tier automatically when hardware or network limits are exceeded.
 
-### 2.2. Hardware Codec Incompatibility with AV1 (`av01`) and 10-bit HDR (`vp09.02`)
-Intercepts `MediaSource.isTypeSupported()`, `HTMLMediaElement.prototype.canPlayType()`, and `navigator.mediaCapabilities.decodingInfo()` in the `MAIN` world at `document_start`. Rejects `av01`, `vp09.02` (10-bit HDR), and optionally `framerate > 30` (30fps Limiter), while certifying **VP9 Profile 0 (8-bit SDR)** as `{ supported: true, smooth: true, powerEfficient: true }`.
-
-### 2.3. MSE SourceBuffer Micro-Gaps & Compositor Overhead
-Inspects `video.buffered` ranges to automatically step over sub-second timestamp gaps (`nextGapStart + 0.02s`), disables GPU-heavy Ambient Mode (`#cinematic-container`), and short-circuits main-thread diagnostic beacons (`/youtubei/v1/log_event`, `/api/stats/qoe`) while preserving `/api/stats/watchtime`, `/ptracking`, and `/api/stats/atr`.
+### 2.3. Conservative MSE Micro-Gap Recovery & Compositor Offload
+Inspects `video.buffered` ranges to gently step over sub-second timestamp gaps (`nextGapStart + 0.04s`) only after a verified freeze (`>= 2.6s` stationary outside ads/seeking), disables GPU-heavy Ambient Mode (`#cinematic-container`) via CSS (`contain: layout paint`), and pre-warms `googlevideo.com` CDN origins passively via `PerformanceObserver` (`resource`) with zero overrides on `fetch`, `XMLHttpRequest`, or `sendBeacon`.
 
 ---
 
 ## 3. V12 Async Warm-up & 12-Worker HLS/MP4 Downloader Engine
 
-In version `2.2.1`, the **V12 (`Async Warm-up & Max Agility`)** architecture was integrated across both playback optimization and media downloading:
+In version `2.3.0`, the **V12 (`Async Warm-up & Max Agility`)** architecture powers non-blocking external web video downloading and passive CDN warm-up:
 
-1. **Dual `fetch` + `XMLHttpRequest.prototype.open` Hook & Millisecond-Zero CDN Warm-up (`src/content/page-hook.js`):**
-   Pre-warms high-resolution CDN origins (`dns-prefetch` + `preconnect`) immediately when `streamingData.adaptiveFormats` is parsed or when `fetch`/`XMLHttpRequest` requests media segments, eliminating 150–400ms of initial handshake latency.
+1. **Passive `PerformanceObserver` CDN Warm-up (`src/content/page-hook.js`):**
+   Observes `resource` timing entries passively to pre-warm active `googlevideo.com` CDN origins (`dns-prefetch` + `preconnect`) with zero overrides on `window.fetch` or `XMLHttpRequest`.
 2. **Non-Blocking WebCrypto AES-128 Key Pre-Warming (`src/core/hls-downloader.js`):**
    When downloading an encrypted HLS (`.m3u8`) stream, all unique `#EXT-X-KEY` URLs are fetched and compiled into WebCrypto (`crypto.subtle.importKey`) asynchronously in background Promises (`preloadKeys`) without blocking the 12 segment download workers.
 3. **Highest-Bandwidth Variant Resolution & Token Preservation (`src/core/utils.js`):**
@@ -76,4 +69,4 @@ The software architecture, system engineering, buffer allocation heuristics, dow
 * **Development Assistant:** AI pair programming and code review assistant under human direction
 * **Supported Languages (Zero-Overhead):** English (`EN` - Default), Portugues (`PT`), Espanol (`ES`)
 * **License:** GNU General Public License v3.0 (`GPL-3.0` Copyleft Open Source)
-* **Version:** `2.2.2` (Manifest V3 — 512 MB SABR Deep Pre-Buffer, Hardware VP9 SDR & V12 HLS/MP4 Downloader)
+* **Version:** `2.3.0` (Manifest V3 — Safe Hardware VP9 Engine, Adaptive Stability Guard & V12 HLS/MP4 Downloader)

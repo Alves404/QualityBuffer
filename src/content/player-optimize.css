@@ -26,10 +26,10 @@ html[data-mq4k-ambient-off="true"] .ytp-ce-element {
   -webkit-backdrop-filter: none !important;
 }
 
-/* Promote 4K video element to dedicated GPU overlay plane */
+/* Promote 4K video element to dedicated GPU overlay plane without size containment side-effects */
 .html5-video-player video.html5-main-video {
   will-change: transform;
   transform: translateZ(0);
   backface-visibility: hidden;
-  contain: strict;
+  contain: layout paint;
 }

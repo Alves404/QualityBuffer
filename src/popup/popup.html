@@ -49,8 +49,8 @@
           <span class="metric-sub" id="metric-codec">Codec: N/A</span>
         </div>
         <div class="metric-card">
-          <span class="metric-label" data-i18n="metricBufLabel">Real Buffer / Target</span>
-          <strong class="metric-value" id="metric-buffer">0.0 s / 120s</strong>
+          <span class="metric-label" data-i18n="metricBufLabel">Buffer &amp; Stability</span>
+          <strong class="metric-value" id="metric-buffer">0.0 s (Idle)</strong>
           <div class="buffer-bar-track">
             <div class="buffer-bar-fill" id="buffer-bar-fill"></div>
           </div>
@@ -70,16 +70,16 @@
           <option value="hd2160" data-i18n="optQ2160">2160p (4K Ultra HD) - Recommended</option>
           <option value="hd1440" data-i18n="optQ1440">1440p (2K Quad HD)</option>
           <option value="hd1080" data-i18n="optQ1080">1080p (Full HD)</option>
-          <option value="auto" data-i18n="optQAuto">Auto (Optimize Buffer/Codec Only)</option>
+          <option value="auto" data-i18n="optQAuto">Auto (Optimize Codec/Stability Only)</option>
         </select>
 
         <div class="control-header">
-          <label for="select-buffer-target" data-i18n="labelBufferHorizon">Pre-Buffer Horizon (Upcoming Minutes)</label>
+          <label for="select-buffer-target" data-i18n="labelBufferHorizon">Playback Stability Profile</label>
         </div>
         <select id="select-buffer-target" class="select-input">
-          <option value="60" data-i18n="optBuf60">60 seconds (1 Minute ahead - Light)</option>
-          <option value="120" selected data-i18n="optBuf120">120 seconds (2 Minutes ahead - Recommended)</option>
-          <option value="180" data-i18n="optBuf180">180 seconds (3 Minutes ahead - Maximum)</option>
+          <option value="balanced" selected data-i18n="optBuf120">Balanced (Hardware VP9 &amp; Auto Guard - Recommended)</option>
+          <option value="strict_quality" data-i18n="optBuf180">Strict Quality (Hold Target Resolution)</option>
+          <option value="gpu_saver" data-i18n="optBuf60">GPU &amp; Network Saver (30fps + Fast Step-Down)</option>
         </select>
       </div>
 
@@ -106,7 +106,7 @@
 
         <div id="downloader-yt-notice" class="empty-state" style="display: none;">
           <h2 class="empty-title" data-i18n="dlYtNoticeTitle">YouTube Downloads Disabled</h2>
-          <p class="empty-desc" data-i18n="dlYtNoticeDesc">In compliance with Chrome Web Store policies, downloading videos from YouTube is disabled. 4K SABR buffer &amp; hardware GPU acceleration remain fully active!</p>
+          <p class="empty-desc" data-i18n="dlYtNoticeDesc">In compliance with Chrome Web Store policies and YouTube terms, downloading videos from YouTube is disabled. 4K hardware VP9 &amp; anti-stutter optimizations remain 100% active!</p>
         </div>
 
         <div id="downloader-media-list" class="media-list" style="display: none;"></div>
@@ -122,7 +122,7 @@
         >
           <div class="dropdown-header-left">
             <span class="dropdown-title" data-i18n="dropdownTitle">Features</span>
-            <span class="dropdown-badge" id="dropdown-active-count">7/9 active</span>
+            <span class="dropdown-badge" id="dropdown-active-count">6/7 active</span>
           </div>
           <svg class="dropdown-chevron" viewBox="0 0 24 24" width="16" height="16" fill="none" xmlns="http://www.w3.org/2000/svg">
             <polyline points="6 9 12 15 18 9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
@@ -133,19 +133,8 @@
           <div class="settings-list">
             <div class="setting-item">
               <div class="setting-text">
-                <span class="setting-title" data-i18n="featDeepTitle">Deep Pre-Buffer (Load Upcoming Minutes)</span>
-                <span class="setting-desc" data-i18n="featDeepDesc">Unlocks YouTube 15s limit to continuously download the next minutes at full connection speed.</span>
-              </div>
-              <label class="toggle-control">
-                <input type="checkbox" id="toggle-deep-prebuffer" checked>
-                <span class="toggle-track"></span>
-              </label>
-            </div>
-
-            <div class="setting-item">
-              <div class="setting-text">
-                <span class="setting-title" data-i18n="featPrefetchTitle">Parallel RAM Pre-Fetch (64MB sidx Cache)</span>
-                <span class="setting-desc" data-i18n="featPrefetchDesc">Pre-fetches upcoming segment byte-ranges in RAM before the player requests them.</span>
+                <span class="setting-title" data-i18n="featPrefetchTitle">Passive CDN Connection Warm-up</span>
+                <span class="setting-desc" data-i18n="featPrefetchDesc">Pre-warms googlevideo.com media nodes via PerformanceObserver (dns-prefetch &amp; preconnect).</span>
               </div>
               <label class="toggle-control">
                 <input type="checkbox" id="toggle-parallel-prefetch" checked>
@@ -155,19 +144,8 @@
 
             <div class="setting-item">
               <div class="setting-text">
-                <span class="setting-title" data-i18n="featHeadstartTitle">Initial Headstart Cushion (Track Before Train)</span>
-                <span class="setting-desc" data-i18n="featHeadstartDesc">Builds a solid initial 4K buffer cushion at second zero before releasing playback.</span>
-              </div>
-              <label class="toggle-control">
-                <input type="checkbox" id="toggle-headstart-boost">
-                <span class="toggle-track"></span>
-              </label>
-            </div>
-
-            <div class="setting-item">
-              <div class="setting-text">
-                <span class="setting-title" data-i18n="featAv1Title">Block AV1 Codec (Force Hardware VP9)</span>
-                <span class="setting-desc" data-i18n="featAv1Desc">Prevents CPU software AV1 decoding on graphics cards without native hardware support.</span>
+                <span class="setting-title" data-i18n="featAv1Title">Prefer Hardware VP9 over AV1</span>
+                <span class="setting-desc" data-i18n="featAv1Desc">Guides MediaCapabilities toward GPU VP9 decoding without breaking AV1-only videos.</span>
               </div>
               <label class="toggle-control">
                 <input type="checkbox" id="toggle-block-av1" checked>
@@ -177,8 +155,8 @@
 
             <div class="setting-item">
               <div class="setting-text">
-                <span class="setting-title" data-i18n="featHdrTitle">Block VP9 10-bit HDR (Force 4K SDR)</span>
-                <span class="setting-desc" data-i18n="featHdrDesc">Prevents shader tonemapping overload on 4 GB VRAM GPUs while keeping smooth 2160p.</span>
+                <span class="setting-title" data-i18n="featHdrTitle">Prefer 8-bit SDR over 10-bit HDR</span>
+                <span class="setting-desc" data-i18n="featHdrDesc">Avoids heavy HDR shader tonemapping on 4 GB VRAM GPUs while keeping smooth 2160p.</span>
               </div>
               <label class="toggle-control">
                 <input type="checkbox" id="toggle-block-hdr" checked>
@@ -188,8 +166,8 @@
 
             <div class="setting-item">
               <div class="setting-text">
-                <span class="setting-title" data-i18n="featFpsTitle">Limit Streams to 30fps (Block 60fps)</span>
-                <span class="setting-desc" data-i18n="featFpsDesc">Halves decoded frames per second on high-FPS videos to relieve entry-level GPUs.</span>
+                <span class="setting-title" data-i18n="featFpsTitle">Prefer 30fps Streams (GPU Relief)</span>
+                <span class="setting-desc" data-i18n="featFpsDesc">Deprioritizes 60fps streams in MediaCapabilities to halve GPU decode load on modest PCs.</span>
               </div>
               <label class="toggle-control">
                 <input type="checkbox" id="toggle-block-60fps">
@@ -199,8 +177,8 @@
 
             <div class="setting-item">
               <div class="setting-text">
-                <span class="setting-title" data-i18n="featMseTitle">MSE Buffer &amp; Micro-Gap Stabilizer</span>
-                <span class="setting-desc" data-i18n="featMseDesc">Bridges millisecond timestamp gaps between SourceBuffer segments to prevent stalls.</span>
+                <span class="setting-title" data-i18n="featMseTitle">Conservative MSE Micro-Gap Recovery</span>
+                <span class="setting-desc" data-i18n="featMseDesc">Steps across buffered segment timestamp gaps only after genuine multi-second stalls.</span>
               </div>
               <label class="toggle-control">
                 <input type="checkbox" id="toggle-stabilize-buffer" checked>
@@ -221,8 +199,8 @@
 
             <div class="setting-item">
               <div class="setting-text">
-                <span class="setting-title" data-i18n="featDropTitle">Severe Frame Drop Protection</span>
-                <span class="setting-desc" data-i18n="featDropDesc">Automatically steps down from 4K to 2K if frame drop rate exceeds 18%.</span>
+                <span class="setting-title" data-i18n="featDropTitle">Adaptive Drop &amp; Rebuffer Guard</span>
+                <span class="setting-desc" data-i18n="featDropDesc">Steps down one resolution tier automatically if severe frame drops or repeated stalls occur.</span>
               </div>
               <label class="toggle-control">
                 <input type="checkbox" id="toggle-drop-guard" checked>
@@ -237,9 +215,9 @@
     <!-- TAB 2: ABOUT & CREDITS -->
     <section id="tab-about" class="tab-panel">
       <div class="about-card">
-        <h2 data-i18n="aboutArchTitle">Human Architecture &amp; System Design v2.2.2</h2>
+        <h2 data-i18n="aboutArchTitle">Human Architecture &amp; System Design v2.3.0</h2>
         <p data-i18n="aboutArchBody">
-          Conceived, engineered, and architected by Joao Vitor Magalhaes Alves (Google Student Ambassador 2026). QualityBuffer unlocks YouTube SABR 35 MB (16s) internal buffer cap to 512 MB for 1, 2, or 3 full minutes of 4K (2160p) pre-buffering, enforces hardware VP9 SDR decoding, and integrates the V12 12-worker HLS (M3U8 / AES-128) &amp; MP4 web video downloader.
+          Conceived, engineered, and architected by Joao Vitor Magalhaes Alves (Google Student Ambassador 2026). QualityBuffer optimizes 4K/HD YouTube playback using non-destructive MediaCapabilities hardware VP9 preference, ad-safe official player quality control, adaptive frame-drop protection, and the V12 12-worker HLS (M3U8 / AES-128) &amp; MP4 web video downloader.
         </p>
       </div>
 
@@ -264,7 +242,7 @@
           <li data-i18n="creditAi">AI-Assisted Development: Gemini 4 Argon (Google Antigravity) — Coding assistant for implementation, optimizations, and documentation under human direction.</li>
           <li data-i18n="creditI18n">Supported Languages (Zero-Overhead): English (EN - Default), Portugues (PT), and Espanol (ES) with automatic browser detection.</li>
           <li data-i18n="creditLicense">Open Source License: GNU General Public License v3.0 (GPL-3.0 Copyleft) — 100% free, open, and auditable source code.</li>
-          <li data-i18n="creditVersion">Version: 2.2.2 (Manifest V3 — 512 MB SABR Pre-Buffer, Hardware VP9 SDR &amp; V12 HLS/MP4 Downloader).</li>
+          <li data-i18n="creditVersion">Version: 2.3.0 (Manifest V3 — Safe Hardware VP9 Engine, Adaptive Stability Guard &amp; V12 HLS/MP4 Downloader).</li>
         </ul>
       </div>
     </section>
