@@ -1,7 +1,7 @@
 # Engineering Technical Report & Open Source Compliance — QualityBuffer
 
 **Project:** QualityBuffer  
-**Version:** 2.3.0 (Safe Hardware VP9 Engine, Adaptive Stability Guard & V12 HLS/MP4 Downloader)  
+**Version:** 2.3.1 (Safe Hardware VP9 Engine, Adaptive Stability Guard & V12 HLS/MP4 Downloader)  
 **Target Platform:** Google Chrome / Chromium (Manifest V3)  
 **License:** GNU General Public License v3.0 (GPL-3.0 / Copyleft Open Source)  
 **Repository:** `https://github.com/Alves404/QualityBuffer`
@@ -33,7 +33,7 @@ Inspects `video.buffered` ranges to gently step over sub-second timestamp gaps (
 
 ## 3. V12 Async Warm-up & 12-Worker HLS/MP4 Downloader Engine
 
-In version `2.3.0`, the **V12 (`Async Warm-up & Max Agility`)** architecture powers non-blocking external web video downloading and passive CDN warm-up:
+In version `2.3.1`, the **V12 (`Async Warm-up & Max Agility`)** architecture powers non-blocking external web video downloading and passive CDN warm-up:
 
 1. **Passive `PerformanceObserver` CDN Warm-up (`src/content/page-hook.js`):**
    Observes `resource` timing entries passively to pre-warm active `googlevideo.com` CDN origins (`dns-prefetch` + `preconnect`) with zero overrides on `window.fetch` or `XMLHttpRequest`.
@@ -69,4 +69,4 @@ The software architecture, system engineering, buffer allocation heuristics, dow
 * **Development Assistant:** AI pair programming and code review assistant under human direction
 * **Supported Languages (Zero-Overhead):** English (`EN` - Default), Portugues (`PT`), Espanol (`ES`)
 * **License:** GNU General Public License v3.0 (`GPL-3.0` Copyleft Open Source)
-* **Version:** `2.3.0` (Manifest V3 — Safe Hardware VP9 Engine, Adaptive Stability Guard & V12 HLS/MP4 Downloader)
+* **Version:** `2.3.1` (Manifest V3 — Safe Hardware VP9 Engine, Adaptive Stability Guard & V12 HLS/MP4 Downloader)

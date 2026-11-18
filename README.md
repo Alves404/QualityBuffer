@@ -1,7 +1,7 @@
 # QualityBuffer
 
 [![Chrome Web Store](https://img.shields.io/badge/Chrome_Web_Store-Available-4285F4?logo=googlechrome&logoColor=white)](https://chromewebstore.google.com/detail/mdefdlcocdakdpkgfhpnhdcjihaajomg)
-[![Latest Release](https://img.shields.io/badge/Release-v2.3.0-89CFF0.svg)](https://github.com/Alves404/QualityBuffer/releases/latest)
+[![Latest Release](https://img.shields.io/badge/Release-v2.3.1-89CFF0.svg)](https://github.com/Alves404/QualityBuffer/releases/latest)
 [![Manifest V3](https://img.shields.io/badge/Chrome_Extension-Manifest_V3-89CFF0.svg)](manifest.json)
 [![Design System](https://img.shields.io/badge/Design_System-Chrome_Native_UI_(M3)-4285F4.svg)](src/popup/popup.css)
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-5bb5e6.svg)](LICENSE)
@@ -20,7 +20,7 @@
 >
 > Operating **100% within YouTube's Terms of Service and Chrome Web Store policies**, it combines non-destructive GPU hardware codec hints (**VP9 SDR** via `MediaCapabilities`), *Ad-Safe* official quality control, adaptive frame-drop/rebuffer protection, and a built-in **1-click V12 Downloader (MP4 & MP3)** for external websites. Zero ads, zero tracking, and 100% local execution.
 
-Conceived, architected, and engineered in a human manner by **João Vitor Alves (@Alves404)**, **QualityBuffer v2.3.0** pairs a rock-solid, protocol-safe YouTube playback stability engine with a **12-worker HLS (`M3U8` / `AES-128`) & Direct `MP4`/`WebM` external video downloader**, presented in a native **Google Chrome WebUI / Material Design 3** interface.
+Conceived, architected, and engineered in a human manner by **João Vitor Alves (@Alves404)**, **QualityBuffer v2.3.1** pairs a rock-solid, protocol-safe YouTube playback stability engine with a **12-worker HLS (`M3U8` / `AES-128`) & Direct `MP4`/`WebM` external video downloader**, presented in a native **Google Chrome WebUI / Material Design 3** interface.
 
 <p align="center">
   <img src="assets/images/demo.gif" alt="QualityBuffer Demonstration" width="100%">
@@ -35,7 +35,7 @@ Conceived, architected, and engineered in a human manner by **João Vitor Alves 
 1. **Chrome Web Store (Recommended — 1-Click Install):**
    Install directly from the official store listing: [chromewebstore.google.com/detail/mdefdlcocdakdpkgfhpnhdcjihaajomg](https://chromewebstore.google.com/detail/mdefdlcocdakdpkgfhpnhdcjihaajomg)
 2. **Manual Installation (Developer Mode / Unpacked):**
-   * Download [**`QualityBuffer-v2.3.0.zip`**](https://github.com/Alves404/QualityBuffer/releases/download/v2.3.0/QualityBuffer-v2.3.0.zip) from [GitHub Releases](https://github.com/Alves404/QualityBuffer/releases) and extract it to a permanent folder.
+   * Download [**`QualityBuffer-v2.3.1.zip`**](https://github.com/Alves404/QualityBuffer/releases/download/v2.3.1/QualityBuffer-v2.3.1.zip) from [GitHub Releases](https://github.com/Alves404/QualityBuffer/releases) and extract it to a permanent folder.
    * Open `chrome://extensions/` in Google Chrome, Brave, or Edge.
    * Enable **Developer mode** (top-right) and click **Load unpacked** (top-left), selecting the extracted folder containing [`manifest.json`](manifest.json).
 
@@ -47,7 +47,7 @@ Conceived, architected, and engineered in a human manner by **João Vitor Alves 
 
 ## Table of Contents
 
-1. [Engineering Architecture (v2.3.0 — Safe & ToS-Compliant)](#1-engineering-architecture-v230--safe--tos-compliant)
+1. [Engineering Architecture (v2.3.1 — Safe & ToS-Compliant)](#1-engineering-architecture-v231--safe--tos-compliant)
 2. [Playback Stability Profiles](#2-playback-stability-profiles)
 3. [Key Features](#3-key-features)
 4. [Chrome Native UI Design System (Material Design 3)](#4-chrome-native-ui-design-system-material-design-3)
@@ -58,16 +58,16 @@ Conceived, architected, and engineered in a human manner by **João Vitor Alves 
 
 ---
 
-## 1. Engineering Architecture (v2.3.0 — Safe & ToS-Compliant)
+## 1. Engineering Architecture (v2.3.1 — Safe & ToS-Compliant)
 
-Entry-level and mid-range computers (e.g., quad-core CPUs and 4 GB VRAM GPUs) frequently suffer from frame drops or stalls during 4K streaming—not due to slow internet, but due to software codec overhead, heavy background shaders, and rigid quality locks. **QualityBuffer v2.3.0** solves these bottlenecks using strictly standard, non-destructive APIs with **zero `Object.prototype` pollution, zero SABR protocol spoofing, and zero telemetry blocking**:
+Entry-level and mid-range computers (e.g., quad-core CPUs and 4 GB VRAM GPUs) frequently suffer from frame drops or stalls during 4K streaming—not due to slow internet, but due to software codec overhead, heavy background shaders, and rigid quality locks. **QualityBuffer v2.3.1** solves these bottlenecks using strictly standard, non-destructive APIs with **zero `Object.prototype` pollution, zero SABR protocol spoofing, and zero telemetry blocking**:
 
 1. **Non-Destructive `MediaCapabilities` Hardware Codec Hinting:**
    YouTube defaults to AV1 (`av01`) on high-resolution streams, forcing GPUs without hardware AV1 decoders into 90–100% CPU software decoding (`dav1d`). Instead of returning `supported: false` in `MediaSource.isTypeSupported` (which triggers *"Playback Error"* on AV1-only videos, Shorts, or ads), [`page-hook.js`](src/content/page-hook.js) awaits the browser's native `navigator.mediaCapabilities.decodingInfo()` result and adjusts only `{ smooth: false, powerEfficient: false }` on `av01`, 10-bit HDR (`vp09.02`), and optional `>30fps` configs. YouTube naturally selects GPU hardware **VP9 Profile 0 (8-bit SDR)** whenever available while keeping AV1-only streams 100% playable.
 2. **Ad-Safe & Error-Safe Official `#movie_player` Quality Control:**
    Applies the preferred resolution (`2160p`, `1440p`, `1080p`) once per video via YouTube's public `#movie_player` API strictly on watch pages after metadata loads (`video.readyState >= 1`). Automatically pauses intervention during advertisements (`ad-showing`, `getAdState() === 1`), error overlays (`.ytp-error`), Shorts, and hover previews, and listens to `onPlaybackQualityChange` so manual quality selections in YouTube's gear menu are always respected.
 3. **Passive `PerformanceObserver` CDN Warm-up & Live Telemetry:**
-   Uses a passive `PerformanceObserver` (`resource`) to pre-warm active `googlevideo.com` media origins (`dns-prefetch` + `preconnect`, capped at 6 origins) without overriding `window.fetch`, `XMLHttpRequest`, or `navigator.sendBeacon`. Real-time buffer health (`video.buffered`), frame drop rate (`getVideoPlaybackQuality()`), and passive CDN throughput (`Mbps`) are displayed live in the popup.
+   Uses a passive `PerformanceObserver` (`resource`) to pre-warm active `googlevideo.com` media origins (`dns-prefetch` + `preconnect`, capped at 6 origins) without overriding `window.fetch`, `XMLHttpRequest`, or `navigator.sendBeacon`. Real-time buffer health (`video.buffered`) and frame drop rate (`getVideoPlaybackQuality()`) are displayed live in the popup.
 4. **Conservative MSE Micro-Gap Recovery & GPU Compositor Offload:**
    Steps across sub-second timestamp gaps in `video.buffered` only after a verified freeze (`>= 2.6s` stationary outside ads and seeking), and disables GPU-heavy Ambient Mode canvas blur shaders via [`player-optimize.css`](src/content/player-optimize.css) (`contain: layout paint`).
 
@@ -90,7 +90,7 @@ Users can tailor how aggressively the **Adaptive Drop & Rebuffer Guard** protect
 * **Zero Playback Error Guarantee:** Leaves `MediaSource.isTypeSupported`, `canPlayType`, `fetch`, `XHR`, `JSON.parse`, and YouTube QoE/analytics endpoints completely untouched.
 * **Hardware VP9 SDR & 30fps Preference:** Guides `MediaCapabilities` toward smooth hardware decoding on modest GPUs.
 * **Adaptive Resolution Step-Down:** Smoothly steps down one tier (`4K → 2K → 1080p → 720p`) if hardware decoding or network bandwidth falls behind.
-* **Least-Privilege Manifest V3 Security:** Scoped strictly to `*://*.youtube.com/*` and `*://*.googlevideo.com/*`—zero `<all_urls>` broad host permissions. External pages are inspected strictly on-demand via `activeTab` upon user click.
+* **Least-Privilege Manifest V3 Security:** Scoped strictly to `https://*.youtube.com/*`—zero `<all_urls>` broad host permissions and zero `webRequest` interception hooks. External pages are inspected strictly on-demand via `activeTab` upon user click.
 * **Zero-Reload Live Apply:** Hot-applies configuration updates immediately to the active player with visual Applied/Pending pill feedback.
 * **Zero-Overhead Internationalization (`O(1)`):** Instant localization in **English (`EN`)**, **Portuguese (`PT`)**, and **Spanish (`ES`)** with automatic browser locale detection.
 
@@ -127,7 +127,7 @@ npm run verify
 # Run automated unit tests (DownloaderUtils, V12 M3U8/AES-128 parser & YouTube ToS safety checks)
 npm test
 
-# Validate Manifest V3 CWS compliance and build chrome-web-store/QualityBuffer-v2.3.0.zip
+# Validate Manifest V3 CWS compliance and build chrome-web-store/QualityBuffer-v2.3.1.zip
 npm run build:cws
 ```
 
@@ -137,7 +137,7 @@ npm run build:cws
 
 ```text
 QualityBuffer/
-├── manifest.json                 # Chrome Manifest V3 configuration (v2.3.0)
+├── manifest.json                 # Chrome Manifest V3 configuration (v2.3.1)
 ├── package.json                  # Verification, unit test & CWS packaging scripts
 ├── PRIVACY_POLICY.md             # 100% client-side privacy & permission disclosures
 ├── CHANGELOG.md                  # Version history and technical release notes
@@ -150,7 +150,7 @@ QualityBuffer/
 │   └── images/                   # Workflow demonstration GIF & documentation media
 ├── src/
 │   ├── background/
-│   │   └── service-worker.js     # Per-tab state store & passive googlevideo throughput monitor
+│   │   └── service-worker.js     # Per-tab state store & configuration sync
 │   ├── core/
 │   │   ├── utils.js              # Signed URL resolver, AES-128 IV parser & sanitizers
 │   │   └── hls-downloader.js     # V12 12-worker HLS/AES-128 downloader & Blob assembler
@@ -187,6 +187,6 @@ Artificial Intelligence tools functioned exclusively as development and code rev
 * **Development Assistance:** AI coding and code review assistant under human direction
 * **Supported Languages:** English (`EN` - Default), Portuguese (`PT`), and Spanish (`ES`)
 * **License:** GNU General Public License v3.0 (`GPL-3.0` Copyleft Open Source)
-* **Version:** `2.3.0` (Manifest V3 — Safe Hardware VP9 Engine, Adaptive Stability Guard & V12 HLS/MP4 Downloader)
+* **Version:** `2.3.1` (Manifest V3 — Safe Hardware VP9 Engine, Adaptive Stability Guard & V12 HLS/MP4 Downloader)
 
 <sub>*Google Chrome, YouTube, and related marks are trademarks of Google LLC. This independent open-source project is not affiliated with or endorsed by Google LLC.*</sub>
