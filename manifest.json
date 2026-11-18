@@ -2,7 +2,8 @@
   "manifest_version": 3,
   "name": "QualityBuffer",
   "short_name": "QualityBuffer",
-  "version": "2.3.0",
+  "version": "2.3.1",
+  "minimum_chrome_version": "111",
   "description": "Smooth 4K/HD YouTube playback with smart GPU VP9 preference, anti-stutter guard, and HLS/MP4 web video downloading.",
   "author": "Joao Vitor Magalhaes Alves (https://github.com/Alves404)",
   "homepage_url": "https://github.com/Alves404/QualityBuffer",
@@ -26,20 +27,21 @@
     "storage",
     "activeTab",
     "scripting",
-    "webRequest",
     "downloads"
   ],
   "host_permissions": [
-    "*://*.youtube.com/*",
-    "*://*.googlevideo.com/*"
+    "https://*.youtube.com/*"
   ],
+  "content_security_policy": {
+    "extension_pages": "script-src 'self'; object-src 'self';"
+  },
   "background": {
     "service_worker": "src/background/service-worker.js"
   },
   "content_scripts": [
     {
       "matches": [
-        "*://*.youtube.com/*"
+        "https://*.youtube.com/*"
       ],
       "js": [
         "src/content/page-hook.js"
@@ -49,7 +51,7 @@
     },
     {
       "matches": [
-        "*://*.youtube.com/*"
+        "https://*.youtube.com/*"
       ],
       "css": [
         "src/content/player-optimize.css"
@@ -59,7 +61,7 @@
     },
     {
       "matches": [
-        "*://*.youtube.com/*"
+        "https://*.youtube.com/*"
       ],
       "js": [
         "src/core/utils.js",
@@ -67,7 +69,6 @@
         "src/content/content-controller.js"
       ],
       "run_at": "document_start",
-      "all_frames": true,
       "world": "ISOLATED"
     }
   ]

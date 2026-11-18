@@ -1,6 +1,6 @@
 {
   "name": "qualitybuffer",
-  "version": "2.3.0",
+  "version": "2.3.1",
   "description": "Open Source browser extension that optimizes 4K/HD YouTube video playback stability, hardware VP9 codec preference, and V12 HLS/MP4 web video downloading.",
   "scripts": {
     "test": "node tests/test-core.js",

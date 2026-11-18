@@ -6,6 +6,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ---
 
+## [2.3.1] - 2026-11-18
+
+### Changed
+- **Enhanced Safe Browsing Trust & Least-Privilege Hardening (`manifest.json`, `src/background/service-worker.js`):**
+  - Removed the `webRequest` permission and `*://*.googlevideo.com/*` host permission to eliminate network-interception flags in Chrome Enhanced Safe Browsing.
+  - Upgraded `host_permissions` and `content_scripts` matches from `*://*.youtube.com/*` to strict HTTPS (`https://*.youtube.com/*`) and removed `"all_frames": true` on YouTube content scripts.
+  - Added explicit `minimum_chrome_version: "111"` and strict `content_security_policy` (`script-src 'self'; object-src 'self';`) in `manifest.json`.
+
+---
+
 ## [2.3.0] - 2026-11-17
 
 ### Changed

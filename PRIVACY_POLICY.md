@@ -1,8 +1,8 @@
 # Privacy Policy — QualityBuffer
 
-**Last Updated:** November 17, 2026  
+**Last Updated:** November 18, 2026  
 **Extension Name:** QualityBuffer  
-**Version:** 2.3.0 (Manifest V3)  
+**Version:** 2.3.1 (Manifest V3)  
 **Author & Maintainer:** Joao Vitor Magalhaes Alves ([github.com/Alves404](https://github.com/Alves404))  
 **Repository:** [https://github.com/Alves404/QualityBuffer](https://github.com/Alves404/QualityBuffer)
 
@@ -26,8 +26,8 @@ To fulfill its purpose—optimizing 4K/HD YouTube video playback stability, guid
    Used strictly when the user interacts with the extension popup (explicit user gesture) to apply updated playback settings or scan and download user-requested video streams on the active tab without requiring broad host permissions.
 3. **`downloads`:**
    Used exclusively when the user explicitly clicks the **Download Video** button in the popup UI to save a detected direct video file (`.mp4` / `.webm`) to their own computer.
-4. **`webRequest` & Host Permissions (`*://*.youtube.com/*`, `*://*.googlevideo.com/*`):**
-   Used passively (read-only) in volatile memory (RAM) to measure real-time media chunk throughput (Mbps) and CDN latency (ms) on YouTube watch pages for display in the popup dashboard. All network monitoring is strictly scoped to `googlevideo.com` video playback chunks with zero broad host permissions.
+4. **Host Permission (`https://*.youtube.com/*`):**
+   Used exclusively on YouTube pages to apply user-configured hardware VP9 codec hints, ad-safe quality control, and Ambient Mode GPU optimizations locally inside the browser. Zero background `webRequest` interception permissions are requested.
 
 ---
 

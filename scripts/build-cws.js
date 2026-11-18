@@ -46,6 +46,9 @@ function validateManifest(manifestPath) {
   if (Array.isArray(manifest.permissions) && manifest.permissions.includes('tabs')) {
     throw new Error('Manifest should use "activeTab" instead of broad "tabs" permission for CWS compliance');
   }
+  if (Array.isArray(manifest.permissions) && manifest.permissions.includes('webRequest')) {
+    throw new Error('Manifest must not include "webRequest" permission to maximize Enhanced Safe Browsing trust');
+  }
   if (
     Array.isArray(manifest.host_permissions) &&
     manifest.host_permissions.some((h) => h.includes('localhost'))
@@ -54,9 +57,9 @@ function validateManifest(manifestPath) {
   }
   if (
     Array.isArray(manifest.host_permissions) &&
-    manifest.host_permissions.some((h) => h === '<all_urls>' || h === '*://*/*')
+    manifest.host_permissions.some((h) => h === '<all_urls>' || h === '*://*/*' || !h.startsWith('https://'))
   ) {
-    throw new Error('Manifest host_permissions must not use broad <all_urls>; scope to specific domains for CWS compliance');
+    throw new Error('Manifest host_permissions must use strict https:// origins without broad wildcards for CWS & Safe Browsing compliance');
   }
   if (
     Array.isArray(manifest.content_scripts) &&

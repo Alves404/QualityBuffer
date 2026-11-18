@@ -20,7 +20,7 @@
 >
 > Operating **100% within YouTube's Terms of Service and Chrome Web Store policies**, it combines non-destructive GPU hardware codec hints (**VP9 SDR** via `MediaCapabilities`), *Ad-Safe* official quality control, adaptive frame-drop/rebuffer protection, and a built-in **1-click V12 Downloader (MP4 & MP3)** for external websites. Zero ads, zero tracking, and 100% local execution.
 
-Conceived, architected, and engineered in a human manner by **João Vitor Magalhães Alves (@Alves404)**, **QualityBuffer v2.3.0** pairs a rock-solid, protocol-safe YouTube playback stability engine with a **12-worker HLS (`M3U8` / `AES-128`) & Direct `MP4`/`WebM` external video downloader**, presented in a native **Google Chrome WebUI / Material Design 3** interface.
+Conceived, architected, and engineered in a human manner by **João Vitor Alves (@Alves404)**, **QualityBuffer v2.3.0** pairs a rock-solid, protocol-safe YouTube playback stability engine with a **12-worker HLS (`M3U8` / `AES-128`) & Direct `MP4`/`WebM` external video downloader**, presented in a native **Google Chrome WebUI / Material Design 3** interface.
 
 <p align="center">
   <img src="assets/images/demo.gif" alt="QualityBuffer Demonstration" width="100%">
@@ -177,11 +177,11 @@ QualityBuffer/
   <img src="assets/images/gemini-4-argon.jpg" alt="Human Software Architecture & AI Assistance" width="600">
 </p>
 
-All software architecture, systems engineering, media pipeline design, and product decisions in **QualityBuffer** were conceived, planned, and designed in a human manner by **João Vitor Magalhães Alves (@Alves404)** (Google Student Ambassador 2026).
+All software architecture, systems engineering, media pipeline design, and product decisions in **QualityBuffer** were conceived, planned, and designed in a human manner by **João Vitor Alves (@Alves404)** (Google Student Ambassador 2026).
 
 Artificial Intelligence tools functioned exclusively as development and code review assistants under direct human supervision and engineering direction.
 
-* **Creator, Software Architect & Maintainer:** João Vitor Magalhães Alves — **Google Student Ambassador 2026** — [github.com/Alves404](https://github.com/Alves404) (`@Alves404`)
+* **Creator, Software Architect & Maintainer:** João Vitor Alves — **Google Student Ambassador 2026** — [github.com/Alves404](https://github.com/Alves404) (`@Alves404`)
 * **Official Repository:** [github.com/Alves404/QualityBuffer](https://github.com/Alves404/QualityBuffer)
 * **Chrome Web Store:** [QualityBuffer on Chrome Web Store](https://chromewebstore.google.com/detail/mdefdlcocdakdpkgfhpnhdcjihaajomg)
 * **Development Assistance:** AI coding and code review assistant under human direction
